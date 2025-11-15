@@ -1,0 +1,26 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Reglas para eliminar
+        match /{document=**} {
+      allow read, write, delete: if true;
+    }
+
+    // Reglas para plantas
+    match /plants/{plantId} {
+      allow read, write: if true;
+    }
+    
+    // Reglas para equipos
+    match /equipment/{equipmentId} {
+      allow read, write: if true;
+    }
+    
+    // Reglas para pruebas
+    match /test/{document} {
+      allow read, write: if true;
+    }
+  }
+}

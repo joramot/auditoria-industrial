@@ -1,0 +1,27 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Reglas para imágenes de equipos
+    match /plantas/{plantId}/equipos/{equipmentId}/images/{imageFile} {
+      allow read: if true;
+      allow write: if request.resource.size < 10 * 1024 * 1024  // Max 10MB
+                   && request.resource.contentType.matches('image/.*');
+      allow delete: if true;
+    }
+    
+    // ========== NUEVAS REGLAS PARA PDFs (Facturas y Pedimentos) ========== ✨
+    match /plantas/{plantId}/equipos/{equipmentId}/documentos/{pdfFile} {
+      allow read: if true;
+      allow write: if request.resource.size < 20 * 1024 * 1024  // Max 20MB para PDFs
+                   && request.resource.contentType == 'application/pdf';
+      allow delete: if true;
+    }
+    
+    // Regla general (legacy - mantener compatibilidad)
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+      allow delete: if true;
+    }
+  }
+}
