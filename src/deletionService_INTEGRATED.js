@@ -8,7 +8,7 @@
  * @date 2025-11-14
  */
 
-import { db, storage } from './firebaseConfig';
+import { db, storage } from './firebase/firebaseConfig';
 import {
   doc,
   deleteDoc,

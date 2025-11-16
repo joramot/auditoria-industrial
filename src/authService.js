@@ -1,6 +1,6 @@
 // authService.js - Servicio de Autenticación
-// Versión: 1.0
-// Funciones para login, logout, registro y gestión de usuarios
+// Versión: 2.1 - CORREGIDO - Sin duplicados
+// ✅ ARCHIVO FINAL - Errores de compilación resueltos
 
 import { 
   signInWithEmailAndPassword, 
@@ -11,7 +11,9 @@ import {
   sendPasswordResetEmail,
   signInAnonymously
 } from 'firebase/auth';
-import { auth } from './firebaseConfig';
+import { auth } from './firebase/firebaseConfig';
+import { createOrUpdateUserRole, ROLES } from './roleService';
+
 
 // ============================================
 // AUTENTICACIÓN CON EMAIL Y CONTRASEÑA
@@ -20,7 +22,7 @@ import { auth } from './firebaseConfig';
 /**
  * 🔐 LOGIN con email y contraseña
  */
-export const loginWithEmail = async (email, password) => {
+export const login = async (email, password) => {
   try {
     console.log('🔐 Intentando login con:', email);
     
@@ -72,7 +74,7 @@ export const loginWithEmail = async (email, password) => {
 /**
  * 👤 REGISTRO de nuevo usuario
  */
-export const registerWithEmail = async (email, password, displayName) => {
+export const register = async (email, password, displayName) => {
   try {
     console.log('📝 Registrando usuario:', email);
     
@@ -121,11 +123,62 @@ export const registerWithEmail = async (email, password, displayName) => {
 };
 
 // ============================================
-// AUTENTICACIÓN ANÓNIMA
+// OBSERVADOR DE ESTADO DE AUTENTICACIÓN
+// ============================================
+
+/**
+ * 👀 OBSERVAR cambios en el estado de autenticación
+ * ✅ CREA/ACTUALIZA usuario en Firestore automáticamente
+ * 
+ * @param {Function} callback - Función que se ejecuta cuando cambia el estado
+ * @returns {Function} - Función para cancelar la suscripción
+ */
+export const onAuthChange = (callback) => {
+  return onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      console.log('👤 Usuario autenticado:', user.email || user.uid);
+      
+      // ✅ Crear/actualizar usuario en Firestore con rol
+      try {
+        await createOrUpdateUserRole(user.uid, {
+          email: user.email,
+          displayName: user.displayName || user.email,
+          role: ROLES.SUPERVISOR, // Rol por defecto
+          assignedPlants: []
+        });
+        console.log('✅ Usuario sincronizado en Firestore con rol');
+      } catch (error) {
+        console.error('❌ Error al sincronizar usuario en Firestore:', error);
+        // No bloqueamos el login si falla la sincronización
+      }
+      
+      callback({
+        isAuthenticated: true,
+        user: {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || user.email,
+          isAnonymous: user.isAnonymous
+        }
+      });
+    } else {
+      console.log('👤 No hay usuario autenticado');
+      
+      callback({
+        isAuthenticated: false,
+        user: null
+      });
+    }
+  });
+};
+
+// ============================================
+// AUTENTICACIÓN ANÓNIMA (OPCIONAL)
 // ============================================
 
 /**
  * 👻 LOGIN ANÓNIMO (para testing o apps sin usuarios)
+ * ⚠️ NOTA: Requiere habilitar Anonymous Auth en Firebase Console
  */
 export const loginAnonymously = async () => {
   try {
@@ -224,41 +277,6 @@ export const resetPassword = async (email) => {
 };
 
 // ============================================
-// OBSERVADOR DE ESTADO DE AUTENTICACIÓN
-// ============================================
-
-/**
- * 👀 OBSERVAR cambios en el estado de autenticación
- * 
- * @param {Function} callback - Función que se ejecuta cuando cambia el estado
- * @returns {Function} - Función para cancelar la suscripción
- */
-export const onAuthChange = (callback) => {
-  return onAuthStateChanged(auth, (user) => {
-    if (user) {
-      console.log('👤 Usuario autenticado:', user.email || user.uid);
-      
-      callback({
-        isAuthenticated: true,
-        user: {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName || user.email,
-          isAnonymous: user.isAnonymous
-        }
-      });
-    } else {
-      console.log('👤 No hay usuario autenticado');
-      
-      callback({
-        isAuthenticated: false,
-        user: null
-      });
-    }
-  });
-};
-
-// ============================================
 // UTILIDADES
 // ============================================
 
@@ -281,10 +299,34 @@ export const getCurrentUser = () => {
 };
 
 /**
- * 🔍 VERIFICAR si el usuario está autenticado
+ * ✅ ACTUALIZAR perfil del usuario
  */
-export const isAuthenticated = () => {
-  return auth.currentUser !== null;
+export const updateUserProfile = async (displayName) => {
+  try {
+    const user = auth.currentUser;
+    
+    if (!user) {
+      return {
+        success: false,
+        error: 'No hay usuario autenticado'
+      };
+    }
+    
+    await updateProfile(user, { displayName });
+    
+    console.log('✅ Perfil actualizado:', displayName);
+    
+    return {
+      success: true
+    };
+  } catch (error) {
+    console.error('❌ Error al actualizar perfil:', error);
+    
+    return {
+      success: false,
+      error: error.message
+    };
+  }
 };
 
 // ============================================
@@ -292,3 +334,36 @@ export const isAuthenticated = () => {
 // ============================================
 
 export { auth };
+
+// ============================================
+// 📝 NOTAS IMPORTANTES
+// ============================================
+
+/*
+✅ FUNCIONES DISPONIBLES:
+- login(email, password)
+- register(email, password, displayName)
+- loginAnonymously() - ⚠️ Requiere habilitar Anonymous Auth en Firebase
+- logout()
+- resetPassword(email)
+- onAuthChange(callback) - ✅ Crea usuario en Firestore automáticamente
+- getCurrentUser()
+- updateUserProfile(displayName)
+
+✅ INTEGRACIÓN CON ROLES:
+- onAuthChange() ahora crea/actualiza automáticamente el usuario en Firestore
+- Asigna rol SUPERVISOR por defecto
+- Los administradores pueden cambiar roles después
+
+❌ FUNCIONES REMOVIDAS (para evitar errores):
+- loginWithGoogle() - REMOVIDA
+- loginWithFacebook() - REMOVIDA
+
+💡 Si necesitas login social (Google/Facebook):
+1. Habilítalos en Firebase Console
+2. Agrega los providers a firebaseConfig.js
+3. Agrega las funciones de login social aquí
+
+📚 Documentación:
+https://firebase.google.com/docs/auth/web/password-auth
+*/

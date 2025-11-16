@@ -3,23 +3,181 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Reglas para imágenes
-    match /equipment_images/{plantId}/{equipmentId}/{category}/{fileName} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null
-                   && request.resource.size < 10 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
-      allow delete: if request.auth != null;
+    // =====================================================
+    // FUNCIONES AUXILIARES
+    // =====================================================
+    
+    // Verificar si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
     }
     
-    // Reglas para PDFs
-    match /plantas/{plantId}/equipos/{equipmentId}/documentos/{category}/{fileName} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null
-                   && request.resource.size < 20 * 1024 * 1024
-                   && request.resource.contentType == 'application/pdf'
-                   && (category == 'factura' || category == 'pedimento');
-      allow delete: if request.auth != null;
+    // Obtener rol del usuario desde Firestore
+    function getUserRole() {
+      return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    // Verificar roles
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+    
+    function isSupervisor() {
+      return isAuthenticated() && getUserRole() == 'supervisor';
+    }
+    
+    function isAuditor() {
+      return isAuthenticated() && getUserRole() == 'auditor';
+    }
+    
+    // Verificar que el archivo pertenece al usuario
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Verificar tamaño del archivo (máximo 10MB)
+    function validFileSize() {
+      return request.resource.size <= 10 * 1024 * 1024;
+    }
+    
+    // Verificar tipo de archivo para imágenes
+    function validImageType() {
+      return request.resource.contentType.matches('image/.*');
+    }
+    
+    // Verificar tipo de archivo para PDFs
+    function validPDFType() {
+      return request.resource.contentType == 'application/pdf';
+    }
+    
+    // =====================================================
+    // REGLAS PARA IMÁGENES
+    // Path: images/{userId}/{plantId}/{equipmentId}/{imageType}/{filename}
+    // =====================================================
+    
+    match /images/{userId}/{plantId}/{equipmentId}/{imageType}/{filename} {
+      // Lectura:
+      // - Admin: puede leer todas las imágenes
+      // - Auditor: puede leer todas las imágenes
+      // - Supervisor: solo imágenes que subió
+      allow read: if isAuthenticated() && (
+                    isAdmin() ||
+                    isAuditor() ||
+                    (isSupervisor() && isOwner(userId))
+                  );
+      
+      // Escritura (subida):
+      // - Admin: puede subir cualquier imagen
+      // - Supervisor: solo puede subir en su propio directorio
+      // - Debe ser una imagen válida y no exceder tamaño
+      allow write: if isAuthenticated() && 
+                     (isAdmin() || (isSupervisor() && isOwner(userId))) &&
+                     validImageType() &&
+                     validFileSize();
+      
+      // Eliminación:
+      // - Admin: puede eliminar cualquier imagen
+      // - Supervisor: solo imágenes que subió
+      allow delete: if isAuthenticated() && (
+                      isAdmin() ||
+                      (isSupervisor() && isOwner(userId))
+                    );
+    }
+    
+    // =====================================================
+    // REGLAS PARA PDFs
+    // Path: pdfs/{userId}/{plantId}/{equipmentId}/{pdfType}/{filename}
+    // =====================================================
+    
+    match /pdfs/{userId}/{plantId}/{equipmentId}/{pdfType}/{filename} {
+      // Lectura:
+      // - Admin: puede leer todos los PDFs
+      // - Auditor: puede leer todos los PDFs
+      // - Supervisor: solo PDFs que subió
+      allow read: if isAuthenticated() && (
+                    isAdmin() ||
+                    isAuditor() ||
+                    (isSupervisor() && isOwner(userId))
+                  );
+      
+      // Escritura (subida):
+      // - Admin: puede subir cualquier PDF
+      // - Supervisor: solo puede subir en su propio directorio
+      // - Debe ser un PDF válido y no exceder tamaño
+      allow write: if isAuthenticated() && 
+                     (isAdmin() || (isSupervisor() && isOwner(userId))) &&
+                     validPDFType() &&
+                     validFileSize();
+      
+      // Eliminación:
+      // - Admin: puede eliminar cualquier PDF
+      // - Supervisor: solo PDFs que subió
+      allow delete: if isAuthenticated() && (
+                      isAdmin() ||
+                      (isSupervisor() && isOwner(userId))
+                    );
+    }
+    
+    // =====================================================
+    // REGLAS PARA REPORTES GENERADOS
+    // Path: reports/{userId}/{reportType}/{filename}
+    // =====================================================
+    
+    match /reports/{userId}/{reportType}/{filename} {
+      // Lectura:
+      // - Admin: puede leer todos los reportes
+      // - Auditor: puede leer todos los reportes
+      // - Supervisor: solo reportes que generó
+      allow read: if isAuthenticated() && (
+                    isAdmin() ||
+                    isAuditor() ||
+                    isOwner(userId)
+                  );
+      
+      // Escritura:
+      // - Todos pueden generar reportes en su directorio
+      allow write: if isAuthenticated() && 
+                     isOwner(userId) &&
+                     validFileSize();
+      
+      // Eliminación:
+      // - Admin: puede eliminar cualquier reporte
+      // - Usuario: solo sus propios reportes
+      allow delete: if isAuthenticated() && (
+                      isAdmin() ||
+                      isOwner(userId)
+                    );
+    }
+    
+    // =====================================================
+    // REGLAS PARA BACKUPS (Solo Admin)
+    // Path: backups/{timestamp}/{filename}
+    // =====================================================
+    
+    match /backups/{backupTime}/{filename} {
+      // Solo Admin puede leer y escribir backups
+      allow read, write, delete: if isAdmin();
+    }
+    
+    // =====================================================
+    // REGLAS PARA ARCHIVOS TEMPORALES
+    // Path: temp/{userId}/{filename}
+    // =====================================================
+    
+    match /temp/{userId}/{filename} {
+      // Los usuarios solo pueden acceder a sus archivos temporales
+      allow read, write, delete: if isAuthenticated() && 
+                                   isOwner(userId) &&
+                                   validFileSize();
+    }
+    
+    // =====================================================
+    // BLOQUEAR TODO LO DEMÁS
+    // =====================================================
+    
+    // Cualquier ruta no especificada está bloqueada por defecto
+    match /{allPaths=**} {
+      allow read, write: if false;
     }
   }
 }

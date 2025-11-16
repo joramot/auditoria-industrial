@@ -1,6 +1,6 @@
-// LoginScreen.jsx - Pantalla de Login (Versión Mejorada)
-// Versión: 2.0 - Con recuperación de contraseña integrada
-// Componente de autenticación con todas las funcionalidades
+// LoginScreen.jsx - Pantalla de Login (VersiÃ³n Mejorada)
+// VersiÃ³n: 2.0 - Con recuperaciÃ³n de contraseÃ±a integrada
+// Componente de autenticaciÃ³n con todas las funcionalidades
 
 import React, { useState } from 'react';
 import { 
@@ -17,7 +17,7 @@ import {
   User,
   KeyRound
 } from 'lucide-react';
-import { loginWithEmail, registerWithEmail, loginAnonymously } from './authService';
+import { login, register } from './authService';
 import PasswordRecovery from './PasswordRecovery';
 
 const LoginScreen = ({ onLoginSuccess }) => {
@@ -41,10 +41,10 @@ const LoginScreen = ({ onLoginSuccess }) => {
     setIsLoading(true);
 
     try {
-      const result = await loginWithEmail(email, password);
+      const result = await login(email, password);
 
       if (result.success) {
-        setSuccess('¡Login exitoso!');
+        setSuccess('Â¡Login exitoso!');
         setTimeout(() => {
           onLoginSuccess(result.user);
         }, 500);
@@ -52,7 +52,7 @@ const LoginScreen = ({ onLoginSuccess }) => {
         setError(result.error);
       }
     } catch (err) {
-      setError('Error inesperado al iniciar sesión');
+      setError('Error inesperado al iniciar sesiÃ³n');
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -69,10 +69,10 @@ const LoginScreen = ({ onLoginSuccess }) => {
     setIsLoading(true);
 
     try {
-      const result = await registerWithEmail(email, password, displayName);
+      const result = await register(email, password, displayName);
 
       if (result.success) {
-        setSuccess('¡Registro exitoso! Iniciando sesión...');
+        setSuccess('Â¡Registro exitoso! Iniciando sesiÃ³n...');
         setTimeout(() => {
           onLoginSuccess(result.user);
         }, 1000);
@@ -89,7 +89,9 @@ const LoginScreen = ({ onLoginSuccess }) => {
 
   /**
    * Manejar login anónimo (para testing)
+   * NOTA: Deshabilitado temporalmente - se puede habilitar después
    */
+  /*
   const handleAnonymousLogin = async () => {
     setError(null);
     setSuccess(null);
@@ -113,6 +115,7 @@ const LoginScreen = ({ onLoginSuccess }) => {
       setIsLoading(false);
     }
   };
+  */
 
   /**
    * Cambiar entre login y registro
@@ -134,10 +137,10 @@ const LoginScreen = ({ onLoginSuccess }) => {
           <div className="bg-blue-600 text-white p-6 rounded-t-2xl shadow-lg">
             <div className="flex items-center gap-3 justify-center mb-2">
               <Database className="w-8 h-8" />
-              <h1 className="text-2xl font-bold">Auditoría Industrial</h1>
+              <h1 className="text-2xl font-bold">AuditorÃ­a Industrial</h1>
             </div>
             <p className="text-blue-100 text-center text-sm">
-              Sistema de Gestión de Equipos
+              Sistema de GestiÃ³n de Equipos
             </p>
           </div>
 
@@ -158,7 +161,7 @@ const LoginScreen = ({ onLoginSuccess }) => {
                 }`}
               >
                 <LogIn className="w-4 h-4 inline mr-2" />
-                Iniciar Sesión
+                Iniciar SesiÃ³n
               </button>
               <button
                 onClick={() => {
@@ -190,7 +193,7 @@ const LoginScreen = ({ onLoginSuccess }) => {
                     type="text"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="Juan Pérez"
+                    placeholder="Juan PÃ©rez"
                     required={!isLogin}
                     disabled={isLoading}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
@@ -215,18 +218,18 @@ const LoginScreen = ({ onLoginSuccess }) => {
                 />
               </div>
 
-              {/* Campo: Contraseña */}
+              {/* Campo: ContraseÃ±a */}
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-medium mb-2">
                   <Lock className="w-4 h-4 inline mr-1" />
-                  Contraseña
+                  ContraseÃ±a
                 </label>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                     required
                     disabled={isLoading}
                     minLength={6}
@@ -247,12 +250,12 @@ const LoginScreen = ({ onLoginSuccess }) => {
                 </div>
                 {!isLogin && (
                   <p className="text-xs text-gray-500 mt-1">
-                    Mínimo 6 caracteres
+                    MÃ­nimo 6 caracteres
                   </p>
                 )}
               </div>
 
-              {/* Link de recuperación de contraseña (solo en login) */}
+              {/* Link de recuperaciÃ³n de contraseÃ±a (solo en login) */}
               {isLogin && (
                 <div className="mb-4 text-right">
                   <button
@@ -262,12 +265,12 @@ const LoginScreen = ({ onLoginSuccess }) => {
                     disabled={isLoading}
                   >
                     <KeyRound className="w-4 h-4" />
-                    ¿Olvidaste tu contraseña?
+                    Â¿Olvidaste tu contraseÃ±a?
                   </button>
                 </div>
               )}
 
-              {/* Mensajes de error/éxito */}
+              {/* Mensajes de error/Ã©xito */}
               {error && (
                 <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
@@ -282,7 +285,7 @@ const LoginScreen = ({ onLoginSuccess }) => {
                 </div>
               )}
 
-              {/* Botón principal */}
+              {/* BotÃ³n principal */}
               <button
                 type="submit"
                 disabled={isLoading}
@@ -300,7 +303,7 @@ const LoginScreen = ({ onLoginSuccess }) => {
                 ) : isLogin ? (
                   <span className="flex items-center justify-center gap-2">
                     <LogIn className="w-5 h-5" />
-                    Iniciar Sesión
+                    Iniciar SesiÃ³n
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-2">
@@ -318,7 +321,8 @@ const LoginScreen = ({ onLoginSuccess }) => {
               <div className="flex-1 border-t border-gray-300"></div>
             </div>
 
-            {/* Login Anónimo (para testing) */}
+            {/* Login Anónimo (para testing) - DESHABILITADO TEMPORALMENTE */}
+            {/*
             <button
               onClick={handleAnonymousLogin}
               disabled={isLoading}
@@ -333,19 +337,20 @@ const LoginScreen = ({ onLoginSuccess }) => {
                 Acceso Rápido (Anónimo)
               </span>
             </button>
+            */}
 
             <p className="text-xs text-gray-500 text-center mt-4">
               {isLogin ? (
-                <>¿No tienes cuenta? Haz clic en "Registrarse"</>
+                <>Â¿No tienes cuenta? Haz clic en "Registrarse"</>
               ) : (
-                <>¿Ya tienes cuenta? Haz clic en "Iniciar Sesión"</>
+                <>Â¿Ya tienes cuenta? Haz clic en "Iniciar SesiÃ³n"</>
               )}
             </p>
           </div>
 
           {/* Footer */}
           <div className="mt-6 text-center text-sm text-gray-600">
-            <p>Sistema de Auditoría Industrial v2.0</p>
+            <p>Sistema de AuditorÃ­a Industrial v2.0</p>
             <p className="text-xs text-gray-500 mt-1">
               Powered by Firebase Authentication
             </p>
@@ -353,12 +358,12 @@ const LoginScreen = ({ onLoginSuccess }) => {
         </div>
       </div>
 
-      {/* Modal de Recuperación de Contraseña */}
+      {/* Modal de RecuperaciÃ³n de ContraseÃ±a */}
       {showPasswordRecovery && (
         <PasswordRecovery
           onClose={() => setShowPasswordRecovery(false)}
           onSuccess={() => {
-            setSuccess('Email de recuperación enviado. Revisa tu bandeja de entrada.');
+            setSuccess('Email de recuperaciÃ³n enviado. Revisa tu bandeja de entrada.');
             setShowPasswordRecovery(false);
           }}
         />

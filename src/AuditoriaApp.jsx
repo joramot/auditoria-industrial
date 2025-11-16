@@ -55,12 +55,12 @@ import {
   getSyncStats,
 } from "./localStorageService";
 
-// âœ… CORRECCIÃ“N 4: Imports actualizados de syncService
+// Ã¢Å“â€¦ CORRECCIÃƒâ€œN 4: Imports actualizados de syncService
 import {
   syncAllPendingOperations,
-  getSyncStatus,           // âœ… FunciÃ³n que existe y se usa
-  syncOnConnection,        // âœ… FunciÃ³n que existe y se usa
-  startAutoSync,           // âœ… FunciÃ³n que existe y se usa
+  getSyncStatus,           // Ã¢Å“â€¦ FunciÃƒÂ³n que existe y se usa
+  syncOnConnection,        // Ã¢Å“â€¦ FunciÃƒÂ³n que existe y se usa
+  startAutoSync,           // Ã¢Å“â€¦ FunciÃƒÂ³n que existe y se usa
   addPDFToSyncQueue,
 } from "./syncService";
 
@@ -72,7 +72,7 @@ import {
   deleteEquipmentComplete,
   deletePlantComplete,
   getDeleteInfo,
-} from "./deletionService_FIXED";  // âœ… CORRECCIÃ“N 1: Nombre correcto
+} from "./deletionService_FIXED";  // Ã¢Å“â€¦ CORRECCIÃƒâ€œN 1: Nombre correcto
 
 import {
   DeleteEquipmentButton,
@@ -80,7 +80,7 @@ import {
   NukeDatabaseButton
 } from "./DeletionButtons";
 
-// âœ… NUEVO: Imports para limpieza de base de datos
+// Ã¢Å“â€¦ NUEVO: Imports para limpieza de base de datos
 import {
   findDuplicates,
   removeDuplicates,
@@ -90,14 +90,14 @@ import {
 import ImageUploader from "./ImageUploader";
 import PDFUploader from "./PDFUploader";
 
-// ✅ AUTENTICACIÓN: Imports para Firebase Auth
+// âœ… AUTENTICACIÃ“N: Imports para Firebase Auth
 import { onAuthChange, logout } from "./authService";
 import LoginScreen from "./LoginScreen";
 import { LogOut, User as UserIcon } from "lucide-react";
 
 const AuditoriaApp = () => {
   // ============================================
-  // 🔐 ESTADOS DE AUTENTICACIÓN
+  // ðŸ” ESTADOS DE AUTENTICACIÃ“N
   // ============================================
   const [user, setUser] = useState(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
@@ -165,7 +165,7 @@ const AuditoriaApp = () => {
     type: '',
   });
 
-  // Monitorear conexiÃ³n
+  // Monitorear conexiÃƒÂ³n
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
     const handleOffline = () => setIsOffline(true);
@@ -183,47 +183,47 @@ const AuditoriaApp = () => {
   useEffect(() => {
     initDB()
       .then(() => {
-        console.log("âœ… IndexedDB inicializada correctamente");
+        console.log("Ã¢Å“â€¦ IndexedDB inicializada correctamente");
         updateSyncStats();
       })
       .catch((error) => {
-        console.error("âŒ Error al inicializar IndexedDB:", error);
+        console.error("Ã¢ÂÅ’ Error al inicializar IndexedDB:", error);
       });
   }, []);
 
   // ============================================
-  // 🔐 OBSERVADOR DE AUTENTICACIÓN
+  // ðŸ” OBSERVADOR DE AUTENTICACIÃ“N
   // ============================================
   useEffect(() => {
-    console.log('🔐 Configurando observador de autenticación...');
+    console.log('ðŸ” Configurando observador de autenticaciÃ³n...');
     
-    // Observar cambios en el estado de autenticación
+    // Observar cambios en el estado de autenticaciÃ³n
     const unsubscribe = onAuthChange((authState) => {
-      console.log('🔐 Estado de auth cambió:', authState);
+      console.log('ðŸ” Estado de auth cambiÃ³:', authState);
       
       setIsAuthenticated(authState.isAuthenticated);
       setUser(authState.user);
       setIsAuthLoading(false);
       
       if (authState.isAuthenticated) {
-        console.log('✅ Usuario autenticado:', authState.user.email || authState.user.displayName);
+        console.log('âœ… Usuario autenticado:', authState.user.email || authState.user.displayName);
       } else {
-        console.log('ℹ️ No hay usuario autenticado');
+        console.log('â„¹ï¸ No hay usuario autenticado');
       }
     });
     
-    // Cleanup: cancelar suscripción al desmontar
+    // Cleanup: cancelar suscripciÃ³n al desmontar
     return () => {
-      console.log('🔐 Cancelando observador de autenticación');
+      console.log('ðŸ” Cancelando observador de autenticaciÃ³n');
       unsubscribe();
     };
   }, []);
 
 
-  // Configurar sincronizaciÃ³n automÃ¡tica
+  // Configurar sincronizaciÃƒÂ³n automÃƒÂ¡tica
   useEffect(() => {
     const cleanupSyncOnConnection = syncOnConnection((progress) => {
-      console.log("ðŸ“Š Progreso de sincronizaciÃ³n:", progress);
+      console.log("Ã°Å¸â€œÅ  Progreso de sincronizaciÃƒÂ³n:", progress);
       
       if (progress.total > 0) {
         setSyncProgress(progress);
@@ -233,7 +233,7 @@ const AuditoriaApp = () => {
     });
 
     const syncInterval = startAutoSync(5, (progress) => {
-      console.log("ðŸ“Š Progreso de sincronizaciÃ³n:", progress);
+      console.log("Ã°Å¸â€œÅ  Progreso de sincronizaciÃƒÂ³n:", progress);
       
       if (progress.total > 0) {
         setSyncProgress(progress);
@@ -248,11 +248,11 @@ const AuditoriaApp = () => {
     };
   }, []);
 
-  // Cerrar modal de sincronizaciÃ³n
+  // Cerrar modal de sincronizaciÃƒÂ³n
   useEffect(() => {
     if ((syncProgress.percentage === 100 || syncProgress.completed) && showSyncProgress) {
       const timer = setTimeout(() => {
-        console.log("âœ… Cerrando modal de sincronizaciÃ³n");
+        console.log("Ã¢Å“â€¦ Cerrando modal de sincronizaciÃƒÂ³n");
         setShowSyncProgress(false);
         setSyncStatus(prev => ({ ...prev, isSyncing: false }));
         
@@ -298,42 +298,42 @@ const AuditoriaApp = () => {
   const loadPlants = async () => {
     try {
       if (isLoading) {
-        console.log("â­ï¸ Ya se estÃ¡n cargando las plantas, omitiendo llamada duplicada");
+        console.log("Ã¢ÂÂ­Ã¯Â¸Â Ya se estÃƒÂ¡n cargando las plantas, omitiendo llamada duplicada");
         return;
       }
       
       setIsLoading(true);
 
       if (isOffline) {
-        console.log("ðŸ“´ Modo OFFLINE: Cargando plantas desde IndexedDB...");
+        console.log("Ã°Å¸â€œÂ´ Modo OFFLINE: Cargando plantas desde IndexedDB...");
         
         const localResult = await getPlantsLocal();
         
         if (localResult.success) {
           const localPlants = localResult.data;
-          console.log(`âœ… ${localPlants.length} plantas cargadas desde IndexedDB`);
+          console.log(`Ã¢Å“â€¦ ${localPlants.length} plantas cargadas desde IndexedDB`);
           setPlants(localPlants);
         } else {
-          console.error("âŒ Error al cargar plantas locales:", localResult.error);
+          console.error("Ã¢ÂÅ’ Error al cargar plantas locales:", localResult.error);
           setPlants([]);
         }
         
       } else {
-        console.log("ðŸŒ Modo ONLINE: Cargando plantas...");
+        console.log("Ã°Å¸Å’Â Modo ONLINE: Cargando plantas...");
         
         const result = await getPlants();
         let firebasePlants = [];
         
         if (result.success) {
           firebasePlants = result.data;
-          console.log(`âœ… ${firebasePlants.length} plantas cargadas desde Firebase`);
+          console.log(`Ã¢Å“â€¦ ${firebasePlants.length} plantas cargadas desde Firebase`);
           
-          console.log("ðŸ“Š Contando equipos de cada planta...");
+          console.log("Ã°Å¸â€œÅ  Contando equipos de cada planta...");
           for (const plant of firebasePlants) {
             const equipResult = await getEquipmentByPlant(plant.id);
             if (equipResult.success) {
               plant.equipmentCount = equipResult.data.length;
-              console.log(`  âœ… Planta "${plant.name}": ${plant.equipmentCount} equipos`);
+              console.log(`  Ã¢Å“â€¦ Planta "${plant.name}": ${plant.equipmentCount} equipos`);
             } else {
               plant.equipmentCount = 0;
             }
@@ -345,7 +345,7 @@ const AuditoriaApp = () => {
         
         if (localResult.success) {
           localPlants = localResult.data;
-          console.log(`âœ… ${localPlants.length} plantas en IndexedDB`);
+          console.log(`Ã¢Å“â€¦ ${localPlants.length} plantas en IndexedDB`);
           
           for (const plant of localPlants) {
             const equipResult = await getEquipmentByPlantLocal(plant.id);
@@ -366,16 +366,16 @@ const AuditoriaApp = () => {
           return !firebaseIds.has(plant.id);
         });
 
-        console.log(`ðŸ“Š Plantas Ãºnicas locales (no sincronizadas): ${uniqueLocalPlants.length}`);
+        console.log(`Ã°Å¸â€œÅ  Plantas ÃƒÂºnicas locales (no sincronizadas): ${uniqueLocalPlants.length}`);
 
         const allPlants = [...firebasePlants, ...uniqueLocalPlants];
         
-        console.log(`âœ… Total de plantas a mostrar: ${allPlants.length}`);
+        console.log(`Ã¢Å“â€¦ Total de plantas a mostrar: ${allPlants.length}`);
         setPlants(allPlants);
       }
 
     } catch (error) {
-      console.error("âŒ Error al cargar plantas:", error);
+      console.error("Ã¢ÂÅ’ Error al cargar plantas:", error);
       setPlants([]);
     } finally {
       setIsLoading(false);
@@ -383,14 +383,14 @@ const AuditoriaApp = () => {
   };
 
 const loadEquipment = async (plantId) => {
-  console.log("\nðŸ”„ RECARGANDO EQUIPOS de planta:", plantId);
+  console.log("\nÃ°Å¸â€â€ž RECARGANDO EQUIPOS de planta:", plantId);
   setIsLoading(true);
   
   try {
     const result = await getEquipmentByPlant(plantId);
     
     if (result.success) {
-      // Eliminar duplicados basÃ¡ndose en el ID
+      // Eliminar duplicados basÃƒÂ¡ndose en el ID
       const uniqueEquipment = result.data.reduce((acc, current) => {
         const existingIndex = acc.findIndex(item => item.id === current.id);
         
@@ -398,14 +398,14 @@ const loadEquipment = async (plantId) => {
           // No existe, agregarlo
           acc.push(current);
         } else {
-          // Ya existe, mantener el que tenga syncStatus 'synced' o el mÃ¡s reciente
+          // Ya existe, mantener el que tenga syncStatus 'synced' o el mÃƒÂ¡s reciente
           const existing = acc[existingIndex];
           
           if (current.syncStatus === 'synced' && existing.syncStatus !== 'synced') {
-            // Reemplazar con la versiÃ³n sincronizada
+            // Reemplazar con la versiÃƒÂ³n sincronizada
             acc[existingIndex] = current;
           } else if (current.updatedAt > existing.updatedAt) {
-            // Reemplazar con la versiÃ³n mÃ¡s reciente
+            // Reemplazar con la versiÃƒÂ³n mÃƒÂ¡s reciente
             acc[existingIndex] = current;
           }
         }
@@ -413,18 +413,18 @@ const loadEquipment = async (plantId) => {
         return acc;
       }, []);
       
-      console.log("âœ… Equipos cargados:", uniqueEquipment.length);
-      console.log(`ðŸ“Š Duplicados eliminados: ${result.data.length - uniqueEquipment.length}`);
+      console.log("Ã¢Å“â€¦ Equipos cargados:", uniqueEquipment.length);
+      console.log(`Ã°Å¸â€œÅ  Duplicados eliminados: ${result.data.length - uniqueEquipment.length}`);
       
       setEquipment(uniqueEquipment);
     } else {
-      console.error("âŒ Error al cargar equipos:", result.error);
-      alert("âŒ Error al cargar equipos: " + result.error);
+      console.error("Ã¢ÂÅ’ Error al cargar equipos:", result.error);
+      alert("Ã¢ÂÅ’ Error al cargar equipos: " + result.error);
       setEquipment([]);
     }
   } catch (error) {
-    console.error("âŒ ExcepciÃ³n al cargar equipos:", error);
-    alert("âŒ Error inesperado al cargar equipos: " + error.message);
+    console.error("Ã¢ÂÅ’ ExcepciÃƒÂ³n al cargar equipos:", error);
+    alert("Ã¢ÂÅ’ Error inesperado al cargar equipos: " + error.message);
     setEquipment([]);
   } finally {
     setIsLoading(false);
@@ -432,7 +432,7 @@ const loadEquipment = async (plantId) => {
 };
 
   const handleNewEquipment = () => {
-    console.log("\nâž• ABRIENDO FORMULARIO DE NUEVO EQUIPO");
+    console.log("\nÃ¢Å¾â€¢ ABRIENDO FORMULARIO DE NUEVO EQUIPO");
     
     setSelectedEquipment(null);
     
@@ -462,11 +462,11 @@ const loadEquipment = async (plantId) => {
     
     setCurrentView("form");
     
-    console.log("âœ… Formulario limpio y listo para nuevo equipo");
+    console.log("Ã¢Å“â€¦ Formulario limpio y listo para nuevo equipo");
   };
 
   const handleCancelEquipment = () => {
-    console.log("\nâŒ CANCELANDO EDICIÃ“N/CREACIÃ“N DE EQUIPO");
+    console.log("\nÃ¢ÂÅ’ CANCELANDO EDICIÃƒâ€œN/CREACIÃƒâ€œN DE EQUIPO");
     
     setSelectedEquipment(null);
     
@@ -496,7 +496,7 @@ const loadEquipment = async (plantId) => {
     
     setCurrentView("equipment");
     
-    console.log("âœ… Formulario limpiado, volviendo a lista de equipos");
+    console.log("Ã¢Å“â€¦ Formulario limpiado, volviendo a lista de equipos");
   };
 
   const updateSyncStats = async () => {
@@ -512,7 +512,7 @@ const loadEquipment = async (plantId) => {
   const handleSavePlant = async () => {
     if (!newPlantData.name || !newPlantData.location) {
       alert(
-        "âš ï¸ Por favor completa los campos obligatorios:\n- Nombre de la Planta\n- Ciudad y Estado"
+        "Ã¢Å¡Â Ã¯Â¸Â Por favor completa los campos obligatorios:\n- Nombre de la Planta\n- Ciudad y Estado"
       );
       return;
     }
@@ -526,7 +526,7 @@ const loadEquipment = async (plantId) => {
       };
 
       if (isOffline) {
-        console.log("ðŸ“´ Modo OFFLINE: Guardando planta localmente...");
+        console.log("Ã°Å¸â€œÂ´ Modo OFFLINE: Guardando planta localmente...");
 
         const localResult = await savePlantLocal(plantData);
 
@@ -542,7 +542,7 @@ const loadEquipment = async (plantId) => {
         await updateSyncStats();
 
         setSuccessMessage(
-          `âš ï¸ Planta "${newPlantData.name}" guardada localmente. Se sincronizarÃ¡ al conectar.`
+          `Ã¢Å¡Â Ã¯Â¸Â Planta "${newPlantData.name}" guardada localmente. Se sincronizarÃƒÂ¡ al conectar.`
         );
         setShowSuccessMessage(true);
 
@@ -560,7 +560,7 @@ const loadEquipment = async (plantId) => {
         }, 2000);
 
       } else {
-        console.log("ðŸŒ Modo ONLINE: Guardando planta en Firebase...");
+        console.log("Ã°Å¸Å’Â Modo ONLINE: Guardando planta en Firebase...");
 
         const result = await addPlant(plantData);
 
@@ -572,7 +572,7 @@ const loadEquipment = async (plantId) => {
           });
 
           setSuccessMessage(
-            `âœ“ Planta "${newPlantData.name}" guardada y sincronizada con Firebase`
+            `Ã¢Å“â€œ Planta "${newPlantData.name}" guardada y sincronizada con Firebase`
           );
           setShowSuccessMessage(true);
 
@@ -594,8 +594,8 @@ const loadEquipment = async (plantId) => {
       }
 
     } catch (error) {
-      console.error("âŒ Error al guardar planta:", error);
-      alert("âŒ Error al guardar planta: " + error.message);
+      console.error("Ã¢ÂÅ’ Error al guardar planta:", error);
+      alert("Ã¢ÂÅ’ Error al guardar planta: " + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -608,7 +608,7 @@ const loadEquipment = async (plantId) => {
       !formData.serialNumber
     ) {
       alert(
-        "âš ï¸ Por favor completa los campos obligatorios:\n- Nombre del Equipo\n- LocalizaciÃ³n en Planta\n- NÃºmero de Serie"
+        "Ã¢Å¡Â Ã¯Â¸Â Por favor completa los campos obligatorios:\n- Nombre del Equipo\n- LocalizaciÃƒÂ³n en Planta\n- NÃƒÂºmero de Serie"
       );
       return;
     }
@@ -636,7 +636,7 @@ const loadEquipment = async (plantId) => {
       let isNewEquipment = !selectedEquipment;
 
       if (isOffline) {
-        console.log("ðŸ“´ Modo OFFLINE: Guardando equipo localmente...");
+        console.log("Ã°Å¸â€œÂ´ Modo OFFLINE: Guardando equipo localmente...");
 
         if (isNewEquipment) {
           const localResult = await saveEquipmentLocal(
@@ -649,32 +649,32 @@ const loadEquipment = async (plantId) => {
           }
 
           equipmentId = localResult.data.id;
-          console.log("âœ… Equipo guardado localmente con ID:", equipmentId);
+          console.log("Ã¢Å“â€¦ Equipo guardado localmente con ID:", equipmentId);
 
-          // Guardar imÃ¡genes en Base64
+          // Guardar imÃƒÂ¡genes en Base64
           const imageCategories = ["equipment", "plate"];
           let imageCount = 0;
 
           for (const category of imageCategories) {
             const images = capturedImages[category];
             if (images && images.length > 0) {
-              console.log(`ðŸ“¸ Procesando ${images.length} imÃ¡genes de categorÃ­a ${category}`);
+              console.log(`Ã°Å¸â€œÂ¸ Procesando ${images.length} imÃƒÂ¡genes de categorÃƒÂ­a ${category}`);
               
               for (const image of images) {
                 if (image.file) {
-                  console.log(`  ðŸ“¸ Guardando imagen ${category}:`, image.file.name);
+                  console.log(`  Ã°Å¸â€œÂ¸ Guardando imagen ${category}:`, image.file.name);
                   
                   try {
                     const result = await saveImageLocal(image.file, category, equipmentId);
                     
                     if (result.success) {
-                      console.log(`  âœ… Imagen guardada:`, result.data.id);
+                      console.log(`  Ã¢Å“â€¦ Imagen guardada:`, result.data.id);
                       imageCount++;
                     } else {
-                      console.error(`  âŒ Error al guardar imagen:`, result.error);
+                      console.error(`  Ã¢ÂÅ’ Error al guardar imagen:`, result.error);
                     }
                   } catch (error) {
-                    console.error(`  âŒ ExcepciÃ³n al guardar imagen:`, error);
+                    console.error(`  Ã¢ÂÅ’ ExcepciÃƒÂ³n al guardar imagen:`, error);
                   }
                 }
               }
@@ -688,40 +688,40 @@ const loadEquipment = async (plantId) => {
           for (const category of pdfCategories) {
             const pdfs = capturedPDFs[category];
             if (pdfs && pdfs.length > 0) {
-              console.log(`ðŸ“„ Procesando ${pdfs.length} PDFs de categorÃ­a ${category}`);
+              console.log(`Ã°Å¸â€œâ€ž Procesando ${pdfs.length} PDFs de categorÃƒÂ­a ${category}`);
               
               for (const pdf of pdfs) {
                 if (pdf.file) {
-                  console.log(`  ðŸ“„ Guardando PDF ${category}:`, pdf.file.name);
+                  console.log(`  Ã°Å¸â€œâ€ž Guardando PDF ${category}:`, pdf.file.name);
                   
                   try {
                     const result = await savePDFLocal(pdf.file, category, equipmentId);
                     
                     if (result.success) {
-                      console.log(`  âœ… PDF guardado:`, result.data.id);
+                      console.log(`  Ã¢Å“â€¦ PDF guardado:`, result.data.id);
                       pdfCount++;
                     } else {
-                      console.error(`  âŒ Error al guardar PDF:`, result.error);
+                      console.error(`  Ã¢ÂÅ’ Error al guardar PDF:`, result.error);
                     }
                   } catch (error) {
-                    console.error(`  âŒ ExcepciÃ³n al guardar PDF:`, error);
+                    console.error(`  Ã¢ÂÅ’ ExcepciÃƒÂ³n al guardar PDF:`, error);
                   }
                 }
               }
             }
           }
 
-          console.log(`âœ… Total de imÃ¡genes guardadas: ${imageCount}`);
-          console.log(`âœ… Total de PDFs guardados: ${pdfCount}`);
+          console.log(`Ã¢Å“â€¦ Total de imÃƒÂ¡genes guardadas: ${imageCount}`);
+          console.log(`Ã¢Å“â€¦ Total de PDFs guardados: ${pdfCount}`);
 
-          // Agregar equipo a cola de sincronizaciÃ³n
+          // Agregar equipo a cola de sincronizaciÃƒÂ³n
           await addToSyncQueue('ADD_EQUIPMENT', {
             ...equipmentData,
             id: equipmentId,
             plantId: selectedPlant.id,
           });
 
-          // Agregar imÃ¡genes a cola de sincronizaciÃ³n
+          // Agregar imÃƒÂ¡genes a cola de sincronizaciÃƒÂ³n
           for (const category of imageCategories) {
             const images = capturedImages[category];
             if (images && images.length > 0) {
@@ -738,7 +738,7 @@ const loadEquipment = async (plantId) => {
             }
           }
 
-          // Agregar PDFs a cola de sincronizaciÃ³n
+          // Agregar PDFs a cola de sincronizaciÃƒÂ³n
           for (const category of pdfCategories) {
             const pdfs = capturedPDFs[category];
             if (pdfs && pdfs.length > 0) {
@@ -755,7 +755,7 @@ const loadEquipment = async (plantId) => {
             }
           }
 
-          console.log("âœ… Operaciones agregadas a cola de sincronizaciÃ³n");
+          console.log("Ã¢Å“â€¦ Operaciones agregadas a cola de sincronizaciÃƒÂ³n");
 
         } else {
           equipmentId = selectedEquipment.id;
@@ -774,13 +774,13 @@ const loadEquipment = async (plantId) => {
             id: equipmentId,
           });
 
-          console.log("âœ… Equipo actualizado localmente");
+          console.log("Ã¢Å“â€¦ Equipo actualizado localmente");
         }
 
         await updateSyncStats();
 
         setSuccessMessage(
-          `âš ï¸ Equipo "${formData.equipmentName}" guardado localmente. Se sincronizarÃ¡ al conectar.`
+          `Ã¢Å¡Â Ã¯Â¸Â Equipo "${formData.equipmentName}" guardado localmente. Se sincronizarÃƒÂ¡ al conectar.`
         );
         setShowSuccessMessage(true);
 
@@ -817,7 +817,7 @@ const loadEquipment = async (plantId) => {
 
       } else {
         // MODO ONLINE: Guardar en Firebase
-        console.log("ðŸŒ Modo ONLINE: Guardando en Firebase...");
+        console.log("Ã°Å¸Å’Â Modo ONLINE: Guardando en Firebase...");
 
         if (isNewEquipment) {
           const result = await saveEquipment(selectedPlant.id, equipmentData, null);
@@ -827,7 +827,7 @@ const loadEquipment = async (plantId) => {
           }
 
           equipmentId = result.id;
-          console.log("âœ… Equipo creado con ID:", equipmentId);
+          console.log("Ã¢Å“â€¦ Equipo creado con ID:", equipmentId);
         
         } else {
           equipmentId = selectedEquipment.id;
@@ -837,10 +837,10 @@ const loadEquipment = async (plantId) => {
             throw new Error(updateResult.error);
           }
 
-          console.log("âœ… Equipo actualizado");
+          console.log("Ã¢Å“â€¦ Equipo actualizado");
         }
 
-        // SUBIR NUEVAS IMÃGENES
+        // SUBIR NUEVAS IMÃƒÂGENES
         const imageCategories = ["equipment", "plate"];
         const uploadedUrls = {};
         let totalImagesUploaded = 0;
@@ -855,7 +855,7 @@ const loadEquipment = async (plantId) => {
               const image = images[i];
 
               if (image.isNew && image.file) {
-                console.log(`ðŸ“¤ Subiendo imagen ${category}...`);
+                console.log(`Ã°Å¸â€œÂ¤ Subiendo imagen ${category}...`);
 
                 try {
                   const uploadResult = await uploadImage(
@@ -866,7 +866,7 @@ const loadEquipment = async (plantId) => {
                   );
 
                   if (uploadResult.success) {
-                    console.log(`âœ… Imagen ${category} subida`);
+                    console.log(`Ã¢Å“â€¦ Imagen ${category} subida`);
                     
                     uploadedUrls[category].push({
                       url: uploadResult.url,
@@ -875,10 +875,10 @@ const loadEquipment = async (plantId) => {
                     });
                     totalImagesUploaded++;
                   } else {
-                    console.error(`âŒ Error al subir imagen ${category}:`, uploadResult.error);
+                    console.error(`Ã¢ÂÅ’ Error al subir imagen ${category}:`, uploadResult.error);
                   }
                 } catch (uploadError) {
-                  console.error(`âŒ ExcepciÃ³n al subir imagen ${category}:`, uploadError);
+                  console.error(`Ã¢ÂÅ’ ExcepciÃƒÂ³n al subir imagen ${category}:`, uploadError);
                 }
               } else if (!image.isNew && image.url) {
                 // Imagen existente, mantener su URL
@@ -892,7 +892,7 @@ const loadEquipment = async (plantId) => {
           }
         }
 
-        console.log(`ðŸ“Š Total de imÃ¡genes subidas: ${totalImagesUploaded}`);
+        console.log(`Ã°Å¸â€œÅ  Total de imÃƒÂ¡genes subidas: ${totalImagesUploaded}`);
 
         // SUBIR NUEVOS PDFs
         const pdfCategories = ["factura", "pedimento"];
@@ -909,7 +909,7 @@ const loadEquipment = async (plantId) => {
               const pdf = pdfs[i];
 
               if (pdf.isNew && pdf.file) {
-                console.log(`ðŸ“¤ Subiendo PDF ${category}...`);
+                console.log(`Ã°Å¸â€œÂ¤ Subiendo PDF ${category}...`);
 
                 try {
                   const uploadResult = await uploadPDF(
@@ -920,7 +920,7 @@ const loadEquipment = async (plantId) => {
                   );
 
                   if (uploadResult.success) {
-                    console.log(`âœ… PDF ${category} subido`);
+                    console.log(`Ã¢Å“â€¦ PDF ${category} subido`);
                     
                     uploadedPDFUrls[category].push({
                       url: uploadResult.url,
@@ -931,10 +931,10 @@ const loadEquipment = async (plantId) => {
                     });
                     totalPDFsUploaded++;
                   } else {
-                    console.error(`âŒ Error al subir PDF ${category}:`, uploadResult.error);
+                    console.error(`Ã¢ÂÅ’ Error al subir PDF ${category}:`, uploadResult.error);
                   }
                 } catch (uploadError) {
-                  console.error(`âŒ ExcepciÃ³n al subir PDF ${category}:`, uploadError);
+                  console.error(`Ã¢ÂÅ’ ExcepciÃƒÂ³n al subir PDF ${category}:`, uploadError);
                 }
               } else if (!pdf.isNew && pdf.url) {
                 // PDF existente, mantener su URL
@@ -950,11 +950,11 @@ const loadEquipment = async (plantId) => {
           }
         }
 
-        console.log(`ðŸ“Š Total de PDFs subidos: ${totalPDFsUploaded}`);
+        console.log(`Ã°Å¸â€œÅ  Total de PDFs subidos: ${totalPDFsUploaded}`);
 
-        // ACTUALIZAR EQUIPO CON URLs DE IMÃGENES Y PDFs
+        // ACTUALIZAR EQUIPO CON URLs DE IMÃƒÂGENES Y PDFs
         if (totalImagesUploaded > 0 || totalPDFsUploaded > 0) {
-          console.log(`ðŸ“ Actualizando equipo con ${totalImagesUploaded} imÃ¡genes y ${totalPDFsUploaded} PDFs...`);
+          console.log(`Ã°Å¸â€œÂ Actualizando equipo con ${totalImagesUploaded} imÃƒÂ¡genes y ${totalPDFsUploaded} PDFs...`);
 
           const updateData = {
             images: uploadedUrls,
@@ -965,21 +965,21 @@ const loadEquipment = async (plantId) => {
           const finalUpdate = await updateEquipment(equipmentId, updateData);
 
           if (finalUpdate.success) {
-            console.log("âœ… URLs de imÃ¡genes y PDFs guardadas en Firestore");
+            console.log("Ã¢Å“â€¦ URLs de imÃƒÂ¡genes y PDFs guardadas en Firestore");
           } else {
-            console.error("âŒ Error al actualizar URLs:", finalUpdate.error);
+            console.error("Ã¢ÂÅ’ Error al actualizar URLs:", finalUpdate.error);
           }
         }
 
-        // TambiÃ©n guardar localmente como cachÃ©
+        // TambiÃƒÂ©n guardar localmente como cachÃƒÂ©
         await saveEquipmentLocal(
           { ...equipmentData, id: equipmentId, syncStatus: 'synced' },
           selectedPlant.id
         );
 
-        // MENSAJE DE Ã‰XITO Y NAVEGACIÃ“N
+        // MENSAJE DE Ãƒâ€°XITO Y NAVEGACIÃƒâ€œN
         const successMsg = isNewEquipment
-          ? `âœ“ Equipo "${formData.equipmentName}" guardado correctamente${
+          ? `Ã¢Å“â€œ Equipo "${formData.equipmentName}" guardado correctamente${
               totalImagesUploaded > 0
                 ? ` con ${totalImagesUploaded} imagen${totalImagesUploaded > 1 ? "es" : ""}`
                 : ""
@@ -988,7 +988,7 @@ const loadEquipment = async (plantId) => {
                 ? ` y ${totalPDFsUploaded} PDF${totalPDFsUploaded > 1 ? "s" : ""}`
                 : ""
             }`
-          : `âœ“ Equipo "${formData.equipmentName}" actualizado correctamente`;
+          : `Ã¢Å“â€œ Equipo "${formData.equipmentName}" actualizado correctamente`;
 
         setSuccessMessage(successMsg);
         setShowSuccessMessage(true);
@@ -1023,8 +1023,8 @@ const loadEquipment = async (plantId) => {
       }
 
     } catch (error) {
-      console.error("âŒ Error al guardar equipo:", error);
-      alert(`âŒ Error al guardar equipo: ${error.message}`);
+      console.error("Ã¢ÂÅ’ Error al guardar equipo:", error);
+      alert(`Ã¢ÂÅ’ Error al guardar equipo: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -1032,16 +1032,16 @@ const loadEquipment = async (plantId) => {
 
   const syncNow = async () => {
     if (isOffline) {
-      alert("âš ï¸ No hay conexiÃ³n. ConÃ©ctate a internet para sincronizar.");
+      alert("Ã¢Å¡Â Ã¯Â¸Â No hay conexiÃƒÂ³n. ConÃƒÂ©ctate a internet para sincronizar.");
       return;
     }
 
     if (syncStatus.pendingCount === 0) {
-      alert("âœ… No hay operaciones pendientes de sincronizar.");
+      alert("Ã¢Å“â€¦ No hay operaciones pendientes de sincronizar.");
       return;
     }
 
-    console.log("ðŸ”„ Iniciando sincronizaciÃ³n manual...");
+    console.log("Ã°Å¸â€â€ž Iniciando sincronizaciÃƒÂ³n manual...");
 
     setShowSyncProgress(true);
     setSyncStatus(prev => ({ ...prev, isSyncing: true }));
@@ -1053,7 +1053,7 @@ const loadEquipment = async (plantId) => {
 
       if (result.success) {
         setSuccessMessage(
-          `âœ“ SincronizaciÃ³n completada: ${result.synced} ${result.synced === 1 ? 'registro' : 'registros'}`
+          `Ã¢Å“â€œ SincronizaciÃƒÂ³n completada: ${result.synced} ${result.synced === 1 ? 'registro' : 'registros'}`
         );
         setShowSuccessMessage(true);
 
@@ -1070,12 +1070,12 @@ const loadEquipment = async (plantId) => {
         }));
 
       } else {
-        alert("âŒ Error en la sincronizaciÃ³n: " + result.error);
+        alert("Ã¢ÂÅ’ Error en la sincronizaciÃƒÂ³n: " + result.error);
       }
 
     } catch (error) {
-      console.error("âŒ Error al sincronizar:", error);
-      alert("âŒ Error al sincronizar: " + error.message);
+      console.error("Ã¢ÂÅ’ Error al sincronizar:", error);
+      alert("Ã¢ÂÅ’ Error al sincronizar: " + error.message);
     } finally {
       setShowSyncProgress(false);
       setSyncStatus(prev => ({ ...prev, isSyncing: false }));
@@ -1092,7 +1092,7 @@ const loadEquipment = async (plantId) => {
       const file = e.target.files[0];
       if (file) {
         alert(
-          `ðŸ“¸ Imagen capturada: ${file.name}\n\nEn la versiÃ³n completa, esto subirÃ¡ la imagen a Firebase Storage y la comprimirÃ¡ automÃ¡ticamente.`
+          `Ã°Å¸â€œÂ¸ Imagen capturada: ${file.name}\n\nEn la versiÃƒÂ³n completa, esto subirÃƒÂ¡ la imagen a Firebase Storage y la comprimirÃƒÂ¡ automÃƒÂ¡ticamente.`
         );
       }
     };
@@ -1106,19 +1106,19 @@ const loadEquipment = async (plantId) => {
     if (format === "json") {
       const result = await exportToJSON();
       if (result.success) {
-        alert("âœ… Datos exportados a JSON correctamente");
+        alert("Ã¢Å“â€¦ Datos exportados a JSON correctamente");
       } else {
-        alert("âŒ Error al exportar: " + result.error);
+        alert("Ã¢ÂÅ’ Error al exportar: " + result.error);
       }
     } else if (format === "excel" || format === "csv") {
       const result = await exportToCSV();
       if (result.success) {
-        alert("âœ… Datos exportados a CSV/Excel correctamente");
+        alert("Ã¢Å“â€¦ Datos exportados a CSV/Excel correctamente");
       } else {
-        alert("âŒ Error al exportar: " + result.error);
+        alert("Ã¢ÂÅ’ Error al exportar: " + result.error);
       }
     } else {
-      alert(`ðŸ“¥ ExportaciÃ³n en formato ${format.toUpperCase()} en desarrollo`);
+      alert(`Ã°Å¸â€œÂ¥ ExportaciÃƒÂ³n en formato ${format.toUpperCase()} en desarrollo`);
     }
 
     setIsLoading(false);
@@ -1135,20 +1135,20 @@ const loadEquipment = async (plantId) => {
 
   
   // ============================================
-  // 🚪 FUNCIÓN DE LOGOUT
+  // ðŸšª FUNCIÃ“N DE LOGOUT
   // ============================================
   const handleLogout = async () => {
-    if (window.confirm('¿Cerrar sesión?')) {
-      console.log('🚪 Cerrando sesión...');
+    if (window.confirm('Â¿Cerrar sesiÃ³n?')) {
+      console.log('ðŸšª Cerrando sesiÃ³n...');
       
       const result = await logout();
       
       if (result.success) {
-        console.log('✅ Sesión cerrada exitosamente');
-        // El observador de auth se encargará de actualizar el estado
+        console.log('âœ… SesiÃ³n cerrada exitosamente');
+        // El observador de auth se encargarÃ¡ de actualizar el estado
       } else {
-        console.error('❌ Error al cerrar sesión:', result.error);
-        alert('Error al cerrar sesión: ' + result.error);
+        console.error('âŒ Error al cerrar sesiÃ³n:', result.error);
+        alert('Error al cerrar sesiÃ³n: ' + result.error);
       }
     }
   };
@@ -1158,7 +1158,7 @@ const loadEquipment = async (plantId) => {
       <div className="flex justify-between items-center mb-2">
         <div className="flex items-center gap-2">
           <Database className="w-6 h-6" />
-          <h1 className="text-xl font-bold">AuditorÃ­a Industrial</h1>
+          <h1 className="text-xl font-bold">Auditoría Industrial</h1>
         </div>
         
         <div className="flex items-center gap-3">
@@ -1185,6 +1185,31 @@ const loadEquipment = async (plantId) => {
           )}
           {isLoading && <Loader className="w-5 h-5 animate-spin" />}
         </div>
+      </div>
+
+      {/* Usuario y botón Salir */}
+      <div className="flex justify-between items-center mt-2 pt-2 border-t border-blue-500">
+        <div className="flex items-center gap-2 text-sm">
+          <UserIcon className="w-4 h-4" />
+          <span className="font-medium">
+            {user?.displayName || user?.email || 'Usuario'}
+          </span>
+        </div>
+        
+        <button
+          onClick={async () => {
+            try {
+              await logout();
+              console.log('âœ… Sesiï¿½n cerrada exitosamente');
+            } catch (error) {
+              console.error('â�Œ Error al cerrar sesiï¿½n:', error);
+            }
+          }}
+          className="flex items-center gap-1 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-xs font-medium transition-colors"
+        >
+          <LogOut className="w-3 h-3" />
+          <span>Salir</span>
+        </button>
       </div>
 
       {currentView === "equipment" && selectedPlant && (
@@ -1264,7 +1289,7 @@ const loadEquipment = async (plantId) => {
           <span className="text-xs mt-1">Reportes</span>
         </button>
         <button
-          onClick={() => alert("ðŸ” Panel de filtros avanzados en desarrollo")}
+          onClick={() => alert("Ã°Å¸â€Â Panel de filtros avanzados en desarrollo")}
           className="flex flex-col items-center p-2 rounded text-gray-600 hover:text-gray-800 transition-colors"
         >
           <Filter className="w-6 h-6" />
@@ -1336,11 +1361,11 @@ const loadEquipment = async (plantId) => {
                   </span>
                 </div>
                 <span className="text-xs text-gray-500">
-                  Ãšltima auditorÃ­a: {plant.lastAudit}
+                  Última auditorí­a: {plant.lastAudit}
                 </span>
               </div>
               
-              {/* âœ… CORRECCIÃ“N 3: onClick stopPropagation agregado */}
+              {/* Ã¢Å“â€¦ CORRECCIÓN 3: onClick stopPropagation agregado */}
               <div 
                 className="mt-3 pt-3 border-t border-gray-200"
                 onClick={(e) => e.stopPropagation()}
@@ -1350,10 +1375,10 @@ const loadEquipment = async (plantId) => {
                   plantName={plant.name}
                   isOnline={!isOffline}
                   onSuccess={(result) => {
-                    console.log("âœ… Planta eliminada:", result);
+                    console.log("Ã¢Å“â€¦ Planta eliminada:", result);
                     loadPlants();
                   }}
-                  onError={(error) => console.error("âŒ Error:", error)}
+                  onError={(error) => console.error("Ã¢ÂÅ’ Error:", error)}
                   className="w-full"
                 />
               </div>
@@ -1420,7 +1445,7 @@ const loadEquipment = async (plantId) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              DirecciÃ³n Completa
+              Dirección Completa
             </label>
             <textarea
               value={newPlantData.address}
@@ -1429,7 +1454,7 @@ const loadEquipment = async (plantId) => {
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               rows="2"
-              placeholder="Calle, nÃºmero, colonia, cÃ³digo postal"
+              placeholder="Calle, nÃƒÂºmero, colonia, cÃƒÂ³digo postal"
               disabled={isLoading}
             />
           </div>
@@ -1455,7 +1480,7 @@ const loadEquipment = async (plantId) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              TelÃ©fono de Contacto
+              Teléfono de Contacto
             </label>
             <input
               type="tel"
@@ -1513,7 +1538,7 @@ const loadEquipment = async (plantId) => {
       </div>
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
-        <span className="font-medium">â„¹ï¸ InformaciÃ³n:</span> Los campos marcados
+        <span className="font-medium">Ã¢â€žÂ¹Ã¯Â¸Â InformaciÃƒÂ³n:</span> Los campos marcados
         con <span className="text-red-500">*</span> son obligatorios
       </div>
     </div>
@@ -1601,13 +1626,13 @@ const loadEquipment = async (plantId) => {
                     observations: equip.observations || "",
                   });
 
-                  console.log("\nðŸ” CARGANDO EQUIPO PARA EDITAR:");
+                  console.log("\nÃ°Å¸â€Â CARGANDO EQUIPO PARA EDITAR:");
                   console.log("  Equipo ID:", equip.id);
                   console.log("  Equipo completo:", equip);
-                  console.log("  Â¿Tiene campo images?:", !!equip.images);
+                  console.log("  Ã‚Â¿Tiene campo images?:", !!equip.images);
                   
                   if (equip.images) {
-                    console.log("  âœ… Equipo tiene imÃ¡genes:", equip.images);
+                    console.log("  Ã¢Å“â€¦ Equipo tiene imÃƒÂ¡genes:", equip.images);
                     
                     const existingImages = {
                       equipment: [],
@@ -1615,7 +1640,7 @@ const loadEquipment = async (plantId) => {
                     };
 
                     Object.keys(equip.images).forEach((category) => {
-                      console.log(`  ðŸ“‚ Procesando categorÃ­a: ${category}`);
+                      console.log(`  Ã°Å¸â€œâ€š Procesando categorÃƒÂ­a: ${category}`);
                       console.log(`     Datos:`, equip.images[category]);
                       console.log(`     Es array:`, Array.isArray(equip.images[category]));
                       
@@ -1625,7 +1650,7 @@ const loadEquipment = async (plantId) => {
                       ) {
                         existingImages[category] = equip.images[category].map(
                           (img) => {
-                            console.log(`       ðŸ“· Imagen en ${category}:`, img);
+                            console.log(`       Ã°Å¸â€œÂ· Imagen en ${category}:`, img);
                             return {
                               url: img.url,
                               path: img.path,
@@ -1634,24 +1659,24 @@ const loadEquipment = async (plantId) => {
                             };
                           }
                         );
-                        console.log(`     âœ… ${category}: ${existingImages[category].length} imÃ¡genes cargadas`);
+                        console.log(`     Ã¢Å“â€¦ ${category}: ${existingImages[category].length} imÃƒÂ¡genes cargadas`);
                       }
                     });
 
-                    console.log("  ðŸ“Š Resumen de imÃ¡genes cargadas:");
+                    console.log("  Ã°Å¸â€œÅ  Resumen de imÃƒÂ¡genes cargadas:");
                     Object.keys(existingImages).forEach(cat => {
-                      console.log(`     ${cat}: ${existingImages[cat].length} imÃ¡genes`);
+                      console.log(`     ${cat}: ${existingImages[cat].length} imÃƒÂ¡genes`);
                     });
 
                     setCapturedImages(existingImages);
-                    console.log("  âœ… capturedImages actualizado con imÃ¡genes existentes");
+                    console.log("  Ã¢Å“â€¦ capturedImages actualizado con imÃƒÂ¡genes existentes");
                   } else {
-                    console.log("  âš ï¸ Equipo NO tiene campo images");
+                    console.log("  Ã¢Å¡Â Ã¯Â¸Â Equipo NO tiene campo images");
                     setCapturedImages({
                       equipment: [],
                       plate: [],
                     });
-                    console.log("  â„¹ï¸ capturedImages reiniciado vacÃ­o");
+                    console.log("  Ã¢â€žÂ¹Ã¯Â¸Â capturedImages reiniciado vacÃƒÂ­o");
                   }
 
                   setCapturedPDFs({
@@ -1704,7 +1729,7 @@ const loadEquipment = async (plantId) => {
                 onClick={() => setEquipmentSearchTerm("")}
                 className="text-blue-600 hover:text-blue-700 text-sm font-medium"
               >
-                Limpiar bÃºsqueda
+                Limpiar bÃƒÂºsqueda
               </button>
             </div>
           ) : (
@@ -1731,7 +1756,7 @@ const loadEquipment = async (plantId) => {
     <div className="p-4 pb-24 bg-gray-50 min-h-screen">
       <div className="bg-white rounded-lg shadow-md p-4 mb-4">
         <h2 className="text-lg font-bold text-gray-800 mb-4">
-          {selectedEquipment ? "âœï¸ Editar Equipo" : "âž• Nuevo Equipo"}
+          {selectedEquipment ? "✏️ Editar Equipo" : "Ã¢Å¾â€¢ Nuevo Equipo"}
         </h2>
 
         <div className="space-y-4">
@@ -1753,7 +1778,7 @@ const loadEquipment = async (plantId) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              LocalizaciÃ³n en Planta <span className="text-red-500">*</span>
+              Localización en Planta <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -1762,14 +1787,14 @@ const loadEquipment = async (plantId) => {
                 setFormData({ ...formData, locationInPlant: e.target.value })
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Ej: Ãrea de ProducciÃ³n A"
+              placeholder="Ej: ÃƒÂrea de ProducciÃƒÂ³n A"
               disabled={isLoading}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              ImÃ¡genes del Equipo
+              Imágenes del Equipo
             </label>
             <ImageUploader
               category="equipment"
@@ -1786,7 +1811,7 @@ const loadEquipment = async (plantId) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              ImÃ¡genes de la Placa
+              Imágenes de la Placa
             </label>
             <ImageUploader
               category="plate"
@@ -1804,12 +1829,12 @@ const loadEquipment = async (plantId) => {
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-        <h3 className="text-md font-bold text-gray-800 mb-4">Datos TÃ©cnicos</h3>
+        <h3 className="text-md font-bold text-gray-800 mb-4">Datos Técnicos</h3>
 
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              NÃºmero de Serie <span className="text-red-500">*</span>
+              Número de Serie <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -1857,7 +1882,7 @@ const loadEquipment = async (plantId) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              PaÃ­s de Origen
+              Paí­s de Origen
             </label>
             <input
               type="text"
@@ -1950,12 +1975,12 @@ const loadEquipment = async (plantId) => {
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-        <h3 className="text-md font-bold text-gray-800 mb-4">DocumentaciÃ³n</h3>
+        <h3 className="text-md font-bold text-gray-800 mb-4">Documentación</h3>
 
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              ðŸ“„ Factura de Compra (PDF)
+              📄 Factura de Compra (PDF)
             </label>
             <PDFUploader
               category="factura"
@@ -1974,7 +1999,7 @@ const loadEquipment = async (plantId) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              ðŸ“„ Pedimento Aduanal (PDF)
+              📄 Pedimento Aduanal (PDF)
             </label>
             <PDFUploader
               category="pedimento"
@@ -1993,7 +2018,7 @@ const loadEquipment = async (plantId) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              DescripciÃ³n de Acciones a Realizar
+              Descripción de Acciones a Realizar
             </label>
             <textarea
               value={formData.actionsDescription}
@@ -2002,7 +2027,7 @@ const loadEquipment = async (plantId) => {
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               rows="3"
-              placeholder="Describe las acciones necesarias (mantenimiento, reparaciÃ³n, etc.)"
+              placeholder="Describe las acciones necesarias (mantenimiento, reparación, etc.)"
               disabled={isLoading}
             />
           </div>
@@ -2032,7 +2057,7 @@ const loadEquipment = async (plantId) => {
         </div>
       )}
 
-      {/* âœ… CORRECCIÃ“N 2: BotÃ³n DeleteEquipmentButton movido ANTES del botÃ³n Guardar */}
+      {/* Ã¢Å“â€¦ CORRECCIÃƒâ€œN 2: BotÃƒÂ³n DeleteEquipmentButton movido ANTES del botÃƒÂ³n Guardar */}
       {selectedEquipment && (
         <div className="mb-4">
           <DeleteEquipmentButton
@@ -2041,11 +2066,11 @@ const loadEquipment = async (plantId) => {
             equipmentName={selectedEquipment.name}
             isOnline={!isOffline}
             onSuccess={(result) => {
-              console.log("âœ… Equipo eliminado:", result);
+              console.log("Ã¢Å“â€¦ Equipo eliminado:", result);
               setCurrentView("equipment");
               loadEquipment(selectedPlant.id);
             }}
-            onError={(error) => console.error("âŒ Error:", error)}
+            onError={(error) => console.error("Ã¢ÂÅ’ Error:", error)}
             className="w-full"
           />
         </div>
@@ -2079,7 +2104,7 @@ const loadEquipment = async (plantId) => {
 
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800 flex items-center gap-2">
         <AlertCircle className="w-4 h-4" />
-        <span>ðŸ’¾ Los datos se guardan automÃ¡ticamente en Firebase</span>
+        <span>💾 Los datos se guardan automáticamente en Firebase</span>
       </div>
     </div>
   );
@@ -2087,13 +2112,13 @@ const loadEquipment = async (plantId) => {
   const renderReports = () => (
     <div className="p-4 pb-24 bg-gray-50 min-h-screen">
       <h2 className="text-xl font-bold text-gray-800 mb-4">
-        Reportes y ExportaciÃ³n
+        Reportes y Exportación
       </h2>
 
       <div className="bg-white rounded-lg shadow-md p-4 mb-4 border-l-4 border-blue-500">
         <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
           <RefreshCw className="w-5 h-5 text-blue-600" />
-          Estado de SincronizaciÃ³n
+          Estado de Sincronización
         </h3>
         
         <div className="space-y-2 text-sm mb-4">
@@ -2107,7 +2132,7 @@ const loadEquipment = async (plantId) => {
           </div>
           
           <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">Ãšltima sincronizaciÃ³n:</span>
+            <span className="text-gray-600">Última sincronización:</span>
             <span className="text-sm text-gray-800">
               {syncStatus.lastSync 
                 ? new Date(syncStatus.lastSync).toLocaleString('es-MX', {
@@ -2123,11 +2148,11 @@ const loadEquipment = async (plantId) => {
           </div>
           
           <div className="flex justify-between py-2">
-            <span className="text-gray-600">Estado de conexiÃ³n:</span>
+            <span className="text-gray-600">Estado de conexión:</span>
             <span className={`font-semibold ${
               isOffline ? "text-red-600" : "text-green-600"
             }`}>
-              {isOffline ? "Sin conexiÃ³n" : "Conectado"}
+              {isOffline ? "Sin conexiÃƒÂ³n" : "Conectado"}
             </span>
           </div>
         </div>
@@ -2158,14 +2183,14 @@ const loadEquipment = async (plantId) => {
         {isOffline && (
           <p className="text-xs text-orange-600 mt-2 flex items-center gap-1">
             <AlertCircle className="w-4 h-4" />
-            ConÃ©ctate a internet para sincronizar los datos pendientes
+            Conéctate a internet para sincronizar los datos pendientes
           </p>
         )}
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-4 mb-4">
         <h3 className="font-semibold text-gray-800 mb-3">
-          Filtros de BÃºsqueda
+          Filtros de Búsqueda
         </h3>
         <div className="space-y-3">
           <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
@@ -2176,7 +2201,7 @@ const loadEquipment = async (plantId) => {
           </select>
 
           <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-            <option>Todos los orÃ­genes</option>
+            <option>Todos los orí­genes</option>
             <option>Nacional</option>
             <option>Extranjero</option>
           </select>
@@ -2188,7 +2213,7 @@ const loadEquipment = async (plantId) => {
           </select>
 
           <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-            <option>Estado de sincronizaciÃ³n</option>
+            <option>Estado de sincronización</option>
             <option>Sincronizados</option>
             <option>Pendientes</option>
           </select>
@@ -2251,7 +2276,7 @@ const loadEquipment = async (plantId) => {
 
       <div className="bg-white rounded-lg shadow-md p-4 mb-4">
         <h3 className="font-semibold text-gray-800 mb-3">
-          EstadÃ­sticas Generales
+          Estadí­sticas Generales
         </h3>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between py-2 border-b border-gray-100">
@@ -2268,7 +2293,7 @@ const loadEquipment = async (plantId) => {
             </span>
           </div>
           <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">Ãšltima sincronizaciÃ³n:</span>
+            <span className="text-gray-600">Última sincronización:</span>
             <span className="font-semibold text-green-600">
               {isOffline ? "Modo Offline" : "Sincronizado"}
             </span>
@@ -2280,10 +2305,10 @@ const loadEquipment = async (plantId) => {
         <div className="flex items-start gap-3">
           <FileText className="w-5 h-5 text-blue-600 flex-shrink-0 mt-1" />
           <div className="text-sm text-blue-800">
-            <p className="font-semibold mb-1">ðŸ’¡ Tip: ExportaciÃ³n de Datos</p>
+            <p className="font-semibold mb-1">Ã°Å¸â€™Â¡ Tip: ExportaciÃƒÂ³n de Datos</p>
             <p>
               Los reportes se generan desde Firebase e incluyen toda la
-              informaciÃ³n capturada en tiempo real.
+              informaciÃƒÂ³n capturada en tiempo real.
             </p>
           </div>
         </div>
@@ -2297,15 +2322,15 @@ const loadEquipment = async (plantId) => {
         
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-3">
           <p className="text-sm text-red-800 mb-2">
-            <strong>âš ï¸ PrecauciÃ³n:</strong> EliminarÃ¡ toda la BD local.
+            <strong>Ã¢Å¡Â Ã¯Â¸Â PrecauciÃƒÂ³n:</strong> EliminarÃƒÂ¡ toda la BD local.
           </p>
           <p className="text-xs text-red-700">
-            Firebase no se verÃ¡ afectado.
+            Firebase no se verÃƒÂ¡ afectado.
           </p>
         </div>
 
         <NukeDatabaseButton
-          onSuccess={() => console.log("âœ… BD eliminada")}
+          onSuccess={() => console.log("Ã¢Å“â€¦ BD eliminada")}
           className="w-full"
         />
       </div>
@@ -2319,10 +2344,10 @@ const loadEquipment = async (plantId) => {
         
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-3">
           <p className="text-sm text-yellow-800 mb-2">
-            <strong>âš ï¸ Detectado:</strong> Posibles duplicados en la base de datos
+            <strong>Ã¢Å¡Â Ã¯Â¸Â Detectado:</strong> Posibles duplicados en la base de datos
           </p>
           <p className="text-xs text-yellow-700">
-            Esta operaciÃ³n buscarÃ¡ y eliminarÃ¡ registros duplicados manteniendo el mÃ¡s antiguo.
+            Esta operación buscará y eliminará registros duplicados manteniendo el más antiguo.
           </p>
         </div>
 
@@ -2336,20 +2361,20 @@ const loadEquipment = async (plantId) => {
                 
                 if (result.success) {
                   if (result.duplicates.length === 0) {
-                    setSuccessMessage("âœ… No se encontraron duplicados");
+                    setSuccessMessage("Ã¢Å“â€¦ No se encontraron duplicados");
                     setShowSuccessMessage(true);
                   } else {
                     alert(
-                      `âš ï¸ Duplicados encontrados: ${result.duplicates.length}\n\n` +
+                      `Ã¢Å¡Â Ã¯Â¸Â Duplicados encontrados: ${result.duplicates.length}\n\n` +
                       `Revisa la consola (F12) para ver detalles`
                     );
                   }
                 } else {
-                  alert("âŒ Error: " + result.error);
+                  alert("Ã¢ÂÅ’ Error: " + result.error);
                 }
               } catch (error) {
                 setIsLoading(false);
-                alert("âŒ Error: " + error.message);
+                alert("Ã¢ÂÅ’ Error: " + error.message);
               }
             }}
             disabled={isLoading}
@@ -2360,15 +2385,15 @@ const loadEquipment = async (plantId) => {
             ) : (
               <Search className="w-5 h-5" />
             )}
-            {isLoading ? "Buscando..." : "ðŸ” Buscar Duplicados"}
+            {isLoading ? "Buscando..." : "Ã°Å¸â€Â Buscar Duplicados"}
           </button>
           
           <button
             onClick={async () => {
               if (!window.confirm(
-                'Â¿Eliminar duplicados?\n\n' +
-                'Se mantendrÃ¡ el registro mÃ¡s antiguo de cada duplicado.\n' +
-                'Esta acciÃ³n NO se puede deshacer.'
+                'Ã‚Â¿Eliminar duplicados?\n\n' +
+                'Se mantendrÃƒÂ¡ el registro mÃƒÂ¡s antiguo de cada duplicado.\n' +
+                'Esta acciÃƒÂ³n NO se puede deshacer.'
               )) {
                 return;
               }
@@ -2379,17 +2404,17 @@ const loadEquipment = async (plantId) => {
                 setIsLoading(false);
                 
                 if (result.success) {
-                  setSuccessMessage(`âœ… Duplicados eliminados: ${result.removed}`);
+                  setSuccessMessage(`Ã¢Å“â€¦ Duplicados eliminados: ${result.removed}`);
                   setShowSuccessMessage(true);
                   
                   // Recargar plantas
                   await loadPlants();
                 } else {
-                  alert("âŒ Error: " + result.error);
+                  alert("Ã¢ÂÅ’ Error: " + result.error);
                 }
               } catch (error) {
                 setIsLoading(false);
-                alert("âŒ Error: " + error.message);
+                alert("Ã¢ÂÅ’ Error: " + error.message);
               }
             }}
             disabled={isLoading}
@@ -2400,7 +2425,7 @@ const loadEquipment = async (plantId) => {
             ) : (
               <Trash2 className="w-5 h-5" />
             )}
-            {isLoading ? "Eliminando..." : "ðŸ—‘ï¸ Eliminar Duplicados"}
+            {isLoading ? "Eliminando..." : "Ã°Å¸â€”â€˜Ã¯Â¸Â Eliminar Duplicados"}
           </button>
         </div>
       </div>
@@ -2409,55 +2434,55 @@ const loadEquipment = async (plantId) => {
       <div className="bg-white rounded-lg shadow-md p-4 mb-4">
         <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
           <AlertCircle className="w-5 h-5 text-red-600" />
-          ðŸ”¥ Limpieza Total
+          Ã°Å¸â€Â¥ Limpieza Total
         </h3>
         
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-3">
           <p className="text-sm text-red-800 mb-2">
-            <strong>ðŸš¨ PELIGRO EXTREMO:</strong> Esto eliminarÃ¡ TODO
+            <strong>Ã°Å¸Å¡Â¨ PELIGRO EXTREMO:</strong> Esto eliminarÃƒÂ¡ TODO
           </p>
           <ul className="text-xs text-red-700 list-disc list-inside space-y-1">
             <li>Todas las plantas de Firebase</li>
             <li>Todos los equipos de Firebase</li>
-            <li>Toda la cachÃ© local (IndexedDB)</li>
-            <li>Operaciones pendientes de sincronizaciÃ³n</li>
+            <li>Toda la cachÃƒÂ© local (IndexedDB)</li>
+            <li>Operaciones pendientes de sincronizaciÃƒÂ³n</li>
           </ul>
           <p className="text-xs text-red-700 mt-2">
-            âš ï¸ Las imÃ¡genes y PDFs en Storage deben eliminarse manualmente desde Firebase Console
+            Ã¢Å¡Â Ã¯Â¸Â Las imÃƒÂ¡genes y PDFs en Storage deben eliminarse manualmente desde Firebase Console
           </p>
         </div>
 
         <button
           onClick={async () => {
-            // Triple confirmaciÃ³n
+            // Triple confirmaciÃƒÂ³n
             if (!window.confirm(
-              'âš ï¸âš ï¸âš ï¸ Â¿ELIMINAR TODA LA BASE DE DATOS?\n\n' +
-              'Esta acciÃ³n es IRREVERSIBLE.\n' +
-              'Se eliminarÃ¡n:\n' +
+              'Ã¢Å¡Â Ã¯Â¸ÂÃ¢Å¡Â Ã¯Â¸ÂÃ¢Å¡Â Ã¯Â¸Â Ã‚Â¿ELIMINAR TODA LA BASE DE DATOS?\n\n' +
+              'Esta acciÃƒÂ³n es IRREVERSIBLE.\n' +
+              'Se eliminarÃƒÂ¡n:\n' +
               '- Todas las plantas\n' +
               '- Todos los equipos\n' +
-              '- Toda la cachÃ© local\n\n' +
-              'Â¿Continuar?'
+              '- Toda la cachÃƒÂ© local\n\n' +
+              'Ã‚Â¿Continuar?'
             )) {
               return;
             }
             
             if (!window.confirm(
-              'âš ï¸âš ï¸ SEGUNDA CONFIRMACIÃ“N\n\n' +
-              'Â¿ESTÃS COMPLETAMENTE SEGURO?\n\n' +
-              'No hay vuelta atrÃ¡s.'
+              'Ã¢Å¡Â Ã¯Â¸ÂÃ¢Å¡Â Ã¯Â¸Â SEGUNDA CONFIRMACIÃƒâ€œN\n\n' +
+              'Ã‚Â¿ESTÃƒÂS COMPLETAMENTE SEGURO?\n\n' +
+              'No hay vuelta atrÃƒÂ¡s.'
             )) {
               return;
             }
             
             const confirmText = prompt(
-              'Para confirmar la eliminaciÃ³n total, escribe exactamente:\n\n' +
+              'Para confirmar la eliminaciÃƒÂ³n total, escribe exactamente:\n\n' +
               'BORRAR TODO\n\n' +
-              '(en mayÃºsculas)'
+              '(en mayÃƒÂºsculas)'
             );
             
             if (confirmText !== 'BORRAR TODO') {
-              alert('âŒ OperaciÃ³n cancelada - Texto incorrecto');
+              alert('Ã¢ÂÅ’ OperaciÃƒÂ³n cancelada - Texto incorrecto');
               return;
             }
             
@@ -2469,26 +2494,26 @@ const loadEquipment = async (plantId) => {
               
               if (result.success) {
                 alert(
-                  'âœ… BASE DE DATOS COMPLETAMENTE LIMPIA\n\n' +
-                  'ðŸ“‹ Resultados:\n' +
+                  'Ã¢Å“â€¦ BASE DE DATOS COMPLETAMENTE LIMPIA\n\n' +
+                  'Ã°Å¸â€œâ€¹ Resultados:\n' +
                   `- Firebase limpio: ${result.results.firebase.totalDeleted} registros\n` +
-                  `- IndexedDB limpio: âœ…\n\n` +
-                  'âš ï¸ IMPORTANTE:\n' +
+                  `- IndexedDB limpio: Ã¢Å“â€¦\n\n` +
+                  'Ã¢Å¡Â Ã¯Â¸Â IMPORTANTE:\n' +
                   '1. Limpia Firebase Storage manualmente\n' +
-                  '2. RECARGA LA PÃGINA (F5)\n' +
+                  '2. RECARGA LA PÃƒÂGINA (F5)\n' +
                   '3. Crea nuevos datos ONLINE'
                 );
                 
                 // Sugerir recarga
-                if (window.confirm('Â¿Recargar la pÃ¡gina ahora?')) {
+                if (window.confirm('Ã‚Â¿Recargar la pÃƒÂ¡gina ahora?')) {
                   window.location.reload();
                 }
               } else {
-                alert('âŒ Error en limpieza: ' + result.error);
+                alert('Ã¢ÂÅ’ Error en limpieza: ' + result.error);
               }
             } catch (error) {
               setIsLoading(false);
-              alert('âŒ Error inesperado: ' + error.message);
+              alert('Ã¢ÂÅ’ Error inesperado: ' + error.message);
             }
           }}
           disabled={isLoading}
@@ -2502,23 +2527,23 @@ const loadEquipment = async (plantId) => {
           ) : (
             <>
               <AlertCircle className="w-5 h-5" />
-              ðŸ”¥ ELIMINAR TODO
+              Ã°Å¸â€Â¥ ELIMINAR TODO
             </>
           )}
         </button>
         
         <p className="text-xs text-red-600 mt-2 text-center font-medium">
-          âš ï¸ Requiere 3 confirmaciones y escribir "BORRAR TODO"
+          Ã¢Å¡Â Ã¯Â¸Â Requiere 3 confirmaciones y escribir "BORRAR TODO"
         </p>
       </div>
     </div>  
   );
 
   // ============================================
-  // 🔐 RENDERIZADO CONDICIONAL POR AUTENTICACIÓN
+  // ðŸ” RENDERIZADO CONDICIONAL POR AUTENTICACIÃ“N
   // ============================================
   
-  // Mostrar loading mientras se verifica la autenticación
+  // Mostrar loading mientras se verifica la autenticaciÃ³n
   if (isAuthLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
@@ -2526,8 +2551,8 @@ const loadEquipment = async (plantId) => {
           <div className="flex items-center gap-3 justify-center mb-4">
             <Database className="w-12 h-12 text-blue-600 animate-pulse" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Auditoría Industrial</h2>
-          <p className="text-gray-600">Verificando autenticación...</p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">AuditorÃ­a Industrial</h2>
+          <p className="text-gray-600">Verificando autenticaciÃ³n...</p>
           <div className="mt-4">
             <Loader className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
           </div>
@@ -2536,14 +2561,14 @@ const loadEquipment = async (plantId) => {
     );
   }
   
-  // Mostrar pantalla de login si no está autenticado
+  // Mostrar pantalla de login si no estÃ¡ autenticado
   if (!isAuthenticated) {
     return <LoginScreen onLoginSuccess={() => {
-      console.log('✅ Login exitoso, cargando aplicación...');
+      console.log('âœ… Login exitoso, cargando aplicaciÃ³n...');
     }} />;
   }
   
-  // Usuario autenticado: mostrar aplicación normal
+  // Usuario autenticado: mostrar aplicaciÃ³n normal
   return (
     <div className="max-w-md mx-auto bg-gray-100 min-h-screen">
       {renderHeader()}
@@ -2577,7 +2602,7 @@ const loadEquipment = async (plantId) => {
                   <span className="font-medium">Procesando:</span> {syncProgress.type}
                 </>
               ) : (
-                'Iniciando sincronizaciÃ³n...'
+                'Iniciando sincronizaciÃƒÂ³n...'
               )}
             </p>
           </div>

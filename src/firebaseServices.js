@@ -5,7 +5,7 @@
 // - Agregada función saveEquipment que detecta si es nuevo o actualización
 // - Soporte para PDFs (Facturas y Pedimentos)
 
-import { db, storage } from './firebaseConfig';
+import { db, storage } from './firebase/firebaseConfig';
 import {
   collection,
   doc,

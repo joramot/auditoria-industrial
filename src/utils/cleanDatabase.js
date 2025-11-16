@@ -11,7 +11,7 @@
  * 4. Ejecutar cleanEverything()
  */
 
-import { db } from '../firebaseConfig';
+import { db } from '../firebase/firebaseConfig';
 import { 
   collection, 
   getDocs, 
