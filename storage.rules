@@ -12,12 +12,28 @@ service firebase.storage {
       return request.auth != null;
     }
     
-    // Obtener rol del usuario desde Firestore
-    function getUserRole() {
-      return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role;
+    // Obtener datos del usuario desde Firestore (con manejo de errores)
+    function getUserData() {
+      let userPath = /databases/(default)/documents/users/$(request.auth.uid);
+      return firestore.get(userPath);
     }
     
-    // Verificar roles
+    // Verificar si el usuario tiene un documento en Firestore
+    function userExists() {
+      return getUserData() != null;
+    }
+    
+    // Obtener rol del usuario de forma segura (retorna null si no existe)
+    function getUserRole() {
+      return userExists() ? getUserData().data.role : null;
+    }
+    
+    // Verificar si el usuario tiene un rol asignado
+    function hasRole() {
+      return getUserRole() != null;
+    }
+    
+    // Verificar roles específicos
     function isAdmin() {
       return isAuthenticated() && getUserRole() == 'admin';
     }
@@ -30,14 +46,31 @@ service firebase.storage {
       return isAuthenticated() && getUserRole() == 'auditor';
     }
     
-    // Verificar que el archivo pertenece al usuario
-    function isOwner(userId) {
-      return request.auth.uid == userId;
+    // Verificar si puede subir archivos (Admin, Supervisor, o sin rol asignado)
+    function canUpload() {
+      return isAuthenticated() && (
+        !hasRole() ||           // Usuario sin rol = permitir (transición)
+        isAdmin() || 
+        isSupervisor()
+      );
     }
     
-    // Verificar tamaño del archivo (máximo 10MB)
-    function validFileSize() {
+    // Verificar si puede eliminar archivos
+    function canDelete() {
+      return isAuthenticated() && (
+        !hasRole() ||           // Usuario sin rol = permitir (transición)
+        isAdmin() || 
+        isSupervisor()
+      );
+    }
+    
+    // Verificar tamaño del archivo (máximo 20MB para PDFs, 10MB para imágenes)
+    function validImageSize() {
       return request.resource.size <= 10 * 1024 * 1024;
+    }
+    
+    function validPDFSize() {
+      return request.resource.size <= 20 * 1024 * 1024;
     }
     
     // Verificar tipo de archivo para imágenes
@@ -51,71 +84,50 @@ service firebase.storage {
     }
     
     // =====================================================
-    // REGLAS PARA IMÁGENES
-    // Path: images/{userId}/{plantId}/{equipmentId}/{imageType}/{filename}
+    // REGLAS PARA IMÁGENES DE EQUIPOS
+    // Path: equipment_images/{plantId}/{equipmentId}/{imageType}/{filename}
     // =====================================================
     
-    match /images/{userId}/{plantId}/{equipmentId}/{imageType}/{filename} {
-      // Lectura:
-      // - Admin: puede leer todas las imágenes
-      // - Auditor: puede leer todas las imágenes
-      // - Supervisor: solo imágenes que subió
-      allow read: if isAuthenticated() && (
-                    isAdmin() ||
-                    isAuditor() ||
-                    (isSupervisor() && isOwner(userId))
-                  );
+    match /equipment_images/{plantId}/{equipmentId}/{imageType}/{filename} {
+      // Lectura: Todos los usuarios autenticados
+      allow read: if isAuthenticated();
       
-      // Escritura (subida):
-      // - Admin: puede subir cualquier imagen
-      // - Supervisor: solo puede subir en su propio directorio
-      // - Debe ser una imagen válida y no exceder tamaño
-      allow write: if isAuthenticated() && 
-                     (isAdmin() || (isSupervisor() && isOwner(userId))) &&
-                     validImageType() &&
-                     validFileSize();
+      // Escritura: Admin, Supervisor, o usuarios sin rol (transición)
+      allow write: if canUpload() && 
+                     validImageType() && 
+                     validImageSize();
       
-      // Eliminación:
-      // - Admin: puede eliminar cualquier imagen
-      // - Supervisor: solo imágenes que subió
-      allow delete: if isAuthenticated() && (
-                      isAdmin() ||
-                      (isSupervisor() && isOwner(userId))
-                    );
+      // Eliminación: Admin, Supervisor, o usuarios sin rol (transición)
+      allow delete: if canDelete();
     }
     
     // =====================================================
-    // REGLAS PARA PDFs
-    // Path: pdfs/{userId}/{plantId}/{equipmentId}/{pdfType}/{filename}
+    // REGLAS PARA PDFs EN ESTRUCTURA PLANTAS/EQUIPOS
+    // Path: plantas/{plantId}/equipos/{equipmentId}/documentos/{docType}/{filename}
     // =====================================================
     
-    match /pdfs/{userId}/{plantId}/{equipmentId}/{pdfType}/{filename} {
-      // Lectura:
-      // - Admin: puede leer todos los PDFs
-      // - Auditor: puede leer todos los PDFs
-      // - Supervisor: solo PDFs que subió
-      allow read: if isAuthenticated() && (
-                    isAdmin() ||
-                    isAuditor() ||
-                    (isSupervisor() && isOwner(userId))
-                  );
+    match /plantas/{plantId}/equipos/{equipmentId}/documentos/{docType}/{filename} {
+      // Lectura: Todos los usuarios autenticados
+      allow read: if isAuthenticated();
       
-      // Escritura (subida):
-      // - Admin: puede subir cualquier PDF
-      // - Supervisor: solo puede subir en su propio directorio
-      // - Debe ser un PDF válido y no exceder tamaño
-      allow write: if isAuthenticated() && 
-                     (isAdmin() || (isSupervisor() && isOwner(userId))) &&
-                     validPDFType() &&
-                     validFileSize();
+      // Escritura: Admin, Supervisor, o usuarios sin rol (transición)
+      allow write: if canUpload() && 
+                     validPDFType() && 
+                     validPDFSize();
       
-      // Eliminación:
-      // - Admin: puede eliminar cualquier PDF
-      // - Supervisor: solo PDFs que subió
-      allow delete: if isAuthenticated() && (
-                      isAdmin() ||
-                      (isSupervisor() && isOwner(userId))
-                    );
+      // Eliminación: Admin, Supervisor, o usuarios sin rol (transición)
+      allow delete: if canDelete();
+    }
+    
+    // =====================================================
+    // REGLAS ALTERNATIVAS (paths antiguos - por compatibilidad)
+    // Path: plants/{plantId}/equipment/{equipmentId}/{allPaths}
+    // =====================================================
+    
+    match /plants/{plantId}/equipment/{equipmentId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if canUpload() && validImageSize();
+      allow delete: if canDelete();
     }
     
     // =====================================================
@@ -124,38 +136,31 @@ service firebase.storage {
     // =====================================================
     
     match /reports/{userId}/{reportType}/{filename} {
-      // Lectura:
-      // - Admin: puede leer todos los reportes
-      // - Auditor: puede leer todos los reportes
-      // - Supervisor: solo reportes que generó
+      // Lectura: Admin, Auditor, o el dueño del reporte
       allow read: if isAuthenticated() && (
                     isAdmin() ||
                     isAuditor() ||
-                    isOwner(userId)
+                    request.auth.uid == userId
                   );
       
-      // Escritura:
-      // - Todos pueden generar reportes en su directorio
+      // Escritura: El usuario puede crear sus propios reportes
       allow write: if isAuthenticated() && 
-                     isOwner(userId) &&
-                     validFileSize();
+                     request.auth.uid == userId;
       
-      // Eliminación:
-      // - Admin: puede eliminar cualquier reporte
-      // - Usuario: solo sus propios reportes
+      // Eliminación: Admin o el dueño
       allow delete: if isAuthenticated() && (
                       isAdmin() ||
-                      isOwner(userId)
+                      request.auth.uid == userId
                     );
     }
     
     // =====================================================
     // REGLAS PARA BACKUPS (Solo Admin)
-    // Path: backups/{timestamp}/{filename}
+    // Path: backups/{backupTime}/{filename}
     // =====================================================
     
     match /backups/{backupTime}/{filename} {
-      // Solo Admin puede leer y escribir backups
+      // Solo Admin puede acceder a backups
       allow read, write, delete: if isAdmin();
     }
     
@@ -167,15 +172,14 @@ service firebase.storage {
     match /temp/{userId}/{filename} {
       // Los usuarios solo pueden acceder a sus archivos temporales
       allow read, write, delete: if isAuthenticated() && 
-                                   isOwner(userId) &&
-                                   validFileSize();
+                                   request.auth.uid == userId;
     }
     
     // =====================================================
     // BLOQUEAR TODO LO DEMÁS
     // =====================================================
     
-    // Cualquier ruta no especificada está bloqueada por defecto
+    // Cualquier ruta no especificada está bloqueada
     match /{allPaths=**} {
       allow read, write: if false;
     }

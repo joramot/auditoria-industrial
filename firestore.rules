@@ -2,25 +2,162 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Reglas para eliminar
-        match /{document=**} {
-      allow read, write, delete: if true;
+    
+    // =====================================================
+    // FUNCIONES AUXILIARES
+    // =====================================================
+    
+    // Verificar si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Verificar si el usuario tiene un documento en Firestore
+    function userExists() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    
+    // Obtener datos del usuario desde Firestore
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    // Obtener rol del usuario de forma segura
+    function getUserRole() {
+      return userExists() ? getUserData().role : 'supervisor';  // 👈 Rol por defecto
+    }
+    
+    // Verificar roles específicos
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+    
+    function isSupervisor() {
+      return isAuthenticated() && getUserRole() == 'supervisor';
+    }
+    
+    function isAuditor() {
+      return isAuthenticated() && getUserRole() == 'auditor';
     }
 
-    // Reglas para plantas
+    function isVisualizador() {
+      return isAuthenticated() && getUserRole() == 'visualizador';
+    }
+
+    // Verificar si el usuario tiene un rol válido
+    function hasValidRole() {
+      let role = getUserRole();
+      return role == 'admin' || role == 'supervisor' || role == 'auditor' || role == 'visualizador';
+    }
+    
+    // =====================================================
+    // REGLAS PARA COLECCIÓN DE USUARIOS
+    // =====================================================
+    
+    match /users/{userId} {
+      // Lectura:
+      // - Admin: Puede leer todos los usuarios
+      // - Otros: Solo pueden leer su propio documento
+      allow read: if isAuthenticated() && (
+                    isAdmin() || 
+                    request.auth.uid == userId
+                  );
+      
+      // Crear: Permitir que se cree el documento del usuario al registrarse
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Actualizar:
+      // - Admin: Puede actualizar cualquier usuario (incluyendo rol)
+      // - Usuario: Puede actualizar su propio perfil (pero NO el rol ni assignedPlants)
+      allow update: if isAuthenticated() && (
+                      isAdmin() ||
+                      (request.auth.uid == userId && 
+                       !('role' in request.resource.data.diff(resource.data)) &&
+                       !('assignedPlants' in request.resource.data.diff(resource.data)))
+                    );
+      
+      // Eliminación: Solo Admin
+      allow delete: if isAdmin();
+    }
+    
+    // =====================================================
+    // 🏭 REGLAS PARA COLECCIÓN DE PLANTAS - ✅ CORREGIDAS
+    // =====================================================
+    
     match /plants/{plantId} {
-      allow read, write: if true;
+      // ✅ LECTURA: Todos los roles autenticados pueden ver todas las plantas
+      // Esto permite que getDocs(collection(db, 'plants')) funcione correctamente
+      allow read: if isAuthenticated() && hasValidRole();
+      
+      // Escritura (crear/actualizar):
+      // - Admin: Acceso completo
+      // - Supervisor: Puede crear y editar plantas
+      allow create, update: if isAuthenticated() && (
+                              isAdmin() ||
+                              isSupervisor()
+                            );
+      
+      // Eliminación: Solo Admin
+      allow delete: if isAdmin();
     }
     
-    // Reglas para equipos
+    // =====================================================
+    // 🔧 REGLAS PARA COLECCIÓN DE EQUIPOS - ✅ CORREGIDAS
+    // =====================================================
+    
     match /equipment/{equipmentId} {
-      allow read, write: if true;
+      // ✅ LECTURA: Todos los roles autenticados pueden ver todos los equipos
+      // Esto permite consultas de colección completa
+      allow read: if isAuthenticated() && hasValidRole();
+      
+      // Escritura (crear):
+      // - Admin y Supervisor pueden crear equipos
+      allow create: if isAuthenticated() && (
+                      isAdmin() ||
+                      isSupervisor()
+                    );
+      
+      // Escritura (actualizar):
+      // - Admin: Puede actualizar cualquier campo
+      // - Supervisor: Puede actualizar cualquier campo
+      // - Auditor: Solo puede actualizar campos de auditoría
+      allow update: if isAuthenticated() && (
+                      isAdmin() ||
+                      isSupervisor() ||
+                      (isAuditor() && onlyAuditFieldsChanged())
+                    );
+      
+      // Función: Verificar que solo se modificaron campos de auditoría
+      function onlyAuditFieldsChanged() {
+        let diff = request.resource.data.diff(resource.data).affectedKeys();
+        let allowedFields = ['reviewStatus', 'reviewDate', 'reviewedBy', 
+                            'reviewerName', 'actionsDescription', 'observations', 'updatedAt'];
+        return diff.hasOnly(allowedFields);
+      }
+      
+      // Eliminación: Solo Admin y Supervisor
+      allow delete: if isAuthenticated() && (
+                      isAdmin() ||
+                      isSupervisor()
+                    );
     }
     
-    // Reglas para pruebas
+    // =====================================================
+    // REGLAS PARA OTRAS COLECCIONES
+    // =====================================================
+    
+    // Colección de pruebas (si la usas)
     match /test/{document} {
-      allow read, write: if true;
+      allow read, write: if isAuthenticated() && isAdmin();
+    }
+    
+    // =====================================================
+    // BLOQUEAR TODO LO DEMÁS
+    // =====================================================
+    
+    // Cualquier colección no especificada está bloqueada
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

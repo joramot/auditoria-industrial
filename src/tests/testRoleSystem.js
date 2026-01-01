@@ -21,13 +21,13 @@ import {
   debugUserRole,
   ROLES,
   PERMISSIONS
-} from './roleService';
+} from './services/roleService';
 
 import {
   migrateAllUsers,
   makeFirstAdmin,
   checkMigrationStatus
-} from './migrateUsersToRoles';
+} from './services/migrateUsersToRoles';
 
 // ============================================
 // 🧪 PRUEBAS UNITARIAS

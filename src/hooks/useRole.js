@@ -1,10 +1,13 @@
 /**
- * useRole.js
+ * useRole.js - VERSIÓN CORREGIDA v2.0
  * Hook personalizado para gestión de roles en React
- * Proporciona acceso fácil a roles, permisos y verificaciones
+ * Detecta automáticamente el usuario autenticado de Firebase
+ * 
+ * IMPORTANTE: Este archivo reemplaza COMPLETAMENTE el useRole.js anterior
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { auth } from '../services/firebase/firebaseConfig';
 import { 
   getUserRole, 
   hasPermission, 
@@ -14,86 +17,134 @@ import {
   PERMISSIONS,
   EDITABLE_FIELDS_BY_ROLE,
   getRoleName
-} from './roleService';
+} from '../services/migration/roleService';
 
 /**
- * Hook principal de roles
- * @param {string} userId - ID del usuario actual
+ * Hook principal de roles - VERSIÓN MEJORADA
+ * Detecta automáticamente el usuario actual de Firebase Auth
  * @returns {Object} Datos y funciones de rol
  */
-export const useRole = (userId) => {
-  const [roleData, setRoleData] = useState(null);
+export const useRole = () => {  // ← SIN PARÁMETROS
+  const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  // Cargar datos del rol del usuario
+  // ============================================
+  // PASO 1: Detectar usuario autenticado
+  // ============================================
+  
+  useEffect(() => {
+    console.log('🎭 useRole: Configurando detección de usuario...');
+    
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      console.log('🎭 useRole: Usuario detectado:', user?.email || 'ninguno');
+      setCurrentUser(user);
+      
+      // Si no hay usuario, resetear todo
+      if (!user) {
+        setUserRole(null);
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // ============================================
+  // PASO 2: Cargar rol cuando hay usuario
+  // ============================================
+  
   useEffect(() => {
     const loadUserRole = async () => {
-      if (!userId) {
+      // Si no hay usuario autenticado, no hacer nada
+      if (!currentUser) {
+        console.log('🎭 useRole: No hay usuario autenticado');
+        setUserRole(null);
         setLoading(false);
         return;
       }
 
       try {
+        console.log('🎭 useRole: Cargando rol para usuario:', currentUser.uid);
         setLoading(true);
-        const data = await getUserRole(userId);
-        setRoleData(data);
+        
+        const roleData = await getUserRole(currentUser.uid);
+        
+        console.log('🎭 useRole: Rol obtenido:', roleData);
+        
+        setUserRole(roleData);
         setError(null);
+        
       } catch (err) {
-        console.error('❌ Error al cargar rol:', err);
+        console.error('❌ useRole: Error al cargar rol:', err);
         setError(err.message);
+        setUserRole(null);
       } finally {
         setLoading(false);
       }
     };
 
     loadUserRole();
-  }, [userId]);
+  }, [currentUser]); // ← Se ejecuta cuando currentUser cambia
 
+  // ============================================
+  // FUNCIONES DE VERIFICACIÓN
+  // ============================================
+  
   // Verificar permiso específico
   const checkPermission = useCallback(async (permission) => {
-    if (!userId) return false;
-    return await hasPermission(userId, permission);
-  }, [userId]);
+    if (!currentUser) return false;
+    return await hasPermission(currentUser.uid, permission);
+  }, [currentUser]);
 
   // Verificar si puede editar un campo
   const checkEditField = useCallback(async (fieldName) => {
-    if (!userId) return false;
-    return await canEditField(userId, fieldName);
-  }, [userId]);
+    if (!currentUser) return false;
+    return await canEditField(currentUser.uid, fieldName);
+  }, [currentUser]);
 
   // Verificar si puede ver una planta
   const checkViewPlant = useCallback(async (plantId) => {
-    if (!userId) return false;
-    return await canViewPlant(userId, plantId);
-  }, [userId]);
+    if (!currentUser) return false;
+    return await canViewPlant(currentUser.uid, plantId);
+  }, [currentUser]);
 
-  // Verificaciones de rol
-  const isAdmin = roleData?.role === ROLES.ADMIN;
-  const isSupervisor = roleData?.role === ROLES.SUPERVISOR;
-  const isAuditor = roleData?.role === ROLES.AUDITOR;
+  // ============================================
+  // VERIFICACIONES DE ROL (BOOLEANOS)
+  // ============================================
+
+  const isAdmin = userRole?.role === ROLES.ADMIN;
+  const isSupervisor = userRole?.role === ROLES.SUPERVISOR;
+  const isAuditor = userRole?.role === ROLES.AUDITOR;
+  const isVisualizador = userRole?.role === ROLES.VISUALIZADOR;
 
   // Nombre legible del rol
-  const roleName = roleData ? getRoleName(roleData.role) : '';
+  const roleName = userRole ? getRoleName(userRole.role) : '';
 
   // Campos editables para este rol
-  const editableFields = roleData 
-    ? EDITABLE_FIELDS_BY_ROLE[roleData.role] || []
+  const editableFields = userRole 
+    ? EDITABLE_FIELDS_BY_ROLE[userRole.role] || []
     : [];
 
+  // ============================================
+  // RETORNO DEL HOOK
+  // ============================================
+  
   return {
-    // Datos del rol
-    roleData,
-    role: roleData?.role,
+    // Datos del usuario y rol
+    userRole,           // Objeto completo con rol y datos
+    role: userRole?.role,
     roleName,
-    assignedPlants: roleData?.assignedPlants || [],
-    permissions: roleData?.permissions || [],
+    assignedPlants: userRole?.assignedPlants || [],
+    permissions: userRole?.permissions || [],
     
-    // Verificaciones de rol
+    // Verificaciones de rol (booleanos)
     isAdmin,
     isSupervisor,
     isAuditor,
-    
+    isVisualizador,
+
     // Funciones de verificación
     checkPermission,
     checkEditField,
@@ -104,29 +155,42 @@ export const useRole = (userId) => {
     
     // Estado
     loading,
-    error
+    error,
+    
+    // Usuario actual
+    user: currentUser
   };
 };
 
 /**
  * Hook para verificar permisos específicos
- * @param {string} userId - ID del usuario
  * @param {string} permission - Permiso a verificar
  * @returns {Object} Estado del permiso
  */
-export const usePermission = (userId, permission) => {
+export const usePermission = (permission) => {
   const [hasAccess, setHasAccess] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
 
+  // Detectar usuario
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Verificar permiso
   useEffect(() => {
     const checkAccess = async () => {
-      if (!userId || !permission) {
+      if (!currentUser || !permission) {
+        setHasAccess(false);
         setLoading(false);
         return;
       }
 
       try {
-        const access = await hasPermission(userId, permission);
+        const access = await hasPermission(currentUser.uid, permission);
         setHasAccess(access);
       } catch (error) {
         console.error('❌ Error al verificar permiso:', error);
@@ -137,30 +201,40 @@ export const usePermission = (userId, permission) => {
     };
 
     checkAccess();
-  }, [userId, permission]);
+  }, [currentUser, permission]);
 
   return { hasAccess, loading };
 };
 
 /**
  * Hook para verificar si un campo es editable
- * @param {string} userId - ID del usuario
  * @param {string} fieldName - Nombre del campo
  * @returns {Object} Estado de edición
  */
-export const useFieldPermission = (userId, fieldName) => {
+export const useFieldPermission = (fieldName) => {
   const [canEdit, setCanEdit] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
 
+  // Detectar usuario
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Verificar campo
   useEffect(() => {
     const checkEdit = async () => {
-      if (!userId || !fieldName) {
+      if (!currentUser || !fieldName) {
+        setCanEdit(false);
         setLoading(false);
         return;
       }
 
       try {
-        const editable = await canEditField(userId, fieldName);
+        const editable = await canEditField(currentUser.uid, fieldName);
         setCanEdit(editable);
       } catch (error) {
         console.error('❌ Error al verificar campo editable:', error);
@@ -171,29 +245,39 @@ export const useFieldPermission = (userId, fieldName) => {
     };
 
     checkEdit();
-  }, [userId, fieldName]);
+  }, [currentUser, fieldName]);
 
   return { canEdit, loading };
 };
 
 /**
  * Hook simple para obtener solo el rol
- * @param {string} userId - ID del usuario
  * @returns {Object} Rol y estado
  */
-export const useUserRole = (userId) => {
+export const useUserRole = () => {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
 
+  // Detectar usuario
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Cargar rol
   useEffect(() => {
     const loadRole = async () => {
-      if (!userId) {
+      if (!currentUser) {
+        setRole(null);
         setLoading(false);
         return;
       }
 
       try {
-        const data = await getUserRole(userId);
+        const data = await getUserRole(currentUser.uid);
         setRole(data?.role);
       } catch (error) {
         console.error('❌ Error al cargar rol:', error);
@@ -204,14 +288,15 @@ export const useUserRole = (userId) => {
     };
 
     loadRole();
-  }, [userId]);
+  }, [currentUser]);
 
-  return { 
-    role, 
+  return {
+    role,
     loading,
     isAdmin: role === ROLES.ADMIN,
     isSupervisor: role === ROLES.SUPERVISOR,
-    isAuditor: role === ROLES.AUDITOR
+    isAuditor: role === ROLES.AUDITOR,
+    isVisualizador: role === ROLES.VISUALIZADOR
   };
 };
 
