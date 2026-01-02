@@ -105,11 +105,23 @@ export const ExpedienteViewer = ({
     );
   }
 
+  // Determinar si la página actual es PDF (no necesita scroll del contenedor)
+  const isPDFPage = currentPageData?.type === PAGE_TYPES.PDF;
+
   return (
     <div className="w-full h-full flex flex-col bg-gray-200">
       {/* Área de contenido de la página */}
-      <div className="flex-1 overflow-hidden">
-        <PageRenderer pageData={currentPageData} />
+      <div
+        className={`flex-1 ${isPDFPage ? 'overflow-hidden' : 'overflow-auto scrollbar-custom'}`}
+        style={{
+          /* Scrollbar personalizado para Firefox */
+          scrollbarWidth: 'auto',
+          scrollbarColor: '#9333ea #e5e7eb'
+        }}
+      >
+        <div className={`w-full ${isPDFPage ? 'h-full' : 'min-h-full'}`}>
+          <PageRenderer pageData={currentPageData} />
+        </div>
       </div>
 
       {/* Barra de navegación inferior */}

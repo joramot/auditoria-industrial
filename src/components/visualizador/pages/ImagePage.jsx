@@ -48,7 +48,7 @@ export const ImagePage = ({ data, title }) => {
   return (
     <div className="w-full h-full flex flex-col bg-gray-900">
       {/* Barra de herramientas */}
-      <div className="bg-gray-800 p-2 flex items-center justify-between">
+      <div className="bg-gray-800 p-2 flex items-center justify-between flex-shrink-0">
         <h3 className="text-white font-medium px-2">{title}</h3>
         <div className="flex items-center gap-2">
           <button
@@ -84,7 +84,7 @@ export const ImagePage = ({ data, title }) => {
         </div>
       </div>
 
-      {/* Contenedor de imagen */}
+      {/* Contenedor de imagen con scroll */}
       <div className="flex-1 overflow-auto flex items-center justify-center p-4">
         {imageError ? (
           <div className="text-center text-gray-400">

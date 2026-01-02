@@ -41,9 +41,9 @@ export const PDFPage = ({ data, title }) => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-gray-100">
+    <div className="w-full h-full flex flex-col bg-white">
       {/* Barra de herramientas */}
-      <div className="bg-gray-800 p-2 flex items-center justify-between">
+      <div className="bg-gray-800 p-2 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2 text-white">
           <FileText className="w-5 h-5" />
           <span className="font-medium">{title}</span>
@@ -71,10 +71,10 @@ export const PDFPage = ({ data, title }) => {
         </div>
       </div>
 
-      {/* Contenedor del PDF */}
-      <div className="flex-1 relative">
+      {/* Contenedor del PDF - usa altura calculada */}
+      <div className="flex-1 bg-white" style={{ height: 'calc(100% - 44px)' }}>
         {loadError ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
             <div className="text-center p-8">
               <AlertCircle className="w-16 h-16 mx-auto mb-4 text-yellow-500" />
               <p className="text-gray-700 mb-4">No se pudo cargar el visor de PDF</p>
@@ -98,10 +98,11 @@ export const PDFPage = ({ data, title }) => {
           </div>
         ) : (
           <iframe
-            src={`${data.url}#toolbar=1&navpanes=0&scrollbar=1`}
-            className="w-full h-full border-0"
+            src={`${data.url}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`}
+            className="w-full h-full border-0 bg-white"
             title={title}
             onError={() => setLoadError(true)}
+            style={{ display: 'block' }}
           />
         )}
       </div>

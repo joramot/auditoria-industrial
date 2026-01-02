@@ -27,8 +27,8 @@ export const CaratulaPage = ({ data }) => {
   } = data;
 
   return (
-    <div className="w-full h-full flex items-center justify-center bg-white p-8">
-      <div className="w-full max-w-2xl">
+    <div className="w-full min-h-full flex items-center justify-center bg-white p-8">
+      <div className="w-full max-w-2xl my-8">
         {/* Contenedor principal con borde */}
         <div className="border-4 border-blue-800 p-8">
           {/* Título del equipo */}
