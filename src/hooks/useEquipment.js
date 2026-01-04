@@ -63,6 +63,8 @@ export const useEquipment = (
     origin: "NACIONAL",
     actionsDescription: "",
     observations: "",
+    invoiceNumber: "",
+    customsNumber: "",
   });
   
   // Estados de imágenes capturadas
@@ -136,9 +138,9 @@ export const useEquipment = (
   
   const handleNewEquipment = () => {
     console.log("\n➕ ABRIENDO FORMULARIO DE NUEVO EQUIPO");
-    
+
     setSelectedEquipment(null);
-    
+
     setFormData({
       equipmentName: "",
       locationInPlant: "",
@@ -151,6 +153,8 @@ export const useEquipment = (
       origin: "NACIONAL",
       actionsDescription: "",
       observations: "",
+      invoiceNumber: "",
+      customsNumber: "",
     });
     
     setCapturedImages({
@@ -174,9 +178,9 @@ export const useEquipment = (
   
   const handleCancelEquipment = () => {
     console.log("\n❌ CANCELANDO EDICIÓN/CREACIÓN DE EQUIPO");
-    
+
     setSelectedEquipment(null);
-    
+
     setFormData({
       equipmentName: "",
       locationInPlant: "",
@@ -189,6 +193,8 @@ export const useEquipment = (
       origin: "NACIONAL",
       actionsDescription: "",
       observations: "",
+      invoiceNumber: "",
+      customsNumber: "",
     });
     
     setCapturedImages({
@@ -239,6 +245,8 @@ export const useEquipment = (
         origin: formData.origin,
         actionsDescription: formData.actionsDescription,
         observations: formData.observations,
+        invoiceNumber: formData.invoiceNumber,
+        customsNumber: formData.customsNumber,
         capturedBy: "Usuario Actual",
         createdAt: new Date().toISOString(),
       };
@@ -626,6 +634,8 @@ export const useEquipment = (
       origin: "NACIONAL",
       actionsDescription: "",
       observations: "",
+      invoiceNumber: "",
+      customsNumber: "",
     });
     setCapturedImages({
       equipment: [],

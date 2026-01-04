@@ -124,6 +124,8 @@ export const SupervisorLayout = ({
       origin: equip.origin,
       actionsDescription: equip.actionsDescription || "",
       observations: equip.observations || "",
+      invoiceNumber: equip.invoiceNumber || "",
+      customsNumber: equip.customsNumber || "",
     });
 
     // Cargar imágenes existentes
@@ -153,7 +155,35 @@ export const SupervisorLayout = ({
       setCapturedImages({ equipment: [], plate: [] });
     }
 
-    setCapturedPDFs({ factura: [], pedimento: [] });
+    // Cargar PDFs existentes
+    if (equip.pdfs) {
+      console.log("  ✅ Equipo tiene PDFs:", equip.pdfs);
+
+      const existingPDFs = {
+        factura: [],
+        pedimento: [],
+      };
+
+      Object.keys(equip.pdfs).forEach((category) => {
+        if (equip.pdfs[category] && Array.isArray(equip.pdfs[category])) {
+          existingPDFs[category] = equip.pdfs[category].map((pdf) => ({
+            url: pdf.url,
+            path: pdf.path,
+            fileName: pdf.fileName,
+            size: pdf.size,
+            uploadDate: pdf.uploadDate,
+            isNew: false,
+          }));
+          console.log(`  ✅ ${category}: ${existingPDFs[category].length} PDFs cargados`);
+        }
+      });
+
+      setCapturedPDFs(existingPDFs);
+    } else {
+      console.log("  ⚠️ Equipo NO tiene campo pdfs");
+      setCapturedPDFs({ factura: [], pedimento: [] });
+    }
+
     setCurrentView("form");
   }, [setSelectedEquipment, setFormData, setCapturedImages, setCapturedPDFs, setCurrentView]);
 
