@@ -161,25 +161,16 @@ const PDFUploader = ({
   };
 
   /**
-   * Descargar PDF
+   * Abrir PDF en nueva pestaña
    */
   const handleDownloadPDF = (pdf) => {
-    console.log(`ðŸ“¥ Descargando PDF: ${pdf.name}`);
-    
-    if (pdf.url) {
-      const link = document.createElement("a");
-      link.href = pdf.url;
-      link.download = pdf.name;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else if (pdf.preview) {
-      const link = document.createElement("a");
-      link.href = pdf.preview;
-      link.download = pdf.name;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    console.log(`📄 Abriendo PDF: ${pdf.name}`);
+
+    const url = pdf.url || pdf.preview;
+
+    if (url) {
+      // Abrir en nueva pestaña para no perder la sesión de la app
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
   };
 

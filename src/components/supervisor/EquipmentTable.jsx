@@ -45,11 +45,40 @@ const FILTERABLE_COLUMNS = [
  */
 const ActionMenu = ({ onEdit, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const buttonRef = React.useRef(null);
+  const [menuStyle, setMenuStyle] = useState({});
+
+  // Calcular posición del menú al abrir
+  const handleToggle = () => {
+    if (!isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const menuHeight = 100; // altura aproximada del menú
+
+      // Calcular posición fixed
+      const style = {
+        position: 'fixed',
+        right: window.innerWidth - rect.right,
+        zIndex: 9999,
+      };
+
+      // Si hay espacio abajo, abrir hacia abajo, si no hacia arriba
+      if (spaceBelow >= menuHeight) {
+        style.top = rect.bottom + 4;
+      } else {
+        style.bottom = window.innerHeight - rect.top + 4;
+      }
+
+      setMenuStyle(style);
+    }
+    setIsOpen(!isOpen);
+  };
 
   return (
     <div className="relative">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        ref={buttonRef}
+        onClick={handleToggle}
         className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
       >
         <MoreVertical size={16} className="text-gray-600" />
@@ -59,18 +88,22 @@ const ActionMenu = ({ onEdit, onDelete }) => {
         <>
           {/* Overlay para cerrar el menú */}
           <div
-            className="fixed inset-0 z-10"
+            className="fixed inset-0"
+            style={{ zIndex: 9998 }}
             onClick={() => setIsOpen(false)}
           />
 
-          {/* Menú desplegable */}
-          <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-[140px]">
+          {/* Menú desplegable con position fixed */}
+          <div
+            style={menuStyle}
+            className="bg-white border border-gray-200 rounded-lg shadow-xl min-w-[140px]"
+          >
             <button
               onClick={() => {
                 setIsOpen(false);
                 onEdit();
               }}
-              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg"
             >
               <Edit size={14} />
               <span>Editar</span>
@@ -80,7 +113,7 @@ const ActionMenu = ({ onEdit, onDelete }) => {
                 setIsOpen(false);
                 onDelete();
               }}
-              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-b-lg"
             >
               <Trash2 size={14} />
               <span>Eliminar</span>
@@ -231,7 +264,7 @@ export const EquipmentTable = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
       {/* Header */}
       <div className="p-4 sm:p-6 border-b border-gray-200">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -331,7 +364,7 @@ export const EquipmentTable = ({
       </div>
 
       {/* Tabla */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto overflow-y-visible">
         <table className="w-full">
           <thead>
             {/* Fila de encabezados */}
