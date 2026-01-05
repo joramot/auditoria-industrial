@@ -4,10 +4,11 @@
  * Muestra los equipos de una planta en formato de tabla con:
  * - Header con nombre de planta, contador y búsqueda
  * - Tabla con columnas definidas
+ * - Filtros por columna
  * - Paginación
  * - Acciones por fila (editar/eliminar)
  *
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 import React, { useState, useMemo } from "react";
@@ -22,10 +23,22 @@ import {
   Loader2,
   Package,
   AlertCircle,
+  Filter,
+  X,
 } from "lucide-react";
 
 // Número de items por página
 const ITEMS_PER_PAGE = 10;
+
+// Configuración de columnas filtrables
+const FILTERABLE_COLUMNS = [
+  { key: "name", label: "Descripción", field: "name" },
+  { key: "manufacturer", label: "Fabricante", field: "manufacturer" },
+  { key: "model", label: "Modelo", field: "model" },
+  { key: "serialNumber", label: "No. Serie", field: "serialNumber" },
+  { key: "invoiceNumber", label: "# Factura", field: "invoiceNumber" },
+  { key: "customsNumber", label: "# Pedimento", field: "customsNumber" },
+];
 
 /**
  * Menú de acciones para cada fila
@@ -80,6 +93,34 @@ const ActionMenu = ({ onEdit, onDelete }) => {
 };
 
 /**
+ * Input de filtro para columna
+ */
+const ColumnFilterInput = ({ value, onChange, placeholder }) => (
+  <div className="relative">
+    <input
+      type="text"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="
+        w-full px-2 py-1.5 text-xs
+        border border-gray-300 rounded
+        focus:outline-none focus:ring-1 focus:ring-amber-400 focus:border-amber-400
+        placeholder:text-gray-400
+      "
+    />
+    {value && (
+      <button
+        onClick={() => onChange("")}
+        className="absolute right-1 top-1/2 -translate-y-1/2 p-0.5 hover:bg-gray-200 rounded"
+      >
+        <X size={12} className="text-gray-400" />
+      </button>
+    )}
+  </div>
+);
+
+/**
  * Componente EquipmentTable
  */
 export const EquipmentTable = ({
@@ -95,22 +136,81 @@ export const EquipmentTable = ({
   successMessage,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
 
-  // Filtrar equipos por término de búsqueda
+  // Estado para filtros por columna
+  const [columnFilters, setColumnFilters] = useState({
+    name: "",
+    manufacturer: "",
+    model: "",
+    serialNumber: "",
+    invoiceNumber: "",
+    customsNumber: "",
+  });
+
+  // Verificar si hay filtros activos
+  const hasActiveFilters = useMemo(() => {
+    return Object.values(columnFilters).some((filter) => filter.trim() !== "");
+  }, [columnFilters]);
+
+  // Contar filtros activos
+  const activeFiltersCount = useMemo(() => {
+    return Object.values(columnFilters).filter((filter) => filter.trim() !== "").length;
+  }, [columnFilters]);
+
+  // Actualizar filtro de columna
+  const updateColumnFilter = (column, value) => {
+    setColumnFilters((prev) => ({
+      ...prev,
+      [column]: value,
+    }));
+  };
+
+  // Limpiar todos los filtros
+  const clearAllFilters = () => {
+    setColumnFilters({
+      name: "",
+      manufacturer: "",
+      model: "",
+      serialNumber: "",
+      invoiceNumber: "",
+      customsNumber: "",
+    });
+    if (onSearchChange) {
+      onSearchChange("");
+    }
+  };
+
+  // Filtrar equipos por término de búsqueda global y filtros por columna
   const filteredEquipment = useMemo(() => {
-    if (!searchTerm.trim()) return equipment;
+    let result = equipment;
 
-    const term = searchTerm.toLowerCase();
-    return equipment.filter(
-      (eq) =>
-        eq.name?.toLowerCase().includes(term) ||
-        eq.manufacturer?.toLowerCase().includes(term) ||
-        eq.model?.toLowerCase().includes(term) ||
-        eq.serialNumber?.toLowerCase().includes(term) ||
-        eq.invoiceNumber?.toLowerCase().includes(term) ||
-        eq.customsNumber?.toLowerCase().includes(term)
-    );
-  }, [equipment, searchTerm]);
+    // Aplicar búsqueda global
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(
+        (eq) =>
+          eq.name?.toLowerCase().includes(term) ||
+          eq.manufacturer?.toLowerCase().includes(term) ||
+          eq.model?.toLowerCase().includes(term) ||
+          eq.serialNumber?.toLowerCase().includes(term) ||
+          eq.invoiceNumber?.toLowerCase().includes(term) ||
+          eq.customsNumber?.toLowerCase().includes(term)
+      );
+    }
+
+    // Aplicar filtros por columna
+    FILTERABLE_COLUMNS.forEach(({ field }) => {
+      const filterValue = columnFilters[field]?.trim().toLowerCase();
+      if (filterValue) {
+        result = result.filter((eq) =>
+          eq[field]?.toLowerCase().includes(filterValue)
+        );
+      }
+    });
+
+    return result;
+  }, [equipment, searchTerm, columnFilters]);
 
   // Calcular paginación
   const totalPages = Math.ceil(filteredEquipment.length / ITEMS_PER_PAGE);
@@ -121,7 +221,7 @@ export const EquipmentTable = ({
   // Resetear a página 1 cuando cambie el filtro
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, columnFilters]);
 
   // Navegación de páginas
   const goToPage = (page) => {
@@ -143,16 +243,48 @@ export const EquipmentTable = ({
             <p className="text-sm text-gray-500 mt-1">
               Total: <span className="font-semibold">{equipment.length}</span> equipos
               {filteredEquipment.length !== equipment.length && (
-                <span className="ml-2">
+                <span className="ml-2 text-amber-600">
                   (mostrando {filteredEquipment.length})
                 </span>
               )}
             </p>
           </div>
 
-          {/* Búsqueda y agregar */}
-          <div className="flex items-center gap-3">
-            {/* Búsqueda */}
+          {/* Controles */}
+          <div className="flex items-center gap-2">
+            {/* Botón de filtros */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`
+                flex items-center gap-2 px-3 py-2 rounded-lg border
+                transition-colors duration-200 text-sm
+                ${showFilters || hasActiveFilters
+                  ? "bg-amber-50 border-amber-400 text-amber-700"
+                  : "border-gray-300 text-gray-600 hover:bg-gray-50"
+                }
+              `}
+            >
+              <Filter size={16} />
+              <span className="hidden sm:inline">Filtros</span>
+              {activeFiltersCount > 0 && (
+                <span className="bg-amber-400 text-gray-900 text-xs font-bold px-1.5 py-0.5 rounded-full">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </button>
+
+            {/* Limpiar filtros */}
+            {(hasActiveFilters || searchTerm) && (
+              <button
+                onClick={clearAllFilters}
+                className="flex items-center gap-1 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              >
+                <X size={16} />
+                <span className="hidden sm:inline">Limpiar</span>
+              </button>
+            )}
+
+            {/* Búsqueda global */}
             <div className="relative">
               <Search
                 size={18}
@@ -160,11 +292,11 @@ export const EquipmentTable = ({
               />
               <input
                 type="text"
-                placeholder="Buscar equipo..."
+                placeholder="Buscar..."
                 value={searchTerm}
                 onChange={(e) => onSearchChange(e.target.value)}
                 className="
-                  pl-10 pr-4 py-2 w-48 sm:w-64
+                  pl-10 pr-4 py-2 w-36 sm:w-48
                   border border-gray-300 rounded-lg
                   text-sm
                   focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent
@@ -202,32 +334,87 @@ export const EquipmentTable = ({
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
+            {/* Fila de encabezados */}
             <tr className="bg-amber-400">
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider w-12">
                 #
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider min-w-[150px]">
                 Descripción
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider hidden md:table-cell">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider hidden md:table-cell min-w-[120px]">
                 Fabricante
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider hidden lg:table-cell">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider hidden lg:table-cell min-w-[100px]">
                 Modelo
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider min-w-[120px]">
                 No. Serie
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider hidden xl:table-cell">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider hidden xl:table-cell min-w-[100px]">
                 # Factura
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider hidden xl:table-cell">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider hidden xl:table-cell min-w-[100px]">
                 # Pedimento
               </th>
               <th className="px-4 py-3 text-center text-xs font-semibold text-gray-900 uppercase tracking-wider w-20">
                 Acciones
               </th>
             </tr>
+
+            {/* Fila de filtros por columna */}
+            {showFilters && (
+              <tr className="bg-amber-50 border-b border-amber-200">
+                <th className="px-4 py-2">
+                  {/* Columna # sin filtro */}
+                </th>
+                <th className="px-2 py-2">
+                  <ColumnFilterInput
+                    value={columnFilters.name}
+                    onChange={(value) => updateColumnFilter("name", value)}
+                    placeholder="Filtrar..."
+                  />
+                </th>
+                <th className="px-2 py-2 hidden md:table-cell">
+                  <ColumnFilterInput
+                    value={columnFilters.manufacturer}
+                    onChange={(value) => updateColumnFilter("manufacturer", value)}
+                    placeholder="Filtrar..."
+                  />
+                </th>
+                <th className="px-2 py-2 hidden lg:table-cell">
+                  <ColumnFilterInput
+                    value={columnFilters.model}
+                    onChange={(value) => updateColumnFilter("model", value)}
+                    placeholder="Filtrar..."
+                  />
+                </th>
+                <th className="px-2 py-2">
+                  <ColumnFilterInput
+                    value={columnFilters.serialNumber}
+                    onChange={(value) => updateColumnFilter("serialNumber", value)}
+                    placeholder="Filtrar..."
+                  />
+                </th>
+                <th className="px-2 py-2 hidden xl:table-cell">
+                  <ColumnFilterInput
+                    value={columnFilters.invoiceNumber}
+                    onChange={(value) => updateColumnFilter("invoiceNumber", value)}
+                    placeholder="Filtrar..."
+                  />
+                </th>
+                <th className="px-2 py-2 hidden xl:table-cell">
+                  <ColumnFilterInput
+                    value={columnFilters.customsNumber}
+                    onChange={(value) => updateColumnFilter("customsNumber", value)}
+                    placeholder="Filtrar..."
+                  />
+                </th>
+                <th className="px-4 py-2">
+                  {/* Columna acciones sin filtro */}
+                </th>
+              </tr>
+            )}
           </thead>
           <tbody className="divide-y divide-gray-200">
             {isLoading ? (
@@ -243,13 +430,19 @@ export const EquipmentTable = ({
               <tr>
                 <td colSpan="8" className="px-4 py-12 text-center">
                   <div className="flex flex-col items-center justify-center text-gray-500">
-                    {searchTerm ? (
+                    {searchTerm || hasActiveFilters ? (
                       <>
                         <AlertCircle size={32} className="mb-2 text-gray-400" />
                         <span>No se encontraron equipos</span>
                         <span className="text-sm">
-                          Prueba con otro término de búsqueda
+                          Prueba con otros filtros o términos de búsqueda
                         </span>
+                        <button
+                          onClick={clearAllFilters}
+                          className="mt-3 text-amber-600 hover:text-amber-700 font-medium text-sm"
+                        >
+                          Limpiar todos los filtros
+                        </button>
                       </>
                     ) : (
                       <>
@@ -317,6 +510,11 @@ export const EquipmentTable = ({
           <div className="text-sm text-gray-500">
             Mostrando {startIndex + 1}-{Math.min(endIndex, filteredEquipment.length)} de{" "}
             {filteredEquipment.length}
+            {filteredEquipment.length !== equipment.length && (
+              <span className="text-amber-600 ml-1">
+                (filtrado de {equipment.length})
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -366,7 +564,7 @@ export const EquipmentTable = ({
 
             <button
               onClick={() => goToPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
+              disabled={currentPage === totalPages || totalPages === 0}
               className="
                 p-2 rounded-lg border border-gray-300
                 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed

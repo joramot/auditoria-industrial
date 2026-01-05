@@ -23,7 +23,7 @@ import {
   Settings,
   User,
 } from "lucide-react";
-import { logoutUser } from "../../services/auth/authService";
+import { logout } from "../../services/auth/authService";
 
 /**
  * Item del menú de navegación
@@ -83,7 +83,7 @@ export const Sidebar = ({
   // Manejar logout
   const handleLogout = async () => {
     try {
-      await logoutUser();
+      await logout();
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
