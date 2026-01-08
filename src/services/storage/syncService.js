@@ -12,7 +12,6 @@ import {
   updateEquipment,
   uploadImage,
   uploadPDF,
-  uploadMultiplePDFs,
 } from "../firebase/firebaseServices";
 
 import {

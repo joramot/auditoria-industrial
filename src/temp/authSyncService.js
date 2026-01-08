@@ -3,7 +3,7 @@
 // Extiende syncService para incluir verificación de autenticación
 
 import { isAuthenticated, getCurrentUser, onAuthChange } from './authService';
-import { syncAllPendingOperations, getSyncStatus, startAutoSync } from './syncService';
+import { syncAllPendingOperations, getSyncStatus } from './syncService';
 
 // ============================================
 // ESTADO DE AUTENTICACIÓN Y SINCRONIZACIÓN
@@ -240,7 +240,7 @@ export const forceSyncNow = async () => {
 // EXPORTACIONES
 // ============================================
 
-export default {
+const authSyncService = {
   syncWithAuth,
   getSyncStatusWithAuth,
   startAuthAwareAutoSync,
@@ -250,3 +250,5 @@ export default {
   getFullStatus,
   forceSyncNow
 };
+
+export default authSyncService;

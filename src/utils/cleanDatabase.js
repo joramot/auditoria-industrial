@@ -311,7 +311,7 @@ export const removeDuplicates = async () => {
 };
 
 // Exportar todas las funciones
-export default {
+const cleanDatabase = {
   cleanFirebase,
   cleanIndexedDB,
   cleanFirebaseStorage,
@@ -319,3 +319,5 @@ export default {
   findDuplicates,
   removeDuplicates
 };
+
+export default cleanDatabase;

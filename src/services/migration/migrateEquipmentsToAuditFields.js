@@ -8,12 +8,11 @@
  */
 
 import { db } from './firebase/firebaseConfig';
-import { 
-  collection, 
-  getDocs, 
-  updateDoc, 
+import {
+  collection,
+  getDocs,
   doc,
-  writeBatch 
+  writeBatch
 } from 'firebase/firestore';
 
 /**
@@ -257,8 +256,10 @@ export const cleanAuditFields = async () => {
   }
 };
 
-export default {
+const migrationService = {
   migrateEquipmentsToAuditFields,
   checkMigrationStatus,
   cleanAuditFields
 };
+
+export default migrationService;

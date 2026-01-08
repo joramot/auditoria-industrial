@@ -28,7 +28,6 @@ import {
 import {
   initDB,
   addToSyncQueue,
-  STORES,
 } from "../storage/localStorageService";
 
 // ============================================================================
@@ -267,7 +266,7 @@ export const deleteEquipmentComplete = async (equipmentId, plantId, isOnline = t
         return { success: false, error: "Equipo no encontrado" };
       }
 
-      const equipment = equipmentSnap.data();
+      equipmentSnap.data();
       let deletedImages = 0;
       let deletedPDFs = 0;
 
@@ -588,13 +587,14 @@ export const nukeEverything = async (confirmationText, onProgress = null) => {
 
     for (const plantDoc of plantsSnapshot.docs) {
       const plantId = plantDoc.id;
+      const currentCount = deletedPlants;
       console.log(`\n🏭 Eliminando planta ${deletedPlants + 1}/${totalPlants}`);
-      
+
       const result = await deletePlantComplete(plantId, true, (progress) => {
         if (onProgress) {
           onProgress({
             stage: "plants",
-            current: deletedPlants,
+            current: currentCount,
             total: totalPlants,
             plantId,
             subProgress: progress
@@ -729,23 +729,25 @@ export const getDeleteInfo = async (type, id) => {
 /**
  * ✅ EXPORTAR TODAS LAS FUNCIONES
  */
-export default {
+const deletionService = {
   // PDFs
   deletePedimento,
   deleteFactura,
-  
+
   // Imágenes
   deleteEquipmentImage,
   deletePlacaImage,
-  
+
   // Equipos y Plantas
   deleteEquipmentComplete,
   deletePlantComplete,
-  
+
   // Base de datos
   nukeLocalDatabase,
   nukeEverything,
-  
+
   // Utilidades
   getDeleteInfo
 };
+
+export default deletionService;

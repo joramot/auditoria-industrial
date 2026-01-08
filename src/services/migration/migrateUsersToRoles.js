@@ -258,10 +258,12 @@ export const checkMigrationStatus = async () => {
 };
 
 // Exportar funciones para uso en aplicación
-export default {
+const userMigrationService = {
   migrateUser,
   migrateAllUsers,
   makeFirstAdmin,
   createSampleUsers,
   checkMigrationStatus
 };
+
+export default userMigrationService;

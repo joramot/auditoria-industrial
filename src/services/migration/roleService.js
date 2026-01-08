@@ -631,7 +631,7 @@ export const debugUserRole = async (userId) => {
   }
 };
 
-export default {
+const roleService = {
   ROLES,
   PERMISSIONS,
   ROLE_PERMISSIONS,
@@ -652,3 +652,5 @@ export default {
   getRoleName,
   debugUserRole
 };
+
+export default roleService;

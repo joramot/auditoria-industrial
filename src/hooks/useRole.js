@@ -8,13 +8,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { auth } from '../services/firebase/firebaseConfig';
-import { 
-  getUserRole, 
-  hasPermission, 
+import {
+  getUserRole,
+  hasPermission,
   canEditField,
   canViewPlant,
   ROLES,
-  PERMISSIONS,
   EDITABLE_FIELDS_BY_ROLE,
   getRoleName
 } from '../services/migration/roleService';

@@ -23,11 +23,6 @@ import {
   PERMISSIONS
 } from './services/roleService';
 
-import {
-  migrateAllUsers,
-  makeFirstAdmin,
-  checkMigrationStatus
-} from './services/migrateUsersToRoles';
 
 // ============================================
 // 🧪 PRUEBAS UNITARIAS
@@ -349,7 +344,7 @@ export const cleanupTestUsers = async () => {
 };
 
 // Exportar todas las funciones de prueba
-export default {
+const testRoleSystem = {
   testCreateUser,
   testPermissions,
   testEditableFields,
@@ -360,3 +355,5 @@ export default {
   printUserInfo,
   cleanupTestUsers
 };
+
+export default testRoleSystem;
