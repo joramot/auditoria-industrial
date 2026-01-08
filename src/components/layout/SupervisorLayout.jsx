@@ -14,6 +14,7 @@ import React, { useCallback, useState } from "react";
 
 // Componentes compartidos
 import { SyncProgress } from "../shared/SyncProgress";
+import { DeleteEquipmentModal } from "../shared/DeleteEquipmentModal";
 
 // Componentes de supervisor
 import {
@@ -92,8 +93,9 @@ export const SupervisorLayout = ({
 }) => {
   console.log(`🎭 Renderizando interfaz de ${isAdmin ? "ADMIN" : "SUPERVISOR"} v2.0`);
 
-  // Estado para el equipo a eliminar
+  // Estado para el modal de eliminación
   const [equipmentToDelete, setEquipmentToDelete] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // ============================================
   // HANDLERS PARA COMPONENTES
@@ -202,11 +204,42 @@ export const SupervisorLayout = ({
     [setSelectedEquipment, setFormData, setCapturedImages, setCapturedPDFs, setCurrentView]
   );
 
-  // Handler para eliminar equipo (placeholder)
+  // Handler para eliminar equipo - abre el modal de confirmación
   const handleDeleteEquipment = useCallback((equip) => {
+    console.log("🗑️ Abriendo modal de eliminación para equipo:", equip.id);
     setEquipmentToDelete(equip);
-    // TODO: Implementar modal de confirmación
-    console.log("Eliminar equipo:", equip.id);
+    setShowDeleteModal(true);
+  }, []);
+
+  // Handler cuando se elimina exitosamente un equipo
+  const handleEquipmentDeletedFromTable = useCallback((result) => {
+    console.log("✅ Equipo eliminado:", result);
+    setShowDeleteModal(false);
+    setEquipmentToDelete(null);
+
+    // Mostrar mensaje de éxito
+    setSuccessMessage(
+      result.offline
+        ? "Equipo marcado para eliminar. Se sincronizará al conectar."
+        : `Equipo eliminado correctamente${result.stats ? ` (${result.stats.images} imágenes, ${result.stats.pdfs} PDFs)` : ""}`
+    );
+    setShowSuccessMessage(true);
+
+    // Recargar lista de equipos
+    if (selectedPlant) {
+      loadEquipment(selectedPlant.id);
+    }
+
+    // Ocultar mensaje después de 3 segundos
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+    }, 3000);
+  }, [selectedPlant, loadEquipment, setSuccessMessage, setShowSuccessMessage]);
+
+  // Handler para cerrar modal de eliminación
+  const handleCloseDeleteModal = useCallback(() => {
+    setShowDeleteModal(false);
+    setEquipmentToDelete(null);
   }, []);
 
   // Handler para guardar planta
@@ -410,6 +443,16 @@ export const SupervisorLayout = ({
         {/* Contenido principal */}
         {renderMainContent()}
       </main>
+
+      {/* Modal de confirmación de eliminación de equipo */}
+      <DeleteEquipmentModal
+        isOpen={showDeleteModal}
+        equipment={equipmentToDelete}
+        plantId={selectedPlant?.id}
+        isOnline={!isOffline}
+        onClose={handleCloseDeleteModal}
+        onDeleted={handleEquipmentDeletedFromTable}
+      />
     </div>
   );
 };
