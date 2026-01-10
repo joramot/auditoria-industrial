@@ -40,6 +40,7 @@ export const DeleteEquipmentModal = ({
       setDeleteInfo(null);
       setError(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, equipment?.id]);
 
   const loadDeleteInfo = async () => {

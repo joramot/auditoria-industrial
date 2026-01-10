@@ -13,7 +13,6 @@
 import React from 'react';
 import { useAuthWithRole } from '../../hooks/useAuthWithRole';
 import { ROLES } from '../../services/migration/roleService';
-import { LoadingScreen } from '../shared/LoadingScreen';
 import { Shield, Lock, LogIn } from 'lucide-react';
 
 /**

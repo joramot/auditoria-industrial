@@ -13,11 +13,9 @@
 import React, { useMemo } from "react";
 import {
   Factory,
-  Settings,
   AlertCircle,
   CheckCircle,
   Clock,
-  TrendingUp,
   Package,
   Wifi,
   WifiOff,

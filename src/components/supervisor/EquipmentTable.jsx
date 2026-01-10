@@ -160,6 +160,7 @@ export const EquipmentTable = ({
   equipment = [],
   plantName,
   onSelectEquipment,
+  onViewEquipment,
   onNewEquipment,
   onDeleteEquipment,
   searchTerm = "",
@@ -496,7 +497,22 @@ export const EquipmentTable = ({
               paginatedEquipment.map((equip, index) => (
                 <tr
                   key={equip.id}
-                  className="hover:bg-amber-50 transition-colors odd:bg-white even:bg-gray-50"
+                  className="hover:bg-blue-50 transition-colors odd:bg-white even:bg-gray-50 cursor-pointer focus:outline-none focus:bg-blue-100 focus:ring-2 focus:ring-inset focus:ring-blue-400"
+                  onClick={(e) => {
+                    // Solo abrir consulta si no se hizo click en la columna de acciones
+                    if (!e.target.closest('.actions-column') && onViewEquipment) {
+                      onViewEquipment(equip);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if ((e.key === 'Enter' || e.key === ' ') && onViewEquipment) {
+                      e.preventDefault();
+                      onViewEquipment(equip);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Ver detalles de ${equip.name || 'equipo'}`}
                 >
                   <td className="px-4 py-3 text-sm text-gray-500 font-medium">
                     {startIndex + index + 1}
@@ -524,7 +540,7 @@ export const EquipmentTable = ({
                   <td className="px-4 py-3 text-sm text-gray-600 hidden xl:table-cell">
                     {equip.customsNumber || "-"}
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-4 py-3 text-center actions-column" onClick={(e) => e.stopPropagation()}>
                     <ActionMenu
                       onEdit={() => onSelectEquipment(equip)}
                       onDelete={() => onDeleteEquipment && onDeleteEquipment(equip)}

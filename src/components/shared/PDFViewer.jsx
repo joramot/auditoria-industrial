@@ -4,11 +4,9 @@
  */
 
 import React, { useState } from 'react';
-import { 
-  X, 
+import {
+  X,
   Download,
-  ChevronLeft,
-  ChevronRight,
   Maximize2,
   Minimize2,
   ExternalLink

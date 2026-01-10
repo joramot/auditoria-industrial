@@ -3,13 +3,12 @@
 // Muestra información del usuario y permite editar perfil
 
 import React, { useState } from 'react';
-import { 
-  User, 
-  Mail, 
-  Calendar, 
-  LogOut, 
-  Edit2, 
-  Save, 
+import {
+  User,
+  Mail,
+  LogOut,
+  Edit2,
+  Save,
   X,
   Loader,
   CheckCircle,

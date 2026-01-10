@@ -30,7 +30,6 @@ import {
   ChevronRight
 } from 'lucide-react';
 
-import AuditorStats from './AuditorStats';
 import AuditorPlantsList from './AuditorPlantsList';
 import AuditorEquipmentReview from './AuditorEquipmentReview';
 import PlantDashboard from './PlantDashboard';
@@ -78,6 +77,7 @@ const AuditorDashboard = ({ user }) => {
       loadAllEquipment();
       loadEquipmentCounts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plants]);
 
   // Navegación con teclado
@@ -94,6 +94,7 @@ const AuditorDashboard = ({ user }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentView, selectedEquipmentIndex, equipment]);
 
   // Resetear a página 1 cuando cambien los filtros o la cantidad de items
@@ -429,6 +430,8 @@ const AuditorDashboard = ({ user }) => {
     ).length
   };
 
+  // Progreso de revisión (disponible para uso futuro)
+  // eslint-disable-next-line no-unused-vars
   const reviewProgress = globalStats.totalEquipment > 0
     ? Math.round((globalStats.totalReviewed / globalStats.totalEquipment) * 100)
     : 0;

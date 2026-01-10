@@ -457,8 +457,10 @@ export const NukeDatabaseButton = ({
   );
 };
 
-export default {
+const DeletionButtons = {
   DeleteEquipmentButton,
   DeletePlantButton,
   NukeDatabaseButton
 };
+
+export default DeletionButtons;

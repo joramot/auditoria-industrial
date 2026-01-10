@@ -10,7 +10,7 @@
  * @version 2.0.0
  */
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Factory,
   FileText,
@@ -19,7 +19,6 @@ import {
   ChevronDown,
   Wifi,
   WifiOff,
-  Plus,
   Settings,
   User,
 } from "lucide-react";
@@ -61,7 +60,6 @@ export const Sidebar = ({
   isOffline,
   isAdmin,
 }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Manejar selección de planta
   const handlePlantChange = (e) => {

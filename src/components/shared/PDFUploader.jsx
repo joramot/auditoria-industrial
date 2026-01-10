@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Upload, Trash2, Download, File, X, AlertCircle } from "lucide-react";
+import { Upload, Trash2, Download, File, AlertCircle } from "lucide-react";
 import { deleteFactura, deletePedimento } from "../../services/deletion/deletionService";
 
 /**
@@ -143,8 +143,9 @@ const PDFUploader = ({
   };
 
   /**
-   * Eliminar PDF (mantener funcion original para PDFs nuevos)
+   * Eliminar PDF (funcion alternativa para PDFs nuevos)
    */
+  // eslint-disable-next-line no-unused-vars
   const handleRemovePDF = (index) => {
     console.log(`ðŸ—‘ï¸ Removiendo PDF en Ã­ndice: ${index}`);
     

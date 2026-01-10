@@ -15,6 +15,7 @@ import React, { useCallback, useState } from "react";
 // Componentes compartidos
 import { SyncProgress } from "../shared/SyncProgress";
 import { DeleteEquipmentModal } from "../shared/DeleteEquipmentModal";
+import EquipmentDetailModal from "../shared/EquipmentDetailModal";
 
 // Componentes de supervisor
 import {
@@ -96,6 +97,10 @@ export const SupervisorLayout = ({
   // Estado para el modal de eliminación
   const [equipmentToDelete, setEquipmentToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Estado para el modal de consulta/detalle
+  const [equipmentToView, setEquipmentToView] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   // ============================================
   // HANDLERS PARA COMPONENTES
@@ -209,6 +214,19 @@ export const SupervisorLayout = ({
     console.log("🗑️ Abriendo modal de eliminación para equipo:", equip.id);
     setEquipmentToDelete(equip);
     setShowDeleteModal(true);
+  }, []);
+
+  // Handler para ver detalle de equipo - abre el modal de consulta
+  const handleViewEquipment = useCallback((equip) => {
+    console.log("👁️ Abriendo modal de consulta para equipo:", equip.id);
+    setEquipmentToView(equip);
+    setShowDetailModal(true);
+  }, []);
+
+  // Handler para cerrar modal de consulta
+  const handleCloseDetailModal = useCallback(() => {
+    setShowDetailModal(false);
+    setEquipmentToView(null);
   }, []);
 
   // Handler cuando se elimina exitosamente un equipo
@@ -397,6 +415,7 @@ export const SupervisorLayout = ({
           equipment={equipment}
           plantName={selectedPlant.name}
           onSelectEquipment={handleSelectEquipment}
+          onViewEquipment={handleViewEquipment}
           onNewEquipment={handleNewEquipment}
           onDeleteEquipment={handleDeleteEquipment}
           searchTerm={equipmentSearchTerm}
@@ -452,6 +471,15 @@ export const SupervisorLayout = ({
         isOnline={!isOffline}
         onClose={handleCloseDeleteModal}
         onDeleted={handleEquipmentDeletedFromTable}
+      />
+
+      {/* Modal de consulta/detalle de equipo */}
+      <EquipmentDetailModal
+        isOpen={showDetailModal}
+        equipment={equipmentToView}
+        plantId={selectedPlant?.id}
+        plantName={selectedPlant?.name}
+        onClose={handleCloseDetailModal}
       />
     </div>
   );
