@@ -40,6 +40,8 @@ import {
   Eye,
   Camera,
   Image,
+  X,
+  RotateCcw,
 } from "lucide-react";
 import { getEquipmentImages, getEquipmentPDFs } from "../../services/firebase/firebaseServices";
 import PDFViewer from "../shared/PDFViewer";
@@ -100,7 +102,7 @@ const EditableTextArea = ({ icon: Icon, label, value, onChange, placeholder, row
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       rows={rows}
-      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
+      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y min-h-[100px] text-sm"
     />
   </div>
 );
@@ -137,6 +139,9 @@ const AuditorEquipmentReview = ({
   const [showPedimentoViewer, setShowPedimentoViewer] = useState(false);
   const [showEquipmentImagesViewer, setShowEquipmentImagesViewer] = useState(false);
   const [showPlateImagesViewer, setShowPlateImagesViewer] = useState(false);
+
+  // Estado para modal de confirmacion de cambio de estado
+  const [showStatusModal, setShowStatusModal] = useState(false);
 
   // Cargar datos del equipo
   useEffect(() => {
@@ -271,14 +276,23 @@ const AuditorEquipmentReview = ({
     setHasChanges(false);
   };
 
-  const handleMarkReviewed = async () => {
+  // Abrir modal de confirmacion para cambiar estado
+  const handleOpenStatusModal = () => {
+    setShowStatusModal(true);
+  };
+
+  // Confirmar cambio de estado (toggle entre revisado y pendiente)
+  const handleConfirmStatusChange = async () => {
+    setShowStatusModal(false);
+
     if (hasChanges) {
       await handleSave();
     }
 
+    const newStatus = isReviewed ? "pendiente" : "revisado";
     const reviewData = {
-      reviewStatus: "revisado",
-      reviewDate: new Date().toISOString(),
+      reviewStatus: newStatus,
+      reviewDate: newStatus === "revisado" ? new Date().toISOString() : null,
       actionsDescription,
       observations,
     };
@@ -605,6 +619,16 @@ const AuditorEquipmentReview = ({
             )}
 
             <div className="flex gap-3 ml-auto">
+              {/* Cancelar */}
+              <button
+                onClick={onBackToList}
+                disabled={saving}
+                className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
+              >
+                <X className="w-4 h-4" />
+                Cancelar
+              </button>
+
               {/* Guardar Cambios */}
               <button
                 onClick={handleSave}
@@ -630,17 +654,17 @@ const AuditorEquipmentReview = ({
                 )}
               </button>
 
-              {/* Marcar como Revisado */}
+              {/* Cambiar Estado (Revisado/Pendiente) */}
               <button
-                onClick={handleMarkReviewed}
+                onClick={handleOpenStatusModal}
                 disabled={saving}
                 className={`
                   flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-colors
                   ${saving
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                     : isReviewed
-                      ? "bg-green-600 text-white hover:bg-green-700"
-                      : "bg-orange-600 text-white hover:bg-orange-700"
+                      ? "bg-orange-600 text-white hover:bg-orange-700"
+                      : "bg-green-600 text-white hover:bg-green-700"
                   }
                 `}
               >
@@ -649,10 +673,15 @@ const AuditorEquipmentReview = ({
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Actualizando...
                   </>
+                ) : isReviewed ? (
+                  <>
+                    <RotateCcw className="w-4 h-4" />
+                    Marcar como Pendiente
+                  </>
                 ) : (
                   <>
                     <CheckCircle className="w-4 h-4" />
-                    {isReviewed ? "Actualizar Revision" : "Marcar como Revisado"}
+                    Marcar como Revisado
                   </>
                 )}
               </button>
@@ -703,6 +732,107 @@ const AuditorEquipmentReview = ({
           images={plateImageUrls}
           title={`Imagenes de Placa - ${equipment.name || "Equipo"}`}
         />
+      )}
+
+      {/* ========== MODAL DE CONFIRMACION DE CAMBIO DE ESTADO ========== */}
+      {showStatusModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setShowStatusModal(false)}
+          />
+
+          {/* Modal */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+            {/* Header del modal */}
+            <div className={`px-6 py-4 ${isReviewed ? "bg-orange-500" : "bg-green-500"}`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    {isReviewed ? (
+                      <RotateCcw className="w-5 h-5 text-white" />
+                    ) : (
+                      <CheckCircle className="w-5 h-5 text-white" />
+                    )}
+                  </div>
+                  <h3 className="text-lg font-bold text-white">
+                    {isReviewed ? "Marcar como Pendiente" : "Marcar como Revisado"}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowStatusModal(false)}
+                  className="p-1 hover:bg-white/20 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              </div>
+            </div>
+
+            {/* Contenido del modal */}
+            <div className="p-6">
+              {/* Info del equipo */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <p className="text-sm text-gray-500 mb-1">Equipo</p>
+                <p className="font-semibold text-gray-900">{equipName}</p>
+                <p className="text-sm text-gray-600 mt-1">{plant.name}</p>
+              </div>
+
+              {/* Mensaje de confirmacion */}
+              <div className="flex items-start gap-3 mb-6">
+                <div className={`p-2 rounded-full ${isReviewed ? "bg-orange-100" : "bg-green-100"}`}>
+                  <AlertCircle className={`w-5 h-5 ${isReviewed ? "text-orange-600" : "text-green-600"}`} />
+                </div>
+                <div>
+                  <p className="text-gray-700">
+                    {isReviewed
+                      ? "¿Estas seguro de cambiar el estado de este equipo a Pendiente?"
+                      : "¿Estas seguro de marcar este equipo como Revisado?"}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {isReviewed
+                      ? "El equipo volvera a aparecer en la lista de pendientes por revisar."
+                      : "El equipo se marcara como completado en la auditoria."}
+                  </p>
+                </div>
+              </div>
+
+              {/* Estado actual */}
+              <div className="flex items-center justify-between text-sm mb-6">
+                <span className="text-gray-500">Estado actual:</span>
+                <span
+                  className={`px-3 py-1 rounded-full font-medium ${
+                    isReviewed
+                      ? "bg-green-100 text-green-800"
+                      : "bg-orange-100 text-orange-800"
+                  }`}
+                >
+                  {isReviewed ? "Revisado" : "Pendiente"}
+                </span>
+              </div>
+
+              {/* Botones de accion */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowStatusModal(false)}
+                  className="flex-1 px-4 py-2.5 rounded-xl font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConfirmStatusChange}
+                  className={`flex-1 px-4 py-2.5 rounded-xl font-semibold text-white transition-colors ${
+                    isReviewed
+                      ? "bg-orange-600 hover:bg-orange-700"
+                      : "bg-green-600 hover:bg-green-700"
+                  }`}
+                >
+                  Confirmar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

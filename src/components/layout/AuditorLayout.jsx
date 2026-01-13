@@ -98,6 +98,15 @@ export const AuditorLayout = ({ user }) => {
     if (currentView !== "review") return;
 
     const handleKeyDown = (e) => {
+      // Ignorar teclas si el foco esta en un campo de texto editable
+      const activeElement = document.activeElement;
+      const isEditableField =
+        activeElement?.tagName === "TEXTAREA" ||
+        activeElement?.tagName === "INPUT" ||
+        activeElement?.isContentEditable;
+
+      if (isEditableField) return;
+
       if (e.key === "ArrowLeft") {
         handlePreviousEquipment();
       } else if (e.key === "ArrowRight") {
@@ -223,61 +232,71 @@ export const AuditorLayout = ({ user }) => {
     }
   };
 
-  const handleMarkReviewed = async () => {
+  const handleMarkReviewed = async (reviewData) => {
     const currentEquipment = equipment[selectedEquipmentIndex];
-    const equipName = currentEquipment.name || "este equipo";
+    const wasReviewed = currentEquipment.reviewStatus === "revisado";
+    const newStatus = reviewData.reviewStatus;
 
-    if (window.confirm(`Marcar "${equipName}" como revisado?`)) {
-      setSaving(true);
-      try {
-        console.log("Marcando equipo como revisado:", currentEquipment.id);
+    setSaving(true);
+    try {
+      console.log("Cambiando estado del equipo:", currentEquipment.id, "a", newStatus);
 
-        const reviewData = {
-          reviewStatus: "revisado",
-          reviewDate: new Date().toISOString(),
-          reviewedBy: user?.uid || null,
-          reviewerName: user?.displayName || user?.email || "Auditor",
+      // Agregar datos del usuario si se marca como revisado
+      const dataToSave = {
+        ...reviewData,
+        reviewedBy: newStatus === "revisado" ? (user?.uid || null) : null,
+        reviewerName: newStatus === "revisado" ? (user?.displayName || user?.email || "Auditor") : null,
+      };
+
+      const result = await updateEquipment(currentEquipment.id, dataToSave);
+
+      if (result.success) {
+        console.log("Estado actualizado correctamente");
+
+        // Actualizar el equipo en el estado local
+        const updatedEquipment = [...equipment];
+        updatedEquipment[selectedEquipmentIndex] = {
+          ...currentEquipment,
+          ...dataToSave,
         };
+        setEquipment(updatedEquipment);
 
-        const result = await updateEquipment(currentEquipment.id, reviewData);
-
-        if (result.success) {
-          console.log("Estado actualizado correctamente");
-
-          // Actualizar el equipo en el estado local
-          const updatedEquipment = [...equipment];
-          updatedEquipment[selectedEquipmentIndex] = {
-            ...currentEquipment,
-            ...reviewData,
-          };
-          setEquipment(updatedEquipment);
-
-          // Actualizar conteo
-          const counts = { ...equipmentCountByPlant };
-          if (counts[selectedPlant.id]) {
+        // Actualizar conteo segun el cambio de estado
+        const counts = { ...equipmentCountByPlant };
+        if (counts[selectedPlant.id]) {
+          if (newStatus === "revisado" && !wasReviewed) {
+            // Cambio de pendiente a revisado
             counts[selectedPlant.id].reviewed += 1;
             counts[selectedPlant.id].pending -= 1;
-            setEquipmentCountByPlant(counts);
+          } else if (newStatus === "pendiente" && wasReviewed) {
+            // Cambio de revisado a pendiente
+            counts[selectedPlant.id].reviewed -= 1;
+            counts[selectedPlant.id].pending += 1;
           }
-
-          showSuccess("Equipo marcado como revisado");
-
-          // Avanzar al siguiente equipo si hay mas
-          if (selectedEquipmentIndex < equipment.length - 1) {
-            setTimeout(() => {
-              handleNextEquipment();
-            }, 1000);
-          }
-        } else {
-          console.error("Error al marcar como revisado:", result.error);
-          alert("Error al marcar como revisado: " + result.error);
+          setEquipmentCountByPlant(counts);
         }
-      } catch (error) {
-        console.error("Excepcion al marcar como revisado:", error);
-        alert("Error al actualizar el estado");
-      } finally {
-        setSaving(false);
+
+        showSuccess(
+          newStatus === "revisado"
+            ? "Equipo marcado como revisado"
+            : "Equipo marcado como pendiente"
+        );
+
+        // Avanzar al siguiente equipo si se marco como revisado y hay mas
+        if (newStatus === "revisado" && selectedEquipmentIndex < equipment.length - 1) {
+          setTimeout(() => {
+            handleNextEquipment();
+          }, 1000);
+        }
+      } else {
+        console.error("Error al cambiar estado:", result.error);
+        alert("Error al cambiar estado: " + result.error);
       }
+    } catch (error) {
+      console.error("Excepcion al cambiar estado:", error);
+      alert("Error al actualizar el estado");
+    } finally {
+      setSaving(false);
     }
   };
 
