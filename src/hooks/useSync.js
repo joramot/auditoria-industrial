@@ -113,7 +113,7 @@ const useSync = (isOffline, onSyncComplete, setSuccessMessage, setShowSuccessMes
       return { success: true, synced: 0 };
     }
 
-    console.log('🔄 Iniciando sincronización manual...');
+    // console.log('🔄 Iniciando sincronización manual...');
 
     // Mostrar modal de progreso
     setShowSyncProgress(true);
@@ -177,7 +177,7 @@ const useSync = (isOffline, onSyncComplete, setSuccessMessage, setShowSuccessMes
      * @param {Object} progress - Datos de progreso
      */
     const handleSyncProgress = (progress) => {
-      console.log('📊 Progreso de sincronización:', progress);
+      // console.log('📊 Progreso de sincronización:', progress);
       
       if (progress.total > 0) {
         setSyncProgress(progress);
@@ -208,7 +208,7 @@ const useSync = (isOffline, onSyncComplete, setSuccessMessage, setShowSuccessMes
     
     if (isComplete && showSyncProgress) {
       const timer = setTimeout(() => {
-        console.log('✅ Cerrando modal de sincronización');
+        // console.log('✅ Cerrando modal de sincronización');
         
         // Ocultar modal
         setShowSyncProgress(false);

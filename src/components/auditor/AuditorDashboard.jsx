@@ -113,11 +113,11 @@ const AuditorDashboard = ({ user }) => {
   const loadPlants = async () => {
     setLoading(true);
     try {
-      console.log('📋 Cargando plantas...');
+      // console.log('📋 Cargando plantas...');
       const result = await getPlants();
-      
+
       if (result.success && result.data) {
-        console.log('✅ Plantas cargadas:', result.data.length);
+        // console.log('✅ Plantas cargadas:', result.data.length);
         setPlants(result.data);
       } else {
         console.error('❌ Error al cargar plantas:', result.error);
@@ -138,7 +138,7 @@ const AuditorDashboard = ({ user }) => {
    */
   const loadAllEquipment = async () => {
     try {
-      console.log('📦 Cargando todos los equipos...');
+      // console.log('📦 Cargando todos los equipos...');
       const allEquipmentData = [];
       
       for (const plant of plants) {
@@ -148,7 +148,7 @@ const AuditorDashboard = ({ user }) => {
         }
       }
       
-      console.log('✅ Total equipos cargados:', allEquipmentData.length);
+      // console.log('✅ Total equipos cargados:', allEquipmentData.length);
       setAllEquipment(allEquipmentData);
     } catch (error) {
       console.error('❌ Error al cargar equipos:', error);
@@ -161,7 +161,7 @@ const AuditorDashboard = ({ user }) => {
    */
   const loadEquipmentCounts = async () => {
     try {
-      console.log('🔢 Contando equipos por planta...');
+      // console.log('🔢 Contando equipos por planta...');
       const counts = {};
       
       for (const plant of plants) {
@@ -179,15 +179,15 @@ const AuditorDashboard = ({ user }) => {
             pending: pending
           };
           
-          console.log(`  ✅ ${plant.name}: ${total} total, ${reviewed} revisados, ${pending} pendientes`);
+          // console.log(`  ✅ ${plant.name}: ${total} total, ${reviewed} revisados, ${pending} pendientes`);
         } else {
           counts[plant.id] = { total: 0, reviewed: 0, pending: 0 };
-          console.log(`  ℹ️ ${plant.name}: Sin equipos`);
+          // console.log(`  ℹ️ ${plant.name}: Sin equipos`);
         }
       }
       
       setEquipmentCountByPlant(counts);
-      console.log('✅ Conteo completado');
+      // console.log('✅ Conteo completado');
     } catch (error) {
       console.error('❌ Error al contar equipos:', error);
     }
@@ -200,12 +200,12 @@ const AuditorDashboard = ({ user }) => {
   const loadEquipmentForPlant = async (plant) => {
     setLoading(true);
     try {
-      console.log(`📦 Cargando equipos de planta: ${plant.name}`);
+      // console.log(`📦 Cargando equipos de planta: ${plant.name}`);
       const result = await getEquipmentByPlant(plant.id);
-      
+
       if (result.success && result.data) {
         const sortedEquipment = sortEquipment(result.data);
-        console.log('✅ Equipos cargados y ordenados:', sortedEquipment.length);
+        // console.log('✅ Equipos cargados y ordenados:', sortedEquipment.length);
         setEquipment(sortedEquipment);
       } else {
         console.error('❌ Error:', result.error);
@@ -232,12 +232,12 @@ const AuditorDashboard = ({ user }) => {
     setSaving(true);
     try {
       const currentEquipment = equipment[selectedEquipmentIndex];
-      console.log('💾 Guardando cambios en equipo:', currentEquipment.id);
-      
+      // console.log('💾 Guardando cambios en equipo:', currentEquipment.id);
+
       const result = await updateEquipment(selectedPlant.id, currentEquipment.id, updatedData);
-      
+
       if (result.success) {
-        console.log('✅ Equipo actualizado correctamente');
+        // console.log('✅ Equipo actualizado correctamente');
         
         // Actualizar el equipo en el estado local
         const updatedEquipment = [...equipment];
@@ -271,7 +271,7 @@ const AuditorDashboard = ({ user }) => {
     if (window.confirm(`¿Marcar "${equipName}" como revisado?`)) {
       setSaving(true);
       try {
-        console.log('✅ Marcando equipo como revisado:', currentEquipment.id);
+        // console.log('✅ Marcando equipo como revisado:', currentEquipment.id);
         
         const result = await updateEquipment(
           selectedPlant.id,
@@ -280,8 +280,8 @@ const AuditorDashboard = ({ user }) => {
         );
         
         if (result.success) {
-          console.log('✅ Estado actualizado correctamente');
-          
+          // console.log('✅ Estado actualizado correctamente');
+
           // Actualizar el equipo en el estado local
           const updatedEquipment = [...equipment];
           updatedEquipment[selectedEquipmentIndex] = {
@@ -320,7 +320,7 @@ const AuditorDashboard = ({ user }) => {
    * Actualiza estados y va al dashboard de la planta
    */
   const handleSelectPlant = async (plant) => {
-    console.log('🏭 Seleccionando planta:', plant.name);
+    // console.log('🏭 Seleccionando planta:', plant.name);
     setSelectedPlant(plant);
     await loadEquipmentForPlant(plant);
     setItemsPerPage(null); // Resetear cantidad de items
@@ -331,18 +331,18 @@ const AuditorDashboard = ({ user }) => {
    * Navega del dashboard de planta a la lista de equipos
    */
   const handleViewEquipment = () => {
-    console.log('📦 Navegando a lista de equipos');
+    // console.log('📦 Navegando a lista de equipos');
     setCurrentView('equipment');
   };
 
   const handleSelectEquipment = (index) => {
-    console.log('📦 Seleccionando equipo índice:', index);
+    // console.log('📦 Seleccionando equipo índice:', index);
     setSelectedEquipmentIndex(index);
     setCurrentView('review');
   };
 
   const handleBackToPlants = () => {
-    console.log('⬅️ Volviendo a lista de plantas');
+    // console.log('⬅️ Volviendo a lista de plantas');
     setCurrentView('plants');
     setSelectedPlant(null);
     setEquipment([]);
@@ -353,7 +353,7 @@ const AuditorDashboard = ({ user }) => {
   };
 
   const handleBackToEquipmentList = () => {
-    console.log('⬅️ Volviendo a lista de equipos');
+    // console.log('⬅️ Volviendo a lista de equipos');
     setCurrentView('equipment');
   };
 

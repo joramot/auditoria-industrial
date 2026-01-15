@@ -1,18 +1,18 @@
 // useAuth.js - Custom React Hook para Autenticación
-// Versión: 1.1 - CORREGIDO
+// Versión: 2.0 - Sin logs sensibles
 // Hook personalizado que facilita el uso de autenticación en cualquier componente
 
 import { useState, useEffect } from 'react';
 import { onAuthChange, getCurrentUser } from '../services/auth/authService';
 
 /**
- * 🎣 HOOK PERSONALIZADO DE AUTENTICACIÓN
- * 
+ * HOOK PERSONALIZADO DE AUTENTICACIÓN
+ *
  * Uso en componentes:
  * ```javascript
  * const { user, isAuthenticated, isLoading } = useAuth();
  * ```
- * 
+ *
  * @returns {Object} Estado de autenticación
  *   - user: Objeto del usuario actual (o null)
  *   - isAuthenticated: Boolean indicando si hay usuario autenticado
@@ -24,12 +24,8 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('🎣 Hook useAuth: Inicializando...');
-
     // Suscribirse a cambios de autenticación
     const unsubscribe = onAuthChange((authState) => {
-      console.log('🎣 Hook useAuth: Estado actualizado', authState);
-      
       setUser(authState.user);
       setAuthenticated(authState.isAuthenticated);
       setLoading(false);
@@ -37,7 +33,6 @@ export const useAuth = () => {
 
     // Cleanup: cancelar suscripción al desmontar
     return () => {
-      console.log('🎣 Hook useAuth: Limpiando suscripción');
       unsubscribe();
     };
   }, []);
@@ -50,14 +45,14 @@ export const useAuth = () => {
 };
 
 /**
- * 🔒 HOOK PARA REQUERIR AUTENTICACIÓN
- * 
+ * HOOK PARA REQUERIR AUTENTICACIÓN
+ *
  * Redirige al login si no está autenticado
- * 
+ *
  * Uso:
  * ```javascript
  * const { user, loading } = useRequireAuth();
- * 
+ *
  * if (loading) return <Loading />;
  * // Usuario garantizado aquí
  * ```
@@ -67,7 +62,6 @@ export const useRequireAuth = (redirectUrl = '/login') => {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      console.log('🔒 useRequireAuth: Usuario no autenticado, redirigiendo...');
       // En una app con router, aquí redirigirías:
       // navigate(redirectUrl);
     }
@@ -80,10 +74,10 @@ export const useRequireAuth = (redirectUrl = '/login') => {
 };
 
 /**
- * 👤 OBTENER INFORMACIÓN DEL USUARIO ACTUAL
- * 
+ * OBTENER INFORMACIÓN DEL USUARIO ACTUAL
+ *
  * Versión síncrona que obtiene el usuario del estado actual de Firebase
- * 
+ *
  * @returns {Object|null} Usuario actual o null
  */
 export const useCurrentUser = () => {
@@ -101,10 +95,10 @@ export const useCurrentUser = () => {
 };
 
 /**
- * ✅ VERIFICAR SI USUARIO ESTÁ AUTENTICADO
- * 
+ * VERIFICAR SI USUARIO ESTÁ AUTENTICADO
+ *
  * Versión que verifica autenticación basándose en getCurrentUser
- * 
+ *
  * @returns {Boolean} true si está autenticado
  */
 export const useIsAuthenticated = () => {

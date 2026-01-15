@@ -55,10 +55,10 @@ export const useAuthWithRole = () => {
   // ============================================
   
   useEffect(() => {
-    console.log('🔐 useAuthWithRole: Inicializando...');
+    // console.log('🔐 useAuthWithRole: Inicializando...');
     
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log('🔐 useAuthWithRole: Usuario:', firebaseUser?.email || 'ninguno');
+      // console.log('🔐 useAuthWithRole: Usuario:', firebaseUser?.email || 'ninguno');
       
       setUser(firebaseUser);
       setLoading(false);
@@ -74,7 +74,7 @@ export const useAuthWithRole = () => {
       try {
         setRoleLoading(true);
         const roleData = await getUserRole(firebaseUser.uid);
-        console.log('🔐 useAuthWithRole: Rol obtenido:', roleData?.role);
+        // console.log('🔐 useAuthWithRole: Rol obtenido:', roleData?.role);
         setUserRole(roleData);
         setError(null);
       } catch (err) {
@@ -87,7 +87,7 @@ export const useAuthWithRole = () => {
     });
 
     return () => {
-      console.log('🔐 useAuthWithRole: Limpiando suscripción');
+      // console.log('🔐 useAuthWithRole: Limpiando suscripción');
       unsubscribe();
     };
   }, []);

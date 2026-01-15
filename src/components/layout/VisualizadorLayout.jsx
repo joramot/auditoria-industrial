@@ -25,7 +25,7 @@ export const VisualizadorLayout = ({ user, roleName }) => {
     }
   };
 
-  console.log('👁️ Renderizando interfaz de VISUALIZADOR');
+  // console.log('👁️ Renderizando interfaz de VISUALIZADOR');
 
   return (
     <div className="h-screen flex flex-col bg-gray-100">

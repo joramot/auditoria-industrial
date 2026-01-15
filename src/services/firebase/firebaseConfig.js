@@ -34,9 +34,9 @@ export const storage = getStorage(app);
 export const auth = getAuth(app);
 
 // Log de inicialización
-console.log('🔥 Firebase inicializado correctamente');
-console.log('✅ Firestore:', db ? 'OK' : 'Error');
-console.log('✅ Storage:', storage ? 'OK' : 'Error');
-console.log('✅ Auth:', auth ? 'OK' : 'Error');
+// console.log('🔥 Firebase inicializado correctamente');
+// console.log('✅ Firestore:', db ? 'OK' : 'Error');
+// console.log('✅ Storage:', storage ? 'OK' : 'Error');
+// console.log('✅ Auth:', auth ? 'OK' : 'Error');
 
 export default app;

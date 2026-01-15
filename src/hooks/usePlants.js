@@ -57,7 +57,7 @@ export const usePlants = (isOffline = false, isAuthenticated = false) => {
   const loadPlants = useCallback(async () => {
     // Usar ref para evitar llamadas duplicadas (no causa re-render)
     if (isLoadingRef.current) {
-      console.log("⏭️ Ya se están cargando las plantas, omitiendo llamada duplicada");
+      // console.log("⏭️ Ya se están cargando las plantas, omitiendo llamada duplicada");
       return;
     }
 
@@ -67,13 +67,13 @@ export const usePlants = (isOffline = false, isAuthenticated = false) => {
 
       if (isOffline) {
         // MODO OFFLINE: Cargar solo de IndexedDB
-        console.log("📴 Modo OFFLINE: Cargando plantas desde IndexedDB...");
+        // console.log("📴 Modo OFFLINE: Cargando plantas desde IndexedDB...");
         
         const localResult = await getPlantsLocal();
         
         if (localResult.success) {
           const localPlants = localResult.data;
-          console.log(`✅ ${localPlants.length} plantas cargadas desde IndexedDB`);
+          // console.log(`✅ ${localPlants.length} plantas cargadas desde IndexedDB`);
           
           // Contar equipos de cada planta
           for (const plant of localPlants) {
@@ -93,7 +93,7 @@ export const usePlants = (isOffline = false, isAuthenticated = false) => {
         
       } else {
         // MODO ONLINE: Cargar de Firebase y combinar con local
-        console.log("📡 Modo ONLINE: Cargando plantas...");
+        // console.log("📡 Modo ONLINE: Cargando plantas...");
         
         // 1. Cargar plantas de Firebase
         const result = await getPlants();
@@ -101,15 +101,15 @@ export const usePlants = (isOffline = false, isAuthenticated = false) => {
         
         if (result.success) {
           firebasePlants = result.data;
-          console.log(`✅ ${firebasePlants.length} plantas cargadas desde Firebase`);
+          // console.log(`✅ ${firebasePlants.length} plantas cargadas desde Firebase`);
           
           // Contar equipos de cada planta
-          console.log("📊 Contando equipos de cada planta...");
+          // console.log("📊 Contando equipos de cada planta...");
           for (const plant of firebasePlants) {
             const equipResult = await getEquipmentByPlant(plant.id);
             if (equipResult.success) {
               plant.equipmentCount = equipResult.data.length;
-              console.log(`  ✅ Planta "${plant.name}": ${plant.equipmentCount} equipos`);
+              // console.log(`  ✅ Planta "${plant.name}": ${plant.equipmentCount} equipos`);
             } else {
               plant.equipmentCount = 0;
             }
@@ -124,7 +124,7 @@ export const usePlants = (isOffline = false, isAuthenticated = false) => {
         
         if (localResult.success) {
           localPlants = localResult.data;
-          console.log(`✅ ${localPlants.length} plantas en IndexedDB`);
+          // console.log(`✅ ${localPlants.length} plantas en IndexedDB`);
           
           // Contar equipos locales
           for (const plant of localPlants) {
@@ -149,11 +149,11 @@ export const usePlants = (isOffline = false, isAuthenticated = false) => {
           return !firebaseIds.has(plant.id);
         });
 
-        console.log(`📊 Plantas únicas locales (no sincronizadas): ${uniqueLocalPlants.length}`);
+        // console.log(`📊 Plantas únicas locales (no sincronizadas): ${uniqueLocalPlants.length}`);
 
         const allPlants = [...firebasePlants, ...uniqueLocalPlants];
         
-        console.log(`✅ Total de plantas a mostrar: ${allPlants.length}`);
+        // console.log(`✅ Total de plantas a mostrar: ${allPlants.length}`);
         setPlants(allPlants);
       }
 
@@ -185,7 +185,7 @@ export const usePlants = (isOffline = false, isAuthenticated = false) => {
 
       if (isOffline) {
         // MODO OFFLINE: Guardar localmente
-        console.log("Modo OFFLINE: Guardando planta localmente...");
+        // console.log("Modo OFFLINE: Guardando planta localmente...");
 
         const localResult = await savePlantLocal(plantData);
 
@@ -199,7 +199,7 @@ export const usePlants = (isOffline = false, isAuthenticated = false) => {
           id: localResult.data.id,
         });
 
-        console.log("Planta guardada localmente");
+        // console.log("Planta guardada localmente");
 
         return {
           success: true,
@@ -209,7 +209,7 @@ export const usePlants = (isOffline = false, isAuthenticated = false) => {
 
       } else {
         // MODO ONLINE: Guardar en Firebase
-        console.log("📡 Modo ONLINE: Guardando planta en Firebase...");
+        // console.log("📡 Modo ONLINE: Guardando planta en Firebase...");
 
         const result = await addPlant(plantData);
 
@@ -224,7 +224,7 @@ export const usePlants = (isOffline = false, isAuthenticated = false) => {
           syncStatus: 'synced',
         });
 
-        console.log("Planta guardada y sincronizada");
+        // console.log("Planta guardada y sincronizada");
 
         return {
           success: true,
@@ -245,7 +245,7 @@ export const usePlants = (isOffline = false, isAuthenticated = false) => {
   // 🎯 SELECCIONAR PLANTA
   // ============================================
   const selectPlant = useCallback((plant) => {
-    console.log("🎯 Planta seleccionada:", plant?.name || "ninguna");
+    // console.log("🎯 Planta seleccionada:", plant?.name || "ninguna");
     setSelectedPlant(plant);
   }, []);
 
@@ -291,7 +291,7 @@ export const usePlants = (isOffline = false, isAuthenticated = false) => {
     // 1. El usuario acaba de autenticarse (justAuthenticated)
     // 2. O es la primera carga y hay usuario autenticado
     if (justAuthenticated) {
-      console.log("🔄 Usuario autenticado, recargando plantas...");
+      // console.log("🔄 Usuario autenticado, recargando plantas...");
       loadPlants();
     }
   }, [isAuthenticated, loadPlants]);

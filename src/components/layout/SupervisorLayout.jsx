@@ -92,7 +92,7 @@ export const SupervisorLayout = ({
   setShowSuccessMessage,
   setCurrentView,
 }) => {
-  console.log(`🎭 Renderizando interfaz de ${isAdmin ? "ADMIN" : "SUPERVISOR"} v2.0`);
+  // console.log(`🎭 Renderizando interfaz de ${isAdmin ? "ADMIN" : "SUPERVISOR"} v2.0`);
 
   // Estado para el modal de eliminación
   const [equipmentToDelete, setEquipmentToDelete] = useState(null);
@@ -124,8 +124,8 @@ export const SupervisorLayout = ({
   // Handler para seleccionar equipo (carga datos en formulario)
   const handleSelectEquipment = useCallback(
     (equip) => {
-      console.log("\n🔍 CARGANDO EQUIPO PARA EDITAR:");
-      console.log("  Equipo ID:", equip.id);
+      // console.log("\n🔍 CARGANDO EQUIPO PARA EDITAR:");
+      // console.log("  Equipo ID:", equip.id);
 
       setSelectedEquipment(equip);
       setFormData({
@@ -146,7 +146,7 @@ export const SupervisorLayout = ({
 
       // Cargar imágenes existentes
       if (equip.images) {
-        console.log("  ✅ Equipo tiene imágenes:", equip.images);
+        // console.log("  ✅ Equipo tiene imágenes:", equip.images);
 
         const existingImages = {
           equipment: [],
@@ -161,21 +161,21 @@ export const SupervisorLayout = ({
               uploadDate: img.uploadDate,
               isNew: false,
             }));
-            console.log(
-              `  ✅ ${category}: ${existingImages[category].length} imágenes cargadas`
-            );
+            // console.log(
+            //   `  ✅ ${category}: ${existingImages[category].length} imágenes cargadas`
+            // );
           }
         });
 
         setCapturedImages(existingImages);
       } else {
-        console.log("  ⚠️ Equipo NO tiene campo images");
+        // console.log("  ⚠️ Equipo NO tiene campo images");
         setCapturedImages({ equipment: [], plate: [] });
       }
 
       // Cargar PDFs existentes
       if (equip.pdfs) {
-        console.log("  ✅ Equipo tiene PDFs:", equip.pdfs);
+        // console.log("  ✅ Equipo tiene PDFs:", equip.pdfs);
 
         const existingPDFs = {
           factura: [],
@@ -192,15 +192,15 @@ export const SupervisorLayout = ({
               uploadDate: pdf.uploadDate,
               isNew: false,
             }));
-            console.log(
-              `  ✅ ${category}: ${existingPDFs[category].length} PDFs cargados`
-            );
+            // console.log(
+            //   `  ✅ ${category}: ${existingPDFs[category].length} PDFs cargados`
+            // );
           }
         });
 
         setCapturedPDFs(existingPDFs);
       } else {
-        console.log("  ⚠️ Equipo NO tiene campo pdfs");
+        // console.log("  ⚠️ Equipo NO tiene campo pdfs");
         setCapturedPDFs({ factura: [], pedimento: [] });
       }
 
@@ -211,14 +211,14 @@ export const SupervisorLayout = ({
 
   // Handler para eliminar equipo - abre el modal de confirmación
   const handleDeleteEquipment = useCallback((equip) => {
-    console.log("🗑️ Abriendo modal de eliminación para equipo:", equip.id);
+    // console.log("🗑️ Abriendo modal de eliminación para equipo:", equip.id);
     setEquipmentToDelete(equip);
     setShowDeleteModal(true);
   }, []);
 
   // Handler para ver detalle de equipo - abre el modal de consulta
   const handleViewEquipment = useCallback((equip) => {
-    console.log("👁️ Abriendo modal de consulta para equipo:", equip.id);
+    // console.log("👁️ Abriendo modal de consulta para equipo:", equip.id);
     setEquipmentToView(equip);
     setShowDetailModal(true);
   }, []);
@@ -231,7 +231,7 @@ export const SupervisorLayout = ({
 
   // Handler cuando se elimina exitosamente un equipo
   const handleEquipmentDeletedFromTable = useCallback((result) => {
-    console.log("✅ Equipo eliminado:", result);
+    // console.log("✅ Equipo eliminado:", result);
     setShowDeleteModal(false);
     setEquipmentToDelete(null);
 

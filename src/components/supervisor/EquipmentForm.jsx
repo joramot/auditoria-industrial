@@ -398,7 +398,7 @@ export const EquipmentForm = ({
             equipmentName={selectedEquipment.name}
             isOnline={!isOffline}
             onSuccess={(result) => {
-              console.log("✅ Equipo eliminado:", result);
+              // console.log("✅ Equipo eliminado:", result);
               if (onEquipmentDeleted) onEquipmentDeleted();
             }}
             onError={(error) => console.error("❌ Error:", error)}

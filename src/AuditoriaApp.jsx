@@ -170,7 +170,7 @@ const AuditoriaApp = () => {
   
   // Login requerido
   if (!isAuthenticated) {
-    return <LoginScreen onLoginSuccess={() => console.log('✅ Login exitoso')} />;
+    return <LoginScreen onLoginSuccess={() => { /* console.log('✅ Login exitoso') */ }} />;
   }
 
   // Loading de Rol

@@ -31,13 +31,13 @@ const initDB = () => {
     };
 
     request.onsuccess = () => {
-      console.log("✅ IndexedDB abierta correctamente");
+      // console.log("✅ IndexedDB abierta correctamente");
       resolve(request.result);
     };
 
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
-      console.log("🔧 Creando/Actualizando estructura de IndexedDB...");
+      // console.log("🔧 Creando/Actualizando estructura de IndexedDB...");
 
       // Store para Plantas
       if (!db.objectStoreNames.contains(STORES.PLANTS)) {
@@ -46,7 +46,7 @@ const initDB = () => {
         });
         plantStore.createIndex("name", "name", { unique: false });
         plantStore.createIndex("syncStatus", "syncStatus", { unique: false });
-        console.log("✅ Store 'plants' creado");
+        // console.log("✅ Store 'plants' creado");
       }
 
       // Store para Equipos
@@ -58,7 +58,7 @@ const initDB = () => {
         equipmentStore.createIndex("syncStatus", "syncStatus", {
           unique: false,
         });
-        console.log("✅ Store 'equipment' creado");
+        // console.log("✅ Store 'equipment' creado");
       }
 
       // Store para Operaciones Pendientes de Sincronización
@@ -70,7 +70,7 @@ const initDB = () => {
         syncStore.createIndex("type", "type", { unique: false });
         syncStore.createIndex("timestamp", "timestamp", { unique: false });
         syncStore.createIndex("status", "status", { unique: false });
-        console.log("✅ Store 'pendingSync' creado");
+        // console.log("✅ Store 'pendingSync' creado");
       }
 
       // Store para Imágenes (Base64)
@@ -81,7 +81,7 @@ const initDB = () => {
         imageStore.createIndex("equipmentId", "equipmentId", { unique: false });
         imageStore.createIndex("category", "category", { unique: false });
         imageStore.createIndex("syncStatus", "syncStatus", { unique: false });
-        console.log("✅ Store 'images' creado");
+        // console.log("✅ Store 'images' creado");
       }
 
       // ========== NUEVO: Store para PDFs (Base64) ========== ✨
@@ -92,7 +92,7 @@ const initDB = () => {
         pdfStore.createIndex("equipmentId", "equipmentId", { unique: false });
         pdfStore.createIndex("category", "category", { unique: false });
         pdfStore.createIndex("syncStatus", "syncStatus", { unique: false });
-        console.log("✅ Store 'pdfs' creado");
+        // console.log("✅ Store 'pdfs' creado");
       }
     };
   });
@@ -120,7 +120,7 @@ const savePlantLocal = async (plantData) => {
     };
 
     await store.put(plantWithSync);
-    console.log("✅ Planta guardada localmente:", plantWithSync.id);
+    // console.log("✅ Planta guardada localmente:", plantWithSync.id);
 
     return { success: true, data: plantWithSync };
   } catch (error) {
@@ -152,7 +152,7 @@ const saveEquipmentLocal = async (equipmentData, plantId) => {
     };
 
     await store.put(equipmentWithSync);
-    console.log("✅ Equipo guardado localmente:", equipmentWithSync.id);
+    // console.log("✅ Equipo guardado localmente:", equipmentWithSync.id);
 
     return { success: true, data: equipmentWithSync };
   } catch (error) {
@@ -186,7 +186,7 @@ const saveImageLocal = async (imageFile, category, equipmentId) => {
     };
 
     await store.put(imageData);
-    console.log("✅ Imagen guardada localmente:", imageData.id);
+    // console.log("✅ Imagen guardada localmente:", imageData.id);
 
     return { success: true, data: imageData };
   } catch (error) {
@@ -220,7 +220,7 @@ const savePDFLocal = async (pdfFile, category, equipmentId) => {
     };
 
     await store.put(pdfData);
-    console.log("✅ PDF guardado localmente:", pdfData.id);
+    // console.log("✅ PDF guardado localmente:", pdfData.id);
 
     return { success: true, data: pdfData };
   } catch (error) {
@@ -242,7 +242,7 @@ const getPlantsLocal = async () => {
       const request = store.getAll();
 
       request.onsuccess = () => {
-        console.log("✅ Plantas locales obtenidas:", request.result.length);
+        // console.log("✅ Plantas locales obtenidas:", request.result.length);
         resolve({ success: true, data: request.result });
       };
 
@@ -271,10 +271,10 @@ const getEquipmentByPlantLocal = async (plantId) => {
       const request = index.getAll(plantId);
 
       request.onsuccess = () => {
-        console.log(
-          `✅ Equipos locales de planta ${plantId}:`,
-          request.result.length
-        );
+        // console.log(
+        //   `✅ Equipos locales de planta ${plantId}:`,
+        //   request.result.length
+        // );
         resolve({ success: true, data: request.result });
       };
 
@@ -303,10 +303,10 @@ const getImagesByEquipmentLocal = async (equipmentId) => {
       const request = index.getAll(equipmentId);
 
       request.onsuccess = () => {
-        console.log(
-          `✅ Imágenes locales de equipo ${equipmentId}:`,
-          request.result.length
-        );
+        // console.log(
+        //   `✅ Imágenes locales de equipo ${equipmentId}:`,
+        //   request.result.length
+        // );
         resolve({ success: true, data: request.result });
       };
 
@@ -333,10 +333,10 @@ const getPDFsByEquipmentLocal = async (equipmentId) => {
       const request = index.getAll(equipmentId);
 
       request.onsuccess = () => {
-        console.log(
-          `✅ PDFs locales de equipo ${equipmentId}:`,
-          request.result.length
-        );
+        // console.log(
+        //   `✅ PDFs locales de equipo ${equipmentId}:`,
+        //   request.result.length
+        // );
         resolve({ success: true, data: request.result });
       };
 
@@ -364,7 +364,7 @@ const getPDFsByCategoryLocal = async (equipmentId, category) => {
 
       request.onsuccess = () => {
         const filtered = request.result.filter(pdf => pdf.equipmentId === equipmentId);
-        console.log(`✅ PDFs de ${category} para equipo ${equipmentId}:`, filtered.length);
+        // console.log(`✅ PDFs de ${category} para equipo ${equipmentId}:`, filtered.length);
         resolve({ success: true, data: filtered });
       };
 
@@ -398,7 +398,7 @@ const addToSyncQueue = async (operationType, data) => {
       const request = store.add(syncItem);
 
       request.onsuccess = () => {
-        console.log("✅ Operación agregada a cola de sincronización:", operationType);
+        // console.log("✅ Operación agregada a cola de sincronización:", operationType);
         resolve({ success: true, id: request.result });
       };
 
@@ -427,7 +427,7 @@ const getPendingSyncOperations = async () => {
       const request = index.getAll("pending");
 
       request.onsuccess = () => {
-        console.log("✅ Operaciones pendientes:", request.result.length);
+        // console.log("✅ Operaciones pendientes:", request.result.length);
         resolve({ success: true, data: request.result });
       };
 
@@ -461,7 +461,7 @@ const markAsSynced = async (syncId) => {
           const updateRequest = store.put(syncItem);
 
           updateRequest.onsuccess = () => {
-            console.log("✅ Operación marcada como sincronizada:", syncId);
+            // console.log("✅ Operación marcada como sincronizada:", syncId);
             resolve({ success: true });
           };
 
@@ -503,7 +503,7 @@ const markPDFAsSynced = async (pdfId) => {
           const updateRequest = store.put(pdfItem);
 
           updateRequest.onsuccess = () => {
-            console.log("✅ PDF marcado como sincronizado:", pdfId);
+            // console.log("✅ PDF marcado como sincronizado:", pdfId);
             resolve({ success: true });
           };
 
@@ -537,7 +537,7 @@ const deletePDFLocal = async (pdfId) => {
       const request = store.delete(pdfId);
 
       request.onsuccess = () => {
-        console.log("✅ PDF eliminado localmente:", pdfId);
+        // console.log("✅ PDF eliminado localmente:", pdfId);
         resolve({ success: true });
       };
 
@@ -572,7 +572,7 @@ const deleteEquipmentPDFsLocal = async (equipmentId) => {
       deletedCount++;
     }
 
-    console.log(`✅ ${deletedCount} PDFs eliminados del equipo ${equipmentId}`);
+    // console.log(`✅ ${deletedCount} PDFs eliminados del equipo ${equipmentId}`);
     return { success: true, deletedCount };
   } catch (error) {
     return { success: false, error: error.message };
@@ -634,7 +634,7 @@ const cleanupSyncedOperations = async () => {
           cursor.delete();
           cursor.continue();
         } else {
-          console.log("✅ Operaciones sincronizadas limpiadas");
+          // console.log("✅ Operaciones sincronizadas limpiadas");
           resolve({ success: true });
         }
       };
@@ -746,7 +746,7 @@ const clearAllLocalData = async () => {
       const transaction = db.transaction([storeName], "readwrite");
       const store = transaction.objectStore(storeName);
       await store.clear();
-      console.log(`✅ Store '${storeName}' limpiado`);
+      // console.log(`✅ Store '${storeName}' limpiado`);
     }
 
     return { success: true };

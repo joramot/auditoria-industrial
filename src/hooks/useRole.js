@@ -34,10 +34,10 @@ export const useRole = () => {  // ← SIN PARÁMETROS
   // ============================================
   
   useEffect(() => {
-    console.log('🎭 useRole: Configurando detección de usuario...');
+    // console.log('🎭 useRole: Configurando detección de usuario...');
     
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      console.log('🎭 useRole: Usuario detectado:', user?.email || 'ninguno');
+      // console.log('🎭 useRole: Usuario detectado:', user?.email || 'ninguno');
       setCurrentUser(user);
       
       // Si no hay usuario, resetear todo
@@ -58,19 +58,19 @@ export const useRole = () => {  // ← SIN PARÁMETROS
     const loadUserRole = async () => {
       // Si no hay usuario autenticado, no hacer nada
       if (!currentUser) {
-        console.log('🎭 useRole: No hay usuario autenticado');
+        // console.log('🎭 useRole: No hay usuario autenticado');
         setUserRole(null);
         setLoading(false);
         return;
       }
 
       try {
-        console.log('🎭 useRole: Cargando rol para usuario:', currentUser.uid);
+        // console.log('🎭 useRole: Cargando rol para usuario:', currentUser.uid);
         setLoading(true);
         
         const roleData = await getUserRole(currentUser.uid);
         
-        console.log('🎭 useRole: Rol obtenido:', roleData);
+        // console.log('🎭 useRole: Rol obtenido:', roleData);
         
         setUserRole(roleData);
         setError(null);

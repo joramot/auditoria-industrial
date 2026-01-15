@@ -40,7 +40,7 @@ export const Header = ({
   const handleLogout = async () => {
     try {
       await logout();
-      console.log("✅ Sesión cerrada exitosamente");
+      // console.log("✅ Sesión cerrada exitosamente");
     } catch (error) {
       console.error("❌ Error al cerrar sesión:", error);
     }

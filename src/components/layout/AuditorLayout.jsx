@@ -126,11 +126,11 @@ export const AuditorLayout = ({ user }) => {
   const loadPlants = async () => {
     setLoading(true);
     try {
-      console.log("Cargando plantas...");
+      // console.log("Cargando plantas...");
       const result = await getPlants();
 
       if (result.success && result.data) {
-        console.log("Plantas cargadas:", result.data.length);
+        // console.log("Plantas cargadas:", result.data.length);
         setPlants(result.data);
       } else {
         console.error("Error al cargar plantas:", result.error);
@@ -146,7 +146,7 @@ export const AuditorLayout = ({ user }) => {
 
   const loadEquipmentCounts = async () => {
     try {
-      console.log("Contando equipos por planta...");
+      // console.log("Contando equipos por planta...");
       const counts = {};
 
       for (const plant of plants) {
@@ -165,7 +165,7 @@ export const AuditorLayout = ({ user }) => {
       }
 
       setEquipmentCountByPlant(counts);
-      console.log("Conteo completado");
+      // console.log("Conteo completado");
     } catch (error) {
       console.error("Error al contar equipos:", error);
     }
@@ -174,7 +174,7 @@ export const AuditorLayout = ({ user }) => {
   const loadEquipmentForPlant = async (plant) => {
     setLoading(true);
     try {
-      console.log(`Cargando equipos de planta: ${plant.name}`);
+      // console.log(`Cargando equipos de planta: ${plant.name}`);
       const result = await getEquipmentByPlant(plant.id);
 
       if (result.success && result.data) {
@@ -182,7 +182,7 @@ export const AuditorLayout = ({ user }) => {
         const sortedEquipment = [...result.data].sort((a, b) =>
           (a.name || "").localeCompare(b.name || "")
         );
-        console.log("Equipos cargados:", sortedEquipment.length);
+        // console.log("Equipos cargados:", sortedEquipment.length);
         setEquipment(sortedEquipment);
       } else {
         console.error("Error:", result.error);
@@ -204,12 +204,12 @@ export const AuditorLayout = ({ user }) => {
     setSaving(true);
     try {
       const currentEquipment = equipment[selectedEquipmentIndex];
-      console.log("Guardando cambios en equipo:", currentEquipment.id);
+      // console.log("Guardando cambios en equipo:", currentEquipment.id);
 
       const result = await updateEquipment(currentEquipment.id, updatedData);
 
       if (result.success) {
-        console.log("Equipo actualizado correctamente");
+        // console.log("Equipo actualizado correctamente");
 
         // Actualizar el equipo en el estado local
         const updatedEquipment = [...equipment];
@@ -239,7 +239,7 @@ export const AuditorLayout = ({ user }) => {
 
     setSaving(true);
     try {
-      console.log("Cambiando estado del equipo:", currentEquipment.id, "a", newStatus);
+      // console.log("Cambiando estado del equipo:", currentEquipment.id, "a", newStatus);
 
       // Agregar datos del usuario si se marca como revisado
       const dataToSave = {
@@ -251,7 +251,7 @@ export const AuditorLayout = ({ user }) => {
       const result = await updateEquipment(currentEquipment.id, dataToSave);
 
       if (result.success) {
-        console.log("Estado actualizado correctamente");
+        // console.log("Estado actualizado correctamente");
 
         // Actualizar el equipo en el estado local
         const updatedEquipment = [...equipment];
@@ -305,7 +305,7 @@ export const AuditorLayout = ({ user }) => {
   // ============================================
 
   const handleSelectPlant = useCallback(async (plant) => {
-    console.log("Seleccionando planta:", plant.name);
+    // console.log("Seleccionando planta:", plant.name);
     setSelectedPlant(plant);
     setSearchTerm("");
     setFilterStatus("all");
@@ -315,13 +315,13 @@ export const AuditorLayout = ({ user }) => {
   }, []);
 
   const handleSelectEquipment = useCallback((equip, index) => {
-    console.log("Seleccionando equipo indice:", index);
+    // console.log("Seleccionando equipo indice:", index);
     setSelectedEquipmentIndex(index);
     setCurrentView("review");
   }, []);
 
   const handleNavigate = useCallback((view) => {
-    console.log("Navegando a:", view);
+    // console.log("Navegando a:", view);
     if (view === "equipment" && !selectedPlant) {
       return;
     }
@@ -330,7 +330,7 @@ export const AuditorLayout = ({ user }) => {
   }, [selectedPlant]);
 
   const handleBackToEquipmentList = useCallback(() => {
-    console.log("Volviendo a lista de equipos");
+    // console.log("Volviendo a lista de equipos");
     setCurrentView("equipment");
   }, []);
 
@@ -426,7 +426,7 @@ export const AuditorLayout = ({ user }) => {
   // RENDER PRINCIPAL
   // ============================================
 
-  console.log("Renderizando interfaz de AUDITOR v2.0");
+  // console.log("Renderizando interfaz de AUDITOR v2.0");
 
   return (
     <div className="flex min-h-screen bg-gray-100">

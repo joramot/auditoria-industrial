@@ -25,7 +25,7 @@ export const AdminLayout = ({ user, roleName }) => {
     }
   };
 
-  console.log('Renderizando interfaz de ADMIN');
+  // console.log('Renderizando interfaz de ADMIN');
 
   return (
     <div className="min-h-screen bg-gray-100">

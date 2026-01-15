@@ -250,16 +250,16 @@ export const getUserRole = async (userId) => {
     const userDoc = await getDoc(userRef);
 
     if (!userDoc.exists()) {
-      console.log('⚠️ Usuario no encontrado en Firestore:', userId);
+      console.log('Usuario no encontrado en Firestore:', userId);
       return {
-        role: ROLES.SUPERVISOR, // Rol por defecto
+        role: ROLES.VISUALIZADOR, // Rol por defecto (solo lectura)
         assignedPlants: [],
-        permissions: ROLE_PERMISSIONS[ROLES.SUPERVISOR]
+        permissions: ROLE_PERMISSIONS[ROLES.VISUALIZADOR]
       };
     }
 
     const userData = userDoc.data();
-    const role = userData.role || ROLES.SUPERVISOR;
+    const role = userData.role || ROLES.VISUALIZADOR;
     
     return {
       id: userId,
@@ -307,18 +307,18 @@ export const createOrUpdateUserRole = async (userId, userData) => {
       });
       console.log('✅ Usuario actualizado (rol preservado):', userId, '- Rol:', existingData.role);
     } else {
-      // Crear nuevo usuario con rol por defecto
+      // Crear nuevo usuario con rol VISUALIZADOR por defecto (solo lectura)
       const defaultData = {
         email: userData.email,
         displayName: userData.displayName || userData.email,
-        role: userData.role || ROLES.SUPERVISOR,
+        role: userData.role || ROLES.VISUALIZADOR,
         assignedPlants: userData.assignedPlants || [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         lastLogin: new Date().toISOString()
       };
       await setDoc(userRef, defaultData);
-      console.log('✅ Nuevo usuario creado:', userId, '- Rol:', defaultData.role);
+      console.log('Nuevo usuario creado:', userId, '- Rol:', defaultData.role);
     }
 
     return true;

@@ -47,7 +47,7 @@ export const useAppState = (updateSyncStats) => {
   useEffect(() => {
     initDB()
       .then(() => {
-        console.log("✅ IndexedDB inicializada correctamente");
+        // console.log("✅ IndexedDB inicializada correctamente");
         if (updateSyncStats) {
           updateSyncStats();
         }

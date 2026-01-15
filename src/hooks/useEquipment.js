@@ -84,7 +84,7 @@ export const useEquipment = (
   // ============================================
   
   const loadEquipment = async (plantId) => {
-    console.log("\n🏭 RECARGANDO EQUIPOS de planta:", plantId);
+    // console.log("\n🏭 RECARGANDO EQUIPOS de planta:", plantId);
     setIsLoading(true);
     
     try {
@@ -114,8 +114,8 @@ export const useEquipment = (
           return acc;
         }, []);
         
-        console.log("✅ Equipos cargados:", uniqueEquipment.length);
-        console.log(`🗑️ Duplicados eliminados: ${result.data.length - uniqueEquipment.length}`);
+        // console.log("✅ Equipos cargados:", uniqueEquipment.length);
+        // console.log(`🗑️ Duplicados eliminados: ${result.data.length - uniqueEquipment.length}`);
         
         setEquipment(uniqueEquipment);
       } else {
@@ -137,7 +137,7 @@ export const useEquipment = (
   // ============================================
   
   const handleNewEquipment = () => {
-    console.log("\n➕ ABRIENDO FORMULARIO DE NUEVO EQUIPO");
+    // console.log("\n➕ ABRIENDO FORMULARIO DE NUEVO EQUIPO");
 
     setSelectedEquipment(null);
 
@@ -169,7 +169,7 @@ export const useEquipment = (
     
     setCurrentView("form");
     
-    console.log("✅ Formulario limpio y listo para nuevo equipo");
+    // console.log("✅ Formulario limpio y listo para nuevo equipo");
   };
 
   // ============================================
@@ -177,7 +177,7 @@ export const useEquipment = (
   // ============================================
   
   const handleCancelEquipment = () => {
-    console.log("\n❌ CANCELANDO EDICIÓN/CREACIÓN DE EQUIPO");
+    // console.log("\n❌ CANCELANDO EDICIÓN/CREACIÓN DE EQUIPO");
 
     setSelectedEquipment(null);
 
@@ -209,7 +209,7 @@ export const useEquipment = (
     
     setCurrentView("equipment");
     
-    console.log("✅ Formulario limpiado, volviendo a lista de equipos");
+    // console.log("✅ Formulario limpiado, volviendo a lista de equipos");
   };
 
   // ============================================
@@ -258,7 +258,7 @@ export const useEquipment = (
       // 📴 MODO OFFLINE
       // ============================================
       if (isOffline) {
-        console.log("📴 Modo OFFLINE: Guardando equipo localmente...");
+        // console.log("📴 Modo OFFLINE: Guardando equipo localmente...");
 
         if (isNewEquipment) {
           // CREAR NUEVO EQUIPO LOCAL
@@ -272,7 +272,7 @@ export const useEquipment = (
           }
 
           equipmentId = localResult.data.id;
-          console.log("✅ Equipo guardado localmente con ID:", equipmentId);
+          // console.log("✅ Equipo guardado localmente con ID:", equipmentId);
 
           // Guardar imágenes en Base64
           const imageCategories = ["equipment", "plate"];
@@ -281,17 +281,17 @@ export const useEquipment = (
           for (const category of imageCategories) {
             const images = capturedImages[category];
             if (images && images.length > 0) {
-              console.log(`📸 Procesando ${images.length} imágenes de categoría ${category}`);
+              // console.log(`📸 Procesando ${images.length} imágenes de categoría ${category}`);
               
               for (const image of images) {
                 if (image.file) {
-                  console.log(`  📸 Guardando imagen ${category}:`, image.file.name);
+                  // console.log(`  📸 Guardando imagen ${category}:`, image.file.name);
                   
                   try {
                     const result = await saveImageLocal(image.file, category, equipmentId);
                     
                     if (result.success) {
-                      console.log(`  ✅ Imagen guardada:`, result.data.id);
+                      // console.log(`  ✅ Imagen guardada:`, result.data.id);
                       imageCount++;
                     } else {
                       console.error(`  ❌ Error al guardar imagen:`, result.error);
@@ -311,17 +311,17 @@ export const useEquipment = (
           for (const category of pdfCategories) {
             const pdfs = capturedPDFs[category];
             if (pdfs && pdfs.length > 0) {
-              console.log(`📄 Procesando ${pdfs.length} PDFs de categoría ${category}`);
+              // console.log(`📄 Procesando ${pdfs.length} PDFs de categoría ${category}`);
               
               for (const pdf of pdfs) {
                 if (pdf.file) {
-                  console.log(`  📄 Guardando PDF ${category}:`, pdf.file.name);
+                  // console.log(`  📄 Guardando PDF ${category}:`, pdf.file.name);
                   
                   try {
                     const result = await savePDFLocal(pdf.file, category, equipmentId);
                     
                     if (result.success) {
-                      console.log(`  ✅ PDF guardado:`, result.data.id);
+                      // console.log(`  ✅ PDF guardado:`, result.data.id);
                       pdfCount++;
                     } else {
                       console.error(`  ❌ Error al guardar PDF:`, result.error);
@@ -334,8 +334,8 @@ export const useEquipment = (
             }
           }
 
-          console.log(`✅ Total de imágenes guardadas: ${imageCount}`);
-          console.log(`✅ Total de PDFs guardados: ${pdfCount}`);
+          // console.log(`✅ Total de imágenes guardadas: ${imageCount}`);
+          // console.log(`✅ Total de PDFs guardados: ${pdfCount}`);
 
           // Agregar equipo a cola de sincronización
           await addToSyncQueue('ADD_EQUIPMENT', {
@@ -378,7 +378,7 @@ export const useEquipment = (
             }
           }
 
-          console.log("✅ Operaciones agregadas a cola de sincronización");
+          // console.log("✅ Operaciones agregadas a cola de sincronización");
 
         } else {
           // ACTUALIZAR EQUIPO EXISTENTE LOCAL
@@ -398,7 +398,7 @@ export const useEquipment = (
             id: equipmentId,
           });
 
-          console.log("✅ Equipo actualizado localmente");
+          // console.log("✅ Equipo actualizado localmente");
         }
 
         await updateSyncStats();
@@ -423,7 +423,7 @@ export const useEquipment = (
       // 🌐 MODO ONLINE
       // ============================================
       else {
-        console.log("🌐 Modo ONLINE: Guardando en Firebase...");
+        // console.log("🌐 Modo ONLINE: Guardando en Firebase...");
 
         if (isNewEquipment) {
           // CREAR NUEVO EQUIPO EN FIREBASE
@@ -434,7 +434,7 @@ export const useEquipment = (
           }
 
           equipmentId = result.id;
-          console.log("✅ Equipo creado con ID:", equipmentId);
+          // console.log("✅ Equipo creado con ID:", equipmentId);
         
         } else {
           // ACTUALIZAR EQUIPO EXISTENTE EN FIREBASE
@@ -445,7 +445,7 @@ export const useEquipment = (
             throw new Error(updateResult.error);
           }
 
-          console.log("✅ Equipo actualizado");
+          // console.log("✅ Equipo actualizado");
         }
 
         // SUBIR NUEVAS IMÁGENES
@@ -463,7 +463,7 @@ export const useEquipment = (
               const image = images[i];
 
               if (image.isNew && image.file) {
-                console.log(`📤 Subiendo imagen ${category}...`);
+                // console.log(`📤 Subiendo imagen ${category}...`);
 
                 try {
                   const uploadResult = await uploadImage(
@@ -474,7 +474,7 @@ export const useEquipment = (
                   );
 
                   if (uploadResult.success) {
-                    console.log(`✅ Imagen ${category} subida`);
+                    // console.log(`✅ Imagen ${category} subida`);
                     
                     uploadedUrls[category].push({
                       url: uploadResult.url,
@@ -500,7 +500,7 @@ export const useEquipment = (
           }
         }
 
-        console.log(`📊 Total de imágenes subidas: ${totalImagesUploaded}`);
+        // console.log(`📊 Total de imágenes subidas: ${totalImagesUploaded}`);
 
         // SUBIR NUEVOS PDFs
         const pdfCategories = ["factura", "pedimento"];
@@ -517,7 +517,7 @@ export const useEquipment = (
               const pdf = pdfs[i];
 
               if (pdf.isNew && pdf.file) {
-                console.log(`📤 Subiendo PDF ${category}...`);
+                // console.log(`📤 Subiendo PDF ${category}...`);
 
                 try {
                   const uploadResult = await uploadPDF(
@@ -528,7 +528,7 @@ export const useEquipment = (
                   );
 
                   if (uploadResult.success) {
-                    console.log(`✅ PDF ${category} subido`);
+                    // console.log(`✅ PDF ${category} subido`);
                     
                     uploadedPDFUrls[category].push({
                       url: uploadResult.url,
@@ -558,11 +558,11 @@ export const useEquipment = (
           }
         }
 
-        console.log(`📊 Total de PDFs subidos: ${totalPDFsUploaded}`);
+        // console.log(`📊 Total de PDFs subidos: ${totalPDFsUploaded}`);
 
         // ACTUALIZAR EQUIPO CON URLs DE IMÁGENES Y PDFs
         if (totalImagesUploaded > 0 || totalPDFsUploaded > 0) {
-          console.log(`🔄 Actualizando equipo con ${totalImagesUploaded} imágenes y ${totalPDFsUploaded} PDFs...`);
+          // console.log(`🔄 Actualizando equipo con ${totalImagesUploaded} imágenes y ${totalPDFsUploaded} PDFs...`);
 
           const updateData = {
             images: uploadedUrls,
@@ -573,7 +573,7 @@ export const useEquipment = (
           const finalUpdate = await updateEquipment(equipmentId, updateData);
 
           if (finalUpdate.success) {
-            console.log("✅ URLs de imágenes y PDFs guardadas en Firestore");
+            // console.log("✅ URLs de imágenes y PDFs guardadas en Firestore");
           } else {
             console.error("❌ Error al actualizar URLs:", finalUpdate.error);
           }

@@ -65,11 +65,11 @@ const compressionOptions = {
  */
 export const uploadPDF = async (file, category, plantId, equipmentId) => {
   try {
-    console.log('ðŸ“„ Subiendo PDF...', {
-      name: file.name,
-      size: (file.size / 1024 / 1024).toFixed(2) + 'MB',
-      category: category
-    });
+    // console.log('ðŸ"„ Subiendo PDF...', {
+    //   name: file.name,
+    //   size: (file.size / 1024 / 1024).toFixed(2) + 'MB',
+    //   category: category
+    // });
 
     // Validar que sea PDF
     if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
@@ -94,7 +94,7 @@ export const uploadPDF = async (file, category, plantId, equipmentId) => {
     const storageRef = ref(storage, storagePath);
 
     // Subir PDF
-    console.log('â˜ï¸ Subiendo PDF a:', storagePath);
+    // console.log('â˜ï¸ Subiendo PDF a:', storagePath);
     const snapshot = await uploadBytes(storageRef, file, {
       contentType: 'application/pdf',
       customMetadata: {
@@ -109,7 +109,7 @@ export const uploadPDF = async (file, category, plantId, equipmentId) => {
     // Obtener URL de descarga
     const downloadURL = await getDownloadURL(snapshot.ref);
     
-    console.log('âœ… PDF subido exitosamente');
+    // console.log('âœ… PDF subido exitosamente');
     return { 
       success: true, 
       url: downloadURL, 
@@ -119,7 +119,7 @@ export const uploadPDF = async (file, category, plantId, equipmentId) => {
       category: category
     };
   } catch (error) {
-    console.error('âŒ Error al subir PDF:', error);
+    //console.error('âŒ Error al subir PDF:', error);
     return { success: false, error: error.message };
   }
 };
@@ -188,14 +188,14 @@ export const getEquipmentPDFs = async (plantId, equipmentId) => {
           });
         }
       } catch (error) {
-        console.log(`â„¹ï¸ No hay PDFs en categorÃ­a: ${category}`);
+        //console.log(`â„¹ï¸ No hay PDFs en categorÃ­a: ${category}`);
       }
     }
     
-    console.log('âœ… PDFs obtenidos:', pdfs);
+    // console.log('âœ… PDFs obtenidos:', pdfs);
     return { success: true, pdfs: pdfs };
   } catch (error) {
-    console.error('âŒ Error al obtener PDFs:', error);
+    // console.error('âŒ Error al obtener PDFs:', error);
     return { success: false, error: error.message };
   }
 };
@@ -205,12 +205,12 @@ export const getEquipmentPDFs = async (plantId, equipmentId) => {
  */
 export const deletePDF = async (pdfPath) => {
   try {
-    console.log(`ðŸ—‘ï¸ Eliminando PDF: ${pdfPath}`);
+    // console.log(`ðŸ—‘ï¸ Eliminando PDF: ${pdfPath}`);
     
     const pdfRef = ref(storage, pdfPath);
     await deleteObject(pdfRef);
     
-    console.log("âœ… PDF eliminado");
+    // console.log("âœ… PDF eliminado");
     
     return {
       success: true,
@@ -249,7 +249,7 @@ export const deleteEquipmentPDFs = async (plantId, equipmentId) => {
       }
     }
     
-    console.log(`âœ… ${deletedCount} PDFs del equipo eliminados`);
+    // console.log(`âœ… ${deletedCount} PDFs del equipo eliminados`);
     return { success: true, deletedCount: deletedCount };
   } catch (error) {
     console.error('âŒ Error al eliminar PDFs del equipo:', error);
@@ -303,7 +303,7 @@ export const addPlant = async (plantData) => {
       createdAt: serverTimestamp(),
       lastAudit: new Date().toISOString().split('T')[0]
     });
-    console.log('âœ… Planta creada con ID:', docRef.id);
+    // console.log('âœ… Planta creada con ID:', docRef.id);
     return { success: true, id: docRef.id };
   } catch (error) {
     console.error('âŒ Error al crear planta:', error);
@@ -318,10 +318,10 @@ export const getPlants = async () => {
     querySnapshot.forEach((doc) => {
       plants.push({ id: doc.id, ...doc.data() });
     });
-    console.log('âœ… Plantas obtenidas:', plants.length);
+    //console.log('âœ… Plantas obtenidas:', plants.length);
     return { success: true, data: plants };
   } catch (error) {
-    console.error('âŒ Error al obtener plantas:', error);
+    //console.error('âŒ Error al obtener plantas:', error);
     return { success: false, error: error.message };
   }
 };
@@ -333,10 +333,10 @@ export const updatePlant = async (plantId, plantData) => {
       ...plantData,
       updatedAt: serverTimestamp()
     });
-    console.log('âœ… Planta actualizada:', plantId);
+    //console.log('âœ… Planta actualizada:', plantId);
     return { success: true };
   } catch (error) {
-    console.error('âŒ Error al actualizar planta:', error);
+    //console.error('âŒ Error al actualizar planta:', error);
     return { success: false, error: error.message };
   }
 };
@@ -345,28 +345,28 @@ export const updatePlant = async (plantId, plantData) => {
  * ðŸ—‘ï¸ ELIMINAR PLANTA Y TODOS SUS DATOS (INCLUYENDO PDFs)
  */
 export const deletePlant = async (plantId) => {
-  console.log(`\nðŸ—‘ï¸ ======================================`);
-  console.log(`ðŸ—‘ï¸ ELIMINANDO PLANTA: ${plantId}`);
-  console.log(`ðŸ—‘ï¸ ======================================\n`);
+  //console.log(`\nðŸ—‘ï¸ ======================================`);
+  //console.log(`ðŸ—‘ï¸ ELIMINANDO PLANTA: ${plantId}`);
+  //console.log(`ðŸ—‘ï¸ ======================================\n`);
 
   try {
     // 1. Obtener todos los equipos
-    console.log("ðŸ“‹ Paso 1: Obteniendo equipos...");
+    //console.log("ðŸ“‹ Paso 1: Obteniendo equipos...");
     const equipmentQuery = query(
       collection(db, "equipment"),
       where("plantId", "==", plantId)
     );
     const equipmentSnapshot = await getDocs(equipmentQuery);
-    console.log(`âœ… Encontrados ${equipmentSnapshot.size} equipos`);
+    //console.log(`âœ… Encontrados ${equipmentSnapshot.size} equipos`);
 
     // 2. Eliminar imÃ¡genes Y PDFs de cada equipo
-    console.log("\nðŸ“‹ Paso 2: Eliminando archivos del Storage...");
+    //console.log("\nðŸ“‹ Paso 2: Eliminando archivos del Storage...");
     let totalImagesDeleted = 0;
     let totalPDFsDeleted = 0;
     
     for (const equipDoc of equipmentSnapshot.docs) {
       const equipmentId = equipDoc.id;
-      console.log(`  ðŸ—‘ï¸ Eliminando archivos del equipo: ${equipmentId}`);
+      //console.log(`  ðŸ—‘ï¸ Eliminando archivos del equipo: ${equipmentId}`);
       
       // Eliminar imÃ¡genes
       const paths = [
@@ -392,7 +392,7 @@ export const deletePlant = async (plantId) => {
             }
           }
         } catch (error) {
-          console.log(`    â„¹ï¸ No se encontraron archivos en ${basePath}`);
+        //  console.log(`    â„¹ï¸ No se encontraron archivos en ${basePath}`);
         }
       }
 
@@ -408,7 +408,7 @@ export const deletePlant = async (plantId) => {
           for (const pdfFileRef of subList.items) {
             await deleteObject(pdfFileRef);
             totalPDFsDeleted++;
-            console.log(`    âœ… PDF eliminado: ${pdfFileRef.name}`);
+          //  console.log(`    âœ… PDF eliminado: ${pdfFileRef.name}`);
           }
         }
         
@@ -416,37 +416,37 @@ export const deletePlant = async (plantId) => {
         for (const pdfFileRef of pdfsList.items) {
           await deleteObject(pdfFileRef);
           totalPDFsDeleted++;
-          console.log(`    âœ… PDF eliminado: ${pdfFileRef.name}`);
+        //  console.log(`    âœ… PDF eliminado: ${pdfFileRef.name}`);
         }
       } catch (error) {
-        console.log(`    â„¹ï¸ No se encontraron PDFs`);
+      //  console.log(`    â„¹ï¸ No se encontraron PDFs`);
       }
     }
     
-    console.log(`\nâœ… Total archivos eliminados:`);
-    console.log(`   ðŸ“¸ ImÃ¡genes: ${totalImagesDeleted}`);
-    console.log(`   ðŸ“„ PDFs: ${totalPDFsDeleted}`);
+    //console.log(`\nâœ… Total archivos eliminados:`);
+    //console.log(`   ðŸ“¸ ImÃ¡genes: ${totalImagesDeleted}`);
+    //console.log(`   ðŸ“„ PDFs: ${totalPDFsDeleted}`);
 
     // 3. Eliminar equipos
-    console.log("\nðŸ“‹ Paso 3: Eliminando equipos de Firestore...");
+    //console.log("\nðŸ“‹ Paso 3: Eliminando equipos de Firestore...");
     if (equipmentSnapshot.size > 0) {
       const batch = writeBatch(db);
       equipmentSnapshot.docs.forEach((equipDoc) => {
         batch.delete(equipDoc.ref);
       });
       await batch.commit();
-      console.log(`âœ… ${equipmentSnapshot.size} equipos eliminados`);
+      //console.log(`âœ… ${equipmentSnapshot.size} equipos eliminados`);
     }
 
     // 4. Eliminar la planta
-    console.log("\nðŸ“‹ Paso 4: Eliminando planta...");
+    //console.log("\nðŸ“‹ Paso 4: Eliminando planta...");
     await deleteDoc(doc(db, "plants", plantId));
-    console.log("âœ… Planta eliminada");
+    //console.log("âœ… Planta eliminada");
 
-    console.log("\nðŸ—‘ï¸ ======================================");
-    console.log("ðŸ—‘ï¸ ELIMINACIÃ“N COMPLETADA");
-    console.log(`ðŸ—‘ï¸ ImÃ¡genes: ${totalImagesDeleted} | PDFs: ${totalPDFsDeleted}`);
-    console.log("ðŸ—‘ï¸ ======================================\n");
+    //console.log("\nðŸ—‘ï¸ ======================================");
+    //console.log("ðŸ—‘ï¸ ELIMINACIÃ“N COMPLETADA");
+    //console.log(`ðŸ—‘ï¸ ImÃ¡genes: ${totalImagesDeleted} | PDFs: ${totalPDFsDeleted}`);
+    //console.log("ðŸ—‘ï¸ ======================================\n");
 
     return {
       success: true,
@@ -457,7 +457,7 @@ export const deletePlant = async (plantId) => {
       },
     };
   } catch (error) {
-    console.error("âŒ Error al eliminar planta:", error);
+    //console.error("âŒ Error al eliminar planta:", error);
     return { success: false, error: error.message };
   }
 };
@@ -503,10 +503,10 @@ export const addEquipment = async (plantId, equipmentData) => {
       });
     }
 
-    console.log('✅ Equipo creado con ID:', docRef.id);
+    // console.log('✅ Equipo creado con ID:', docRef.id);
     return { success: true, id: docRef.id };
   } catch (error) {
-    console.error('❌ Error al crear equipo:', error);
+    //console.error('❌ Error al crear equipo:', error);
     return { success: false, error: error.message };
   }
 };
@@ -520,7 +520,7 @@ export const addEquipment = async (plantId, equipmentData) => {
  */
 export const saveEquipment = async (plantId, equipmentData, equipmentId = null) => {
   try {
-    console.log('💾 Guardando equipo...', { plantId, equipmentId });
+    // console.log('💾 Guardando equipo...', { plantId, equipmentId });
 
     // Detectar si es un equipo nuevo con ID local o sin ID
     const isLocalId = equipmentId && equipmentId.startsWith('local_');
@@ -528,7 +528,7 @@ export const saveEquipment = async (plantId, equipmentData, equipmentId = null) 
 
     if (isNewEquipment) {
       // ====== CREAR NUEVO EQUIPO ======
-      console.log('✨ Creando nuevo equipo en Firebase...');
+      // console.log('✨ Creando nuevo equipo en Firebase...');
       
       const docRef = await addDoc(collection(db, 'equipment'), {
         ...equipmentData,
@@ -560,12 +560,12 @@ export const saveEquipment = async (plantId, equipmentData, equipmentId = null) 
         });
       }
 
-      console.log('✅ Equipo creado con ID:', docRef.id);
+      // console.log('✅ Equipo creado con ID:', docRef.id);
       return { success: true, id: docRef.id, isNew: true };
 
     } else {
       // ====== ACTUALIZAR EQUIPO EXISTENTE ======
-      console.log('🔄 Actualizando equipo existente...', equipmentId);
+      // console.log('🔄 Actualizando equipo existente...', equipmentId);
       
       const equipmentRef = doc(db, 'equipment', equipmentId);
       
@@ -580,12 +580,12 @@ export const saveEquipment = async (plantId, equipmentData, equipmentId = null) 
         updatedAt: serverTimestamp()
       });
 
-      console.log('✅ Equipo actualizado:', equipmentId);
+      // console.log('✅ Equipo actualizado:', equipmentId);
       return { success: true, id: equipmentId, isNew: false };
     }
 
   } catch (error) {
-    console.error('❌ Error al guardar equipo:', error);
+    //console.error('❌ Error al guardar equipo:', error);
     return { success: false, error: error.message };
   }
 };
@@ -597,10 +597,10 @@ export const getEquipmentByPlant = async (plantId) => {
     querySnapshot.forEach((doc) => {
       equipment.push({ id: doc.id, ...doc.data() });
     });
-    console.log(`âœ… Equipos obtenidos: ${equipment.length}`);
+    //console.log(`âœ… Equipos obtenidos: ${equipment.length}`);
     return { success: true, data: equipment };
   } catch (error) {
-    console.error('âŒ Error al obtener equipos:', error);
+    //console.error('âŒ Error al obtener equipos:', error);
     return { success: false, error: error.message };
   }
 };
@@ -611,14 +611,14 @@ export const getEquipmentById = async (equipmentId) => {
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
-      console.log('âœ… Equipo obtenido:', equipmentId);
+      //console.log('âœ… Equipo obtenido:', equipmentId);
       return { success: true, data: { id: docSnap.id, ...docSnap.data() } };
     } else {
-      console.log('âŒ Equipo no encontrado');
+      //console.log('âŒ Equipo no encontrado');
       return { success: false, error: 'Equipo no encontrado' };
     }
   } catch (error) {
-    console.error('âŒ Error al obtener equipo:', error);
+    //console.error('âŒ Error al obtener equipo:', error);
     return { success: false, error: error.message };
   }
 };
@@ -649,10 +649,10 @@ export const updateEquipment = async (equipmentId, equipmentData) => {
       updatedAt: serverTimestamp()
     });
     
-    console.log('âœ… Equipo actualizado:', equipmentId);
+    //console.log('âœ… Equipo actualizado:', equipmentId);
     return { success: true };
   } catch (error) {
-    console.error('âŒ Error al actualizar equipo:', error);
+    //console.error('âŒ Error al actualizar equipo:', error);
     return { success: false, error: error.message };
   }
 };
@@ -683,10 +683,10 @@ export const deleteEquipment = async (plantId, equipmentId) => {
       });
     }
 
-    console.log('âœ… Equipo eliminado completamente');
+    //console.log('âœ… Equipo eliminado completamente');
     return { success: true };
   } catch (error) {
-    console.error('âŒ Error al eliminar equipo:', error);
+    //console.error('âŒ Error al eliminar equipo:', error);
     return { success: false, error: error.message };
   }
 };
@@ -697,15 +697,11 @@ export const deleteEquipment = async (plantId, equipmentId) => {
 
 export const uploadImage = async (file, category, plantId, equipmentId) => {
   try {
-    console.log('ðŸ“¸ Subiendo imagen...', {
-      name: file.name,
-      size: (file.size / 1024).toFixed(2) + 'KB',
-      category: category
-    });
+    //console.log('ðŸ“¸ Subiendo imagen...', {
 
     // Comprimir imagen
     const compressedFile = await imageCompression(file, compressionOptions);
-    console.log('âœ… Imagen comprimida:', (compressedFile.size / 1024).toFixed(2) + 'KB');
+    //console.log('âœ… Imagen comprimida:', (compressedFile.size / 1024).toFixed(2) + 'KB');
     
     const timestamp = Date.now();
     const fileName = `${category}_${timestamp}.webp`;
@@ -713,7 +709,7 @@ export const uploadImage = async (file, category, plantId, equipmentId) => {
     const storagePath = `equipment_images/${plantId}/${equipmentId}/${category}/${fileName}`;
     const storageRef = ref(storage, storagePath);
 
-    console.log('â˜ï¸ Subiendo imagen a:', storagePath);
+    //console.log('â˜ï¸ Subiendo imagen a:', storagePath);
     const snapshot = await uploadBytes(storageRef, compressedFile, {
       contentType: 'image/webp',
       customMetadata: {
@@ -725,7 +721,7 @@ export const uploadImage = async (file, category, plantId, equipmentId) => {
     
     const downloadURL = await getDownloadURL(snapshot.ref);
     
-    console.log('âœ… Imagen subida exitosamente');
+    //console.log('âœ… Imagen subida exitosamente');
     return { 
       success: true, 
       url: downloadURL, 

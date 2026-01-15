@@ -46,7 +46,7 @@ const useOfflineStatus = () => {
      * Se dispara cuando el navegador detecta conexión a internet
      */
     const handleOnline = () => {
-      console.log('🌐 Conexión detectada - Estado: Online');
+      // console.log('🌐 Conexión detectada - Estado: Online');
       setIsOffline(false);
     };
 
@@ -55,7 +55,7 @@ const useOfflineStatus = () => {
      * Se dispara cuando el navegador pierde conexión a internet
      */
     const handleOffline = () => {
-      console.log('📴 Conexión perdida - Estado: Offline');
+      // console.log('📴 Conexión perdida - Estado: Offline');
       setIsOffline(true);
     };
 
@@ -64,7 +64,7 @@ const useOfflineStatus = () => {
     window.addEventListener('offline', handleOffline);
 
     // Log inicial del estado de conexión
-    console.log(`📡 Estado inicial de conexión: ${navigator.onLine ? 'Online' : 'Offline'}`);
+    // console.log(`📡 Estado inicial de conexión: ${navigator.onLine ? 'Online' : 'Offline'}`);
 
     // Cleanup: remover listeners al desmontar el componente
     return () => {
