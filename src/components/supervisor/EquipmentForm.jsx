@@ -460,8 +460,9 @@ export const EquipmentForm = ({
         </div>
       )}
 
-      {/* Botones de acción */}
+      {/* Botones de acción - todos en una fila */}
       <div className="flex gap-2 mb-4">
+        {/* Botón Guardar/Actualizar */}
         <button
           onClick={onSave}
           disabled={isLoading}
@@ -475,21 +476,12 @@ export const EquipmentForm = ({
           {isLoading
             ? "Guardando..."
             : selectedEquipment
-            ? "Actualizar Equipo"
-            : "Guardar Equipo"}
+            ? "Actualizar"
+            : "Guardar"}
         </button>
-        <button
-          onClick={onCancel}
-          disabled={isLoading}
-          className="px-6 bg-gray-500 text-white py-3 rounded-lg font-semibold hover:bg-gray-600 transition-colors shadow-md disabled:opacity-50"
-        >
-          <X className="w-5 h-5" />
-        </button>
-      </div>
 
-      {/* Botón Eliminar Equipo (solo si existe equipo seleccionado) */}
-      {selectedEquipment && selectedPlant && (
-        <div className="mb-4">
+        {/* Botón Eliminar Equipo (solo en modo edición) */}
+        {selectedEquipment && selectedPlant && (
           <DeleteEquipmentButton
             equipmentId={selectedEquipment.id}
             plantId={selectedPlant.id}
@@ -499,10 +491,20 @@ export const EquipmentForm = ({
               if (onEquipmentDeleted) onEquipmentDeleted();
             }}
             onError={(error) => console.error("Error:", error)}
-            className="w-full"
+            className="flex-1"
           />
-        </div>
-      )}
+        )}
+
+        {/* Botón Cancelar */}
+        <button
+          onClick={onCancel}
+          disabled={isLoading}
+          className="px-4 bg-gray-500 text-white py-3 rounded-lg font-semibold hover:bg-gray-600 transition-colors shadow-md disabled:opacity-50 flex items-center justify-center gap-2"
+        >
+          <X className="w-5 h-5" />
+          <span>Cancelar</span>
+        </button>
+      </div>
 
       {/* Nota informativa */}
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800 flex items-center gap-2">
