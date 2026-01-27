@@ -440,7 +440,7 @@ export const SupervisorLayout = ({
   // RENDERIZADO
   // ============================================
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="layout-main flex min-h-screen min-h-dvh bg-gray-100">
       {/* Sidebar izquierdo */}
       <Sidebar
         plants={plants}
@@ -454,8 +454,8 @@ export const SupervisorLayout = ({
         isAdmin={isAdmin}
       />
 
-      {/* Área principal derecha */}
-      <main className="flex-1 p-6 overflow-auto">
+      {/* Área principal derecha - responsive */}
+      <main className="main-content-responsive flex-1 p-4 laptop-sm:p-5 xl:p-6 overflow-auto">
         {/* Modal de progreso de sincronización */}
         <SyncProgress show={showSyncProgress} progress={syncProgress} />
 

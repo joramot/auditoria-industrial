@@ -124,35 +124,35 @@ export const ExpedienteViewer = ({
         </div>
       </div>
 
-      {/* Barra de navegación inferior */}
-      <div className="bg-white border-t border-gray-300 p-3 flex items-center justify-between shadow-lg">
+      {/* Barra de navegación inferior - responsive */}
+      <div className="bg-white border-t border-gray-300 p-2 laptop-sm:p-2.5 xl:p-3 flex items-center justify-between shadow-lg">
         {/* Botones de navegación izquierda */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 laptop-sm:gap-1">
           <button
             onClick={firstPage}
             disabled={!hasPrevPage}
-            className="p-2 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="p-1.5 laptop-sm:p-2 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             title="Primera página"
           >
-            <ChevronsLeft className="w-5 h-5" />
+            <ChevronsLeft className="w-4 h-4 laptop-sm:w-5 laptop-sm:h-5" />
           </button>
           <button
             onClick={prevPage}
             disabled={!hasPrevPage}
-            className="p-2 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="p-1.5 laptop-sm:p-2 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             title="Página anterior"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4 laptop-sm:w-5 laptop-sm:h-5" />
           </button>
         </div>
 
         {/* Indicador de página */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Página</span>
+        <div className="flex items-center gap-1.5 laptop-sm:gap-2">
+          <span className="text-xs laptop-sm:text-sm text-gray-600">Página</span>
           <select
             value={currentPage}
             onChange={(e) => goToPage(parseInt(e.target.value))}
-            className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+            className="px-1.5 laptop-sm:px-2 py-0.5 laptop-sm:py-1 border border-gray-300 rounded text-xs laptop-sm:text-sm focus:ring-2 focus:ring-blue-500"
           >
             {Array.from({ length: totalPages }, (_, i) => (
               <option key={i} value={i}>
@@ -160,26 +160,26 @@ export const ExpedienteViewer = ({
               </option>
             ))}
           </select>
-          <span className="text-sm text-gray-600">de {totalPages}</span>
+          <span className="text-xs laptop-sm:text-sm text-gray-600">de {totalPages}</span>
         </div>
 
         {/* Botones de navegación derecha */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 laptop-sm:gap-1">
           <button
             onClick={nextPage}
             disabled={!hasNextPage}
-            className="p-2 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="p-1.5 laptop-sm:p-2 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             title="Página siguiente"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4 laptop-sm:w-5 laptop-sm:h-5" />
           </button>
           <button
             onClick={lastPage}
             disabled={!hasNextPage}
-            className="p-2 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="p-1.5 laptop-sm:p-2 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             title="Última página"
           >
-            <ChevronsRight className="w-5 h-5" />
+            <ChevronsRight className="w-4 h-4 laptop-sm:w-5 laptop-sm:h-5" />
           </button>
         </div>
       </div>

@@ -285,11 +285,7 @@ export const removeDuplicates = async () => {
     for (const dup of result.duplicates) {
       // console.log(`🗑️  Procesando duplicados de: ${dup.internalId}`);
       
-      // Mantener el primero (más antiguo)
-      const toKeep = dup.plants[0];
-      // console.log(`   ✅ Manteniendo: ${toKeep.firestoreId}`);
-      
-      // Eliminar los demás
+      // Mantener el primero (más antiguo), eliminar los demás
       for (let i = 1; i < dup.plants.length; i++) {
         const toDelete = dup.plants[i];
         // console.log(`   🗑️  Eliminando: ${toDelete.firestoreId}`);

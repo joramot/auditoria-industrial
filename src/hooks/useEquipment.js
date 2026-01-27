@@ -276,7 +276,6 @@ export const useEquipment = (
 
           // Guardar imágenes en Base64
           const imageCategories = ["equipment", "plate"];
-          let imageCount = 0;
 
           for (const category of imageCategories) {
             const images = capturedImages[category];
@@ -292,7 +291,6 @@ export const useEquipment = (
                     
                     if (result.success) {
                       // console.log(`  ✅ Imagen guardada:`, result.data.id);
-                      imageCount++;
                     } else {
                       console.error(`  ❌ Error al guardar imagen:`, result.error);
                     }
@@ -306,7 +304,6 @@ export const useEquipment = (
 
           // Guardar PDFs en Base64
           const pdfCategories = ["factura", "pedimento"];
-          let pdfCount = 0;
 
           for (const category of pdfCategories) {
             const pdfs = capturedPDFs[category];
@@ -322,7 +319,6 @@ export const useEquipment = (
                     
                     if (result.success) {
                       // console.log(`  ✅ PDF guardado:`, result.data.id);
-                      pdfCount++;
                     } else {
                       console.error(`  ❌ Error al guardar PDF:`, result.error);
                     }
@@ -333,9 +329,6 @@ export const useEquipment = (
               }
             }
           }
-
-          // console.log(`✅ Total de imágenes guardadas: ${imageCount}`);
-          // console.log(`✅ Total de PDFs guardados: ${pdfCount}`);
 
           // Agregar equipo a cola de sincronización
           await addToSyncQueue('ADD_EQUIPMENT', {

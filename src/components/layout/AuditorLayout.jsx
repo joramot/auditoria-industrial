@@ -429,7 +429,7 @@ export const AuditorLayout = ({ user }) => {
   // console.log("Renderizando interfaz de AUDITOR v2.0");
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="layout-main flex min-h-screen min-h-dvh bg-gray-100">
       {/* Sidebar izquierdo */}
       <AuditorSidebar
         plants={plants}
@@ -442,12 +442,12 @@ export const AuditorLayout = ({ user }) => {
         equipmentCounts={equipmentCountByPlant}
       />
 
-      {/* Area principal derecha */}
-      <main className="flex-1 p-6 overflow-auto">
+      {/* Area principal derecha - responsive */}
+      <main className="main-content-responsive flex-1 p-4 laptop-sm:p-5 xl:p-6 overflow-auto">
         {/* Mensaje de exito */}
         {successMessage && (
-          <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2 animate-fade-in">
-            <CheckCircle className="w-5 h-5" />
+          <div className="fixed top-4 right-4 bg-green-500 text-white px-4 laptop-sm:px-6 py-2 laptop-sm:py-3 rounded-lg shadow-lg z-50 flex items-center gap-2 animate-fade-in text-sm laptop-sm:text-base">
+            <CheckCircle className="w-4 h-4 laptop-sm:w-5 laptop-sm:h-5" />
             {successMessage}
           </div>
         )}

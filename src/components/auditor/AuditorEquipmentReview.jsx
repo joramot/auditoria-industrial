@@ -303,40 +303,40 @@ const AuditorEquipmentReview = ({
   return (
     <>
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        {/* ========== HEADER ========== */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-700">
-          <div className="flex items-center gap-3">
+        {/* ========== HEADER - Responsive ========== */}
+        <div className="equipment-header-responsive flex flex-col laptop-sm:flex-row laptop-sm:items-center laptop-sm:justify-between px-4 py-3 laptop-sm:px-5 laptop-sm:py-3.5 xl:px-6 xl:py-4 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-700 gap-3">
+          <div className="flex items-center gap-2 laptop-sm:gap-3">
             {/* Boton Volver */}
             <button
               onClick={onBackToList}
-              className="flex items-center gap-1 px-3 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors"
+              className="flex items-center gap-1 px-2 py-1.5 laptop-sm:px-3 laptop-sm:py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-xs laptop-sm:text-sm font-medium transition-colors"
               title="Volver a la lista de equipos"
             >
-              <ArrowLeft className="w-4 h-4" />
-              Volver
+              <ArrowLeft className="w-3.5 h-3.5 laptop-sm:w-4 laptop-sm:h-4" />
+              <span className="hidden laptop-sm:inline">Volver</span>
             </button>
 
             {/* Separador */}
-            <div className="h-8 w-px bg-white/30" />
+            <div className="h-6 laptop-sm:h-8 w-px bg-white/30" />
 
             {/* Info del equipo */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                <Package className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-2 laptop-sm:gap-3 min-w-0 flex-1">
+              <div className="w-8 h-8 laptop-sm:w-10 laptop-sm:h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Package className="w-4 h-4 laptop-sm:w-5 laptop-sm:h-5 text-white" />
               </div>
-              <div>
-                <h2 className="text-lg font-bold text-white">{equipName}</h2>
-                <p className="text-sm text-blue-100">{plant.name}</p>
+              <div className="min-w-0">
+                <h2 className="text-sm laptop-sm:text-base xl:text-lg font-bold text-white truncate">{equipName}</h2>
+                <p className="text-xs laptop-sm:text-sm text-blue-100 truncate">{plant.name}</p>
               </div>
             </div>
           </div>
 
           {/* Navegacion y Estado */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 laptop-sm:gap-3">
             {/* Badge de estado */}
             <span
               className={`
-                px-3 py-1.5 rounded-full text-xs font-semibold
+                px-2 laptop-sm:px-3 py-1 laptop-sm:py-1.5 rounded-full text-xs font-semibold
                 ${isReviewed
                   ? "bg-green-100 text-green-800"
                   : "bg-orange-100 text-orange-800"
@@ -345,88 +345,88 @@ const AuditorEquipmentReview = ({
             >
               {isReviewed ? (
                 <span className="flex items-center gap-1">
-                  <CheckCircle className="w-3.5 h-3.5" />
-                  Revisado
+                  <CheckCircle className="w-3 h-3 laptop-sm:w-3.5 laptop-sm:h-3.5" />
+                  <span className="hidden laptop-sm:inline">Revisado</span>
                 </span>
               ) : (
                 <span className="flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" />
-                  Pendiente
+                  <Clock className="w-3 h-3 laptop-sm:w-3.5 laptop-sm:h-3.5" />
+                  <span className="hidden laptop-sm:inline">Pendiente</span>
                 </span>
               )}
             </span>
 
             {/* Separador */}
-            <div className="h-8 w-px bg-white/30" />
+            <div className="h-6 laptop-sm:h-8 w-px bg-white/30 hidden laptop-sm:block" />
 
             {/* Contador */}
-            <span className="text-sm text-blue-100">
+            <span className="text-xs laptop-sm:text-sm text-blue-100">
               {currentIndex + 1} / {totalEquipment}
             </span>
 
             {/* Botones de navegacion */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5 laptop-sm:gap-1">
               <button
                 onClick={onFirst}
                 disabled={isFirst}
-                className={`p-2 rounded-lg transition-colors ${
+                className={`p-1.5 laptop-sm:p-2 rounded-lg transition-colors ${
                   isFirst
                     ? "text-white/30 cursor-not-allowed"
                     : "text-white hover:bg-white/20"
                 }`}
                 title="Primero"
               >
-                <ChevronsLeft className="w-4 h-4" />
+                <ChevronsLeft className="w-3.5 h-3.5 laptop-sm:w-4 laptop-sm:h-4" />
               </button>
               <button
                 onClick={onPrevious}
                 disabled={isFirst}
-                className={`p-2 rounded-lg transition-colors ${
+                className={`p-1.5 laptop-sm:p-2 rounded-lg transition-colors ${
                   isFirst
                     ? "text-white/30 cursor-not-allowed"
                     : "text-white hover:bg-white/20"
                 }`}
                 title="Anterior"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-3.5 h-3.5 laptop-sm:w-4 laptop-sm:h-4" />
               </button>
               <button
                 onClick={onNext}
                 disabled={isLast}
-                className={`p-2 rounded-lg transition-colors ${
+                className={`p-1.5 laptop-sm:p-2 rounded-lg transition-colors ${
                   isLast
                     ? "text-white/30 cursor-not-allowed"
                     : "text-white hover:bg-white/20"
                 }`}
                 title="Siguiente"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-3.5 h-3.5 laptop-sm:w-4 laptop-sm:h-4" />
               </button>
               <button
                 onClick={onLast}
                 disabled={isLast}
-                className={`p-2 rounded-lg transition-colors ${
+                className={`p-1.5 laptop-sm:p-2 rounded-lg transition-colors ${
                   isLast
                     ? "text-white/30 cursor-not-allowed"
                     : "text-white hover:bg-white/20"
                 }`}
                 title="Ultimo"
               >
-                <ChevronsRight className="w-4 h-4" />
+                <ChevronsRight className="w-3.5 h-3.5 laptop-sm:w-4 laptop-sm:h-4" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* ========== CONTENIDO PRINCIPAL ========== */}
-        <div className="p-6">
+        {/* ========== CONTENIDO PRINCIPAL - Responsive ========== */}
+        <div className="card-responsive p-4 laptop-sm:p-5 xl:p-6">
           {isLoadingFiles ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <Loader2 className="w-10 h-10 text-blue-500 animate-spin mb-3" />
-              <p className="text-gray-500 font-medium">Cargando informacion...</p>
+            <div className="flex flex-col items-center justify-center py-8 laptop-sm:py-12">
+              <Loader2 className="w-8 h-8 laptop-sm:w-10 laptop-sm:h-10 text-blue-500 animate-spin mb-2 laptop-sm:mb-3" />
+              <p className="text-gray-500 font-medium text-sm laptop-sm:text-base">Cargando informacion...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-6 laptop-sm:gap-x-8 gap-y-4 laptop-sm:gap-y-6">
               {/* ========== COLUMNA IZQUIERDA ========== */}
               <div className="space-y-5">
                 {/* Descripcion del Equipo */}
@@ -607,26 +607,26 @@ const AuditorEquipmentReview = ({
           )}
         </div>
 
-        {/* ========== FOOTER CON ACCIONES ========== */}
-        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-          <div className="flex flex-col sm:flex-row gap-3">
+        {/* ========== FOOTER CON ACCIONES - Responsive ========== */}
+        <div className="px-4 py-3 laptop-sm:px-5 laptop-sm:py-3.5 xl:px-6 xl:py-4 border-t border-gray-200 bg-gray-50">
+          <div className="flex flex-col sm:flex-row gap-2 laptop-sm:gap-3">
             {/* Mensaje de cambios sin guardar */}
             {hasChanges && (
-              <div className="flex-1 flex items-center gap-2 text-orange-600 text-sm">
-                <AlertCircle className="w-4 h-4" />
+              <div className="flex-1 flex items-center gap-2 text-orange-600 text-xs laptop-sm:text-sm">
+                <AlertCircle className="w-3.5 h-3.5 laptop-sm:w-4 laptop-sm:h-4" />
                 Tienes cambios sin guardar
               </div>
             )}
 
-            <div className="flex gap-3 ml-auto">
+            <div className="flex flex-wrap gap-2 laptop-sm:gap-3 ml-auto">
               {/* Cancelar */}
               <button
                 onClick={onBackToList}
                 disabled={saving}
-                className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
+                className="flex items-center justify-center gap-1.5 laptop-sm:gap-2 px-3 laptop-sm:px-5 py-2 laptop-sm:py-2.5 rounded-xl text-xs laptop-sm:text-sm font-semibold transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
               >
-                <X className="w-4 h-4" />
-                Cancelar
+                <X className="w-3.5 h-3.5 laptop-sm:w-4 laptop-sm:h-4" />
+                <span className="hidden laptop-sm:inline">Cancelar</span>
               </button>
 
               {/* Guardar Cambios */}
@@ -634,7 +634,7 @@ const AuditorEquipmentReview = ({
                 onClick={handleSave}
                 disabled={!hasChanges || saving}
                 className={`
-                  flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-colors
+                  flex items-center justify-center gap-1.5 laptop-sm:gap-2 px-3 laptop-sm:px-5 py-2 laptop-sm:py-2.5 rounded-xl text-xs laptop-sm:text-sm font-semibold transition-colors
                   ${hasChanges && !saving
                     ? "bg-blue-600 text-white hover:bg-blue-700"
                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
@@ -643,13 +643,13 @@ const AuditorEquipmentReview = ({
               >
                 {saving ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Guardando...
+                    <Loader2 className="w-3.5 h-3.5 laptop-sm:w-4 laptop-sm:h-4 animate-spin" />
+                    <span className="hidden laptop-sm:inline">Guardando...</span>
                   </>
                 ) : (
                   <>
-                    <Save className="w-4 h-4" />
-                    Guardar Cambios
+                    <Save className="w-3.5 h-3.5 laptop-sm:w-4 laptop-sm:h-4" />
+                    <span className="hidden laptop-sm:inline">Guardar</span>
                   </>
                 )}
               </button>
@@ -659,7 +659,7 @@ const AuditorEquipmentReview = ({
                 onClick={handleOpenStatusModal}
                 disabled={saving}
                 className={`
-                  flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-colors
+                  flex items-center justify-center gap-1.5 laptop-sm:gap-2 px-3 laptop-sm:px-5 py-2 laptop-sm:py-2.5 rounded-xl text-xs laptop-sm:text-sm font-semibold transition-colors
                   ${saving
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                     : isReviewed
@@ -670,18 +670,17 @@ const AuditorEquipmentReview = ({
               >
                 {saving ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Actualizando...
+                    <Loader2 className="w-3.5 h-3.5 laptop-sm:w-4 laptop-sm:h-4 animate-spin" />
                   </>
                 ) : isReviewed ? (
                   <>
-                    <RotateCcw className="w-4 h-4" />
-                    Marcar como Pendiente
+                    <RotateCcw className="w-3.5 h-3.5 laptop-sm:w-4 laptop-sm:h-4" />
+                    <span className="hidden laptop-sm:inline">Pendiente</span>
                   </>
                 ) : (
                   <>
-                    <CheckCircle className="w-4 h-4" />
-                    Marcar como Revisado
+                    <CheckCircle className="w-3.5 h-3.5 laptop-sm:w-4 laptop-sm:h-4" />
+                    <span className="hidden laptop-sm:inline">Revisado</span>
                   </>
                 )}
               </button>

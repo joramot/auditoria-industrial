@@ -47,37 +47,37 @@ export const ImagePage = ({ data, title }) => {
 
   return (
     <div className="w-full h-full flex flex-col bg-gray-900">
-      {/* Barra de herramientas */}
-      <div className="bg-gray-800 p-2 flex items-center justify-between flex-shrink-0">
-        <h3 className="text-white font-medium px-2">{title}</h3>
-        <div className="flex items-center gap-2">
+      {/* Barra de herramientas - responsive */}
+      <div className="bg-gray-800 p-1.5 laptop-sm:p-2 flex items-center justify-between flex-shrink-0">
+        <h3 className="text-white font-medium px-1.5 laptop-sm:px-2 text-sm laptop-sm:text-base truncate max-w-[40%]">{title}</h3>
+        <div className="flex items-center gap-1 laptop-sm:gap-2">
           <button
             onClick={handleZoomOut}
-            className="p-2 text-white hover:bg-gray-700 rounded transition-colors"
+            className="p-1.5 laptop-sm:p-2 text-white hover:bg-gray-700 rounded transition-colors"
             title="Alejar"
           >
-            <ZoomOut className="w-5 h-5" />
+            <ZoomOut className="w-4 h-4 laptop-sm:w-5 laptop-sm:h-5" />
           </button>
-          <span className="text-white text-sm min-w-[50px] text-center">
+          <span className="text-white text-xs laptop-sm:text-sm min-w-[40px] laptop-sm:min-w-[50px] text-center">
             {Math.round(zoom * 100)}%
           </span>
           <button
             onClick={handleZoomIn}
-            className="p-2 text-white hover:bg-gray-700 rounded transition-colors"
+            className="p-1.5 laptop-sm:p-2 text-white hover:bg-gray-700 rounded transition-colors"
             title="Acercar"
           >
-            <ZoomIn className="w-5 h-5" />
+            <ZoomIn className="w-4 h-4 laptop-sm:w-5 laptop-sm:h-5" />
           </button>
           <button
             onClick={handleRotate}
-            className="p-2 text-white hover:bg-gray-700 rounded transition-colors"
+            className="p-1.5 laptop-sm:p-2 text-white hover:bg-gray-700 rounded transition-colors"
             title="Rotar"
           >
-            <RotateCw className="w-5 h-5" />
+            <RotateCw className="w-4 h-4 laptop-sm:w-5 laptop-sm:h-5" />
           </button>
           <button
             onClick={resetView}
-            className="px-3 py-1 text-white text-sm hover:bg-gray-700 rounded transition-colors"
+            className="px-2 laptop-sm:px-3 py-0.5 laptop-sm:py-1 text-white text-xs laptop-sm:text-sm hover:bg-gray-700 rounded transition-colors"
           >
             Reset
           </button>
@@ -85,7 +85,7 @@ export const ImagePage = ({ data, title }) => {
       </div>
 
       {/* Contenedor de imagen con scroll */}
-      <div className="flex-1 overflow-auto flex items-center justify-center p-4">
+      <div className="flex-1 overflow-auto flex items-center justify-center p-2 laptop-sm:p-4">
         {imageError ? (
           <div className="text-center text-gray-400">
             <ImageOff className="w-16 h-16 mx-auto mb-4" />

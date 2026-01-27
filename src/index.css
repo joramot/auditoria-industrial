@@ -2,6 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   VARIABLES CSS GLOBALES PARA RESPONSIVE
+   ============================================ */
+:root {
+  /* Anchos de sidebar */
+  --sidebar-width: 16rem;        /* 256px default */
+  --sidebar-width-sm: 14rem;     /* 224px para pantallas pequeñas */
+  --sidebar-collapsed: 4rem;     /* 64px colapsado */
+
+  /* Padding del contenido principal */
+  --content-padding: 1.5rem;     /* 24px default */
+  --content-padding-sm: 1rem;    /* 16px para pantallas pequeñas */
+  --content-padding-xs: 0.75rem; /* 12px para móviles */
+
+  /* Alturas de header */
+  --header-height: 4rem;
+  --header-height-sm: 3.5rem;
+}
+
+/* Ajustes para pantallas pequeñas (laptops 14") */
+@media (max-width: 1400px) {
+  :root {
+    --sidebar-width: 14rem;
+    --content-padding: 1rem;
+  }
+}
+
+/* Ajustes para tablets */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 12rem;
+    --content-padding: 0.75rem;
+  }
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -9,6 +44,242 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   CLASES UTILITARIAS RESPONSIVE
+   ============================================ */
+
+/* Layout principal responsive */
+.layout-main {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height para móviles */
+}
+
+/* Sidebar responsive */
+.sidebar-responsive {
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  min-height: 100dvh;
+  flex-shrink: 0;
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 1400px) {
+  .sidebar-responsive {
+    width: var(--sidebar-width-sm);
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar-responsive {
+    position: fixed;
+    z-index: 50;
+    transform: translateX(-100%);
+  }
+
+  .sidebar-responsive.sidebar-open {
+    transform: translateX(0);
+  }
+}
+
+/* Contenido principal responsive */
+.main-content-responsive {
+  flex: 1;
+  padding: var(--content-padding);
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-width: 0; /* Previene overflow en flexbox */
+}
+
+@media (max-width: 1400px) {
+  .main-content-responsive {
+    padding: var(--content-padding-sm);
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content-responsive {
+    padding: var(--content-padding-xs);
+    width: 100%;
+  }
+}
+
+/* Altura del visor de expediente responsive */
+.expediente-viewer-height {
+  height: calc(100vh - 280px);
+  height: calc(100dvh - 280px);
+}
+
+/* Laptops 14" con resolución 1366x768 */
+@media (max-width: 1400px) {
+  .expediente-viewer-height {
+    height: calc(100vh - 220px);
+    height: calc(100dvh - 220px);
+  }
+}
+
+/* Laptops con altura reducida (768px o menos) */
+@media (max-height: 800px) {
+  .expediente-viewer-height {
+    height: calc(100vh - 200px);
+    height: calc(100dvh - 200px);
+  }
+}
+
+@media (max-width: 1024px) {
+  .expediente-viewer-height {
+    height: calc(100vh - 200px);
+    height: calc(100dvh - 200px);
+  }
+}
+
+@media (max-width: 768px) {
+  .expediente-viewer-height {
+    height: calc(100vh - 180px);
+    height: calc(100dvh - 180px);
+  }
+}
+
+/* Cards y paneles responsive */
+.card-responsive {
+  padding: 1.5rem;
+}
+
+@media (max-width: 1400px) {
+  .card-responsive {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-responsive {
+    padding: 0.75rem;
+  }
+}
+
+/* Texto responsive con clamp */
+.text-responsive-xs {
+  font-size: clamp(0.625rem, 0.5rem + 0.25vw, 0.75rem);
+}
+
+.text-responsive-sm {
+  font-size: clamp(0.75rem, 0.625rem + 0.25vw, 0.875rem);
+}
+
+.text-responsive-base {
+  font-size: clamp(0.875rem, 0.75rem + 0.25vw, 1rem);
+}
+
+.text-responsive-lg {
+  font-size: clamp(1rem, 0.875rem + 0.25vw, 1.125rem);
+}
+
+.text-responsive-xl {
+  font-size: clamp(1.125rem, 1rem + 0.25vw, 1.25rem);
+}
+
+.text-responsive-2xl {
+  font-size: clamp(1.25rem, 1.125rem + 0.5vw, 1.5rem);
+}
+
+/* Espaciado responsive */
+.gap-responsive {
+  gap: 1rem;
+}
+
+@media (max-width: 1400px) {
+  .gap-responsive {
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .gap-responsive {
+    gap: 0.5rem;
+  }
+}
+
+/* Botones de navegación responsive */
+.nav-buttons-responsive {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 1024px) {
+  .nav-buttons-responsive {
+    gap: 0.25rem;
+  }
+
+  .nav-buttons-responsive button {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Grid responsive para listas */
+.grid-responsive {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+@media (max-width: 1400px) {
+  .grid-responsive {
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-responsive {
+    gap: 0.5rem;
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tabla responsive */
+.table-responsive-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Header de equipo responsive */
+.equipment-header-responsive {
+  padding: 1rem 1.5rem;
+}
+
+@media (max-width: 1400px) {
+  .equipment-header-responsive {
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .equipment-header-responsive {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* Modal responsive */
+.modal-responsive {
+  max-width: 90vw;
+  max-height: 90vh;
+  max-height: 90dvh;
+}
+
+@media (min-width: 768px) {
+  .modal-responsive {
+    max-width: 80vw;
+  }
+}
+
+@media (min-width: 1024px) {
+  .modal-responsive {
+    max-width: 70vw;
+  }
 }
 
 /* ============================================
@@ -41,3 +312,97 @@ body {
 }
 
 /* Firefox ya usa los estilos inline scrollbar-width y scrollbar-color */
+
+/* ============================================
+   AJUSTES ESPECÍFICOS PARA LAPTOPS 14" (1366x768)
+   ============================================ */
+
+/* Breakpoint específico para 1366x768 */
+@media (min-width: 1280px) and (max-width: 1400px) {
+  /* Reducir tamaños de fuente y padding para mejor aprovechamiento del espacio */
+  .card-responsive {
+    padding: 0.875rem;
+  }
+
+  /* Headers de equipo más compactos */
+  .equipment-header-responsive {
+    padding: 0.625rem 1rem;
+  }
+
+  /* Botones de navegación más compactos */
+  .nav-buttons-responsive button {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Ajustes para pantallas con altura de 768px o menos */
+@media (max-height: 800px) {
+  /* Reducir padding vertical en headers */
+  .equipment-header-responsive {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  /* Reducir margen entre elementos */
+  .nav-buttons-responsive {
+    margin-top: 0.5rem;
+    gap: 0.375rem;
+  }
+
+  /* Cards más compactas */
+  .card-responsive {
+    padding: 0.75rem;
+  }
+
+  /* Reducir espaciado en grids */
+  .grid-responsive {
+    gap: 0.625rem;
+  }
+}
+
+/* ============================================
+   CLASES DE ALTURA MÍNIMA RESPONSIVE
+   ============================================ */
+
+/* Contenedor principal con altura dinámica */
+.min-h-dvh {
+  min-height: 100dvh;
+}
+
+/* Para navegadores que no soportan dvh */
+@supports not (min-height: 100dvh) {
+  .min-h-dvh {
+    min-height: 100vh;
+  }
+}
+
+/* ============================================
+   UTILIDADES ADICIONALES PARA LAPTOPS PEQUEÑAS
+   ============================================ */
+
+/* Ocultar elementos en pantallas pequeñas */
+@media (max-width: 1400px) {
+  .hide-on-small-laptop {
+    display: none;
+  }
+}
+
+/* Texto truncado con elipsis */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Flex container que envuelve en pantallas pequeñas */
+.flex-wrap-laptop {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 1400px) {
+  .flex-wrap-laptop {
+    flex-wrap: wrap;
+  }
+}
