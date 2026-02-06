@@ -30,7 +30,7 @@ export const PAGE_TYPES = {
 export const useExpediente = (equipmentId, plantId) => {
   const [equipment, setEquipment] = useState(null);
   const [images, setImages] = useState({ equipment: [], plate: [] });
-  const [pdfs, setPdfs] = useState({ factura: [], pedimento: [] });
+  const [pdfs, setPdfs] = useState({ factura: [], pedimento: [], r1: [] });
   const [pages, setPages] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -51,6 +51,7 @@ export const useExpediente = (equipmentId, plantId) => {
         serialNumber: equipmentData.serialNumber || 'N/A',
         invoiceNumber: equipmentData.invoiceNumber || 'N/A',
         customsNumber: equipmentData.customsNumber || 'N/A',
+        r1Number: equipmentData.r1Number || '',
         manufacturer: equipmentData.manufacturer || '',
         model: equipmentData.model || '',
         countryOfOrigin: equipmentData.countryOfOrigin || '',
@@ -112,6 +113,21 @@ export const useExpediente = (equipmentId, plantId) => {
       });
     }
 
+    // Páginas de R1 (Rectificación de Pedimento)
+    if (pdfsData.r1 && pdfsData.r1.length > 0) {
+      pdfsData.r1.forEach((pdf, index) => {
+        pagesList.push({
+          type: PAGE_TYPES.PDF,
+          title: `R1 - Rectificación ${index + 1}`,
+          data: {
+            url: pdf.url,
+            name: pdf.name || pdf.fileName,
+            category: 'r1'
+          }
+        });
+      });
+    }
+
     return pagesList;
   }, []);
 
@@ -140,7 +156,7 @@ export const useExpediente = (equipmentId, plantId) => {
 
       // Cargar PDFs
       const pdfsResult = await getEquipmentPDFs(plantId, equipmentId);
-      const pdfsData = pdfsResult.success ? pdfsResult.pdfs : { factura: [], pedimento: [] };
+      const pdfsData = pdfsResult.success ? pdfsResult.pdfs : { factura: [], pedimento: [], r1: [] };
 
       // Actualizar estado
       setEquipment(equipResult.data);

@@ -103,12 +103,13 @@ const EquipmentDetailModal = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [images, setImages] = useState({ equipment: [], plate: [] });
-  const [pdfs, setPdfs] = useState({ factura: [], pedimento: [] });
+  const [pdfs, setPdfs] = useState({ factura: [], pedimento: [], r1: [] });
   const [error, setError] = useState(null);
 
   // Estados para visores independientes
   const [showFacturaViewer, setShowFacturaViewer] = useState(false);
   const [showPedimentoViewer, setShowPedimentoViewer] = useState(false);
+  const [showR1Viewer, setShowR1Viewer] = useState(false);
   const [showEquipmentImagesViewer, setShowEquipmentImagesViewer] = useState(false);
   const [showPlateImagesViewer, setShowPlateImagesViewer] = useState(false);
 
@@ -118,7 +119,7 @@ const EquipmentDetailModal = ({
       loadEquipmentFiles();
     } else {
       setImages({ equipment: [], plate: [] });
-      setPdfs({ factura: [], pedimento: [] });
+      setPdfs({ factura: [], pedimento: [], r1: [] });
       setError(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -140,7 +141,7 @@ const EquipmentDetailModal = ({
       }
 
       if (pdfsResult.success) {
-        setPdfs(pdfsResult.pdfs || { factura: [], pedimento: [] });
+        setPdfs(pdfsResult.pdfs || { factura: [], pedimento: [], r1: [] });
       }
     } catch (err) {
       console.error("Error cargando archivos:", err);
@@ -154,14 +155,14 @@ const EquipmentDetailModal = ({
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === "Escape" && isOpen &&
-          !showFacturaViewer && !showPedimentoViewer &&
+          !showFacturaViewer && !showPedimentoViewer && !showR1Viewer &&
           !showEquipmentImagesViewer && !showPlateImagesViewer) {
         onClose();
       }
     };
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onClose, showFacturaViewer, showPedimentoViewer, showEquipmentImagesViewer, showPlateImagesViewer]);
+  }, [isOpen, onClose, showFacturaViewer, showPedimentoViewer, showR1Viewer, showEquipmentImagesViewer, showPlateImagesViewer]);
 
   // Imprimir
   const handlePrint = () => {
@@ -209,6 +210,7 @@ const EquipmentDetailModal = ({
   // Verificar si hay documentos e imágenes
   const hasFactura = pdfs.factura && pdfs.factura.length > 0;
   const hasPedimento = pdfs.pedimento && pdfs.pedimento.length > 0;
+  const hasR1 = pdfs.r1 && pdfs.r1.length > 0;
   const hasEquipmentImages = images.equipment && images.equipment.length > 0;
   const hasPlateImages = images.plate && images.plate.length > 0;
 
@@ -406,6 +408,38 @@ const EquipmentDetailModal = ({
                     mono={true}
                   />
 
+                  {/* Folio R1 - Solo para equipos EXTRANJEROS */}
+                  {equipment.origin === "EXTRANJERO" && (
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                        <FileText className="w-3.5 h-3.5 text-gray-400" />
+                        Folio R1 (Rectificación de Pedimento)
+                      </label>
+                      <div className="flex items-center gap-2">
+                        {equipment.r1Number ? (
+                          <>
+                            <p className="text-sm text-gray-900 font-mono flex-1">
+                              {equipment.r1Number}
+                            </p>
+                            {hasR1 && (
+                              <button
+                                onClick={() => setShowR1Viewer(true)}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors border border-red-200"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                VER
+                              </button>
+                            )}
+                          </>
+                        ) : (
+                          <p className="text-sm text-amber-600 italic font-medium">
+                            SIN RECTIFICACION DE PEDIMENTO
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {/* País de Origen */}
                   <InfoField
                     icon={Globe}
@@ -479,6 +513,17 @@ const EquipmentDetailModal = ({
           pdfUrl={pdfs.pedimento[0]?.url}
           title="Pedimento"
           fileName={pdfs.pedimento[0]?.name || `pedimento_${equipment.customsNumber || "equipo"}.pdf`}
+        />
+      )}
+
+      {/* Visor de PDF - R1 (Rectificación de Pedimento) */}
+      {showR1Viewer && hasR1 && (
+        <PDFViewer
+          isOpen={showR1Viewer}
+          onClose={() => setShowR1Viewer(false)}
+          pdfUrl={pdfs.r1[0]?.url}
+          title="R1 - Rectificación de Pedimento"
+          fileName={pdfs.r1[0]?.name || `r1_${equipment.r1Number || "equipo"}.pdf`}
         />
       )}
 

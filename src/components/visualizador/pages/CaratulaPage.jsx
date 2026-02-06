@@ -22,8 +22,10 @@ export const CaratulaPage = ({ data }) => {
     serialNumber,
     invoiceNumber,
     customsNumber,
+    r1Number,
     manufacturer,
-    model
+    model,
+    origin
   } = data;
 
   return (
@@ -78,6 +80,22 @@ export const CaratulaPage = ({ data }) => {
                 </p>
               </div>
             </div>
+
+            {/* Caja de Folio R1 - Solo para equipos EXTRANJEROS */}
+            {origin === 'EXTRANJERO' && (
+              <div className="border-2 border-gray-400 p-4">
+                <div className="text-center">
+                  <p className="text-lg font-semibold text-blue-900 uppercase">Folio R1</p>
+                  {r1Number ? (
+                    <p className="text-2xl font-bold text-gray-800">{r1Number}</p>
+                  ) : (
+                    <p className="text-lg font-medium text-amber-600 italic">
+                      SIN RECTIFICACION DE PEDIMENTO
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

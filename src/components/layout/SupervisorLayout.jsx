@@ -11,6 +11,7 @@
  */
 
 import React, { useCallback, useState } from "react";
+import { Menu } from "lucide-react";
 
 // Componentes compartidos
 import { SyncProgress } from "../shared/SyncProgress";
@@ -94,6 +95,9 @@ export const SupervisorLayout = ({
 }) => {
   // console.log(`🎭 Renderizando interfaz de ${isAdmin ? "ADMIN" : "SUPERVISOR"} v2.0`);
 
+  // Estado para el sidebar en móvil
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   // Estado para el modal de eliminación
   const [equipmentToDelete, setEquipmentToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -142,6 +146,7 @@ export const SupervisorLayout = ({
         observations: equip.observations || "",
         invoiceNumber: equip.invoiceNumber || "",
         customsNumber: equip.customsNumber || "",
+        r1Number: equip.r1Number || "",
       });
 
       // Cargar imágenes existentes
@@ -180,6 +185,7 @@ export const SupervisorLayout = ({
         const existingPDFs = {
           factura: [],
           pedimento: [],
+          r1: [],
         };
 
         Object.keys(equip.pdfs).forEach((category) => {
@@ -201,7 +207,7 @@ export const SupervisorLayout = ({
         setCapturedPDFs(existingPDFs);
       } else {
         // console.log("  ⚠️ Equipo NO tiene campo pdfs");
-        setCapturedPDFs({ factura: [], pedimento: [] });
+        setCapturedPDFs({ factura: [], pedimento: [], r1: [] });
       }
 
       setCurrentView("form");
@@ -452,15 +458,45 @@ export const SupervisorLayout = ({
         user={user}
         isOffline={isOffline}
         isAdmin={isAdmin}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
       {/* Área principal derecha - responsive */}
-      <main className="main-content-responsive flex-1 p-4 laptop-sm:p-5 xl:p-6 overflow-auto">
-        {/* Modal de progreso de sincronización */}
-        <SyncProgress show={showSyncProgress} progress={syncProgress} />
+      <main className="main-content-responsive flex-1 overflow-auto">
+        {/* Header móvil con botón hamburguesa */}
+        <div className="lg:hidden sticky top-0 z-30 bg-gray-900 px-4 py-3 flex items-center gap-3 shadow-md">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="p-2 text-white hover:bg-gray-800 rounded-lg transition-colors"
+            aria-label="Abrir menú"
+          >
+            <Menu size={24} />
+          </button>
+          <div className="flex-1">
+            <h1 className="text-white font-semibold text-sm">
+              {selectedPlant ? selectedPlant.name : "Auditoría Industrial"}
+            </h1>
+            {selectedPlant && (
+              <p className="text-gray-400 text-xs truncate">
+                {currentView === "equipment" && "Equipos"}
+                {currentView === "form" && (selectedEquipment ? "Editar Equipo" : "Nuevo Equipo")}
+                {currentView === "reports" && "Reportes"}
+                {currentView === "stats" && "Estadísticas"}
+                {currentView === "newPlant" && "Nueva Planta"}
+              </p>
+            )}
+          </div>
+        </div>
 
-        {/* Contenido principal */}
-        {renderMainContent()}
+        {/* Contenido con padding */}
+        <div className="p-4 lg:p-5 xl:p-6">
+          {/* Modal de progreso de sincronización */}
+          <SyncProgress show={showSyncProgress} progress={syncProgress} />
+
+          {/* Contenido principal */}
+          {renderMainContent()}
+        </div>
       </main>
 
       {/* Modal de confirmación de eliminación de equipo */}

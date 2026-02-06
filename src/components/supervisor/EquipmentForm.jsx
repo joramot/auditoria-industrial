@@ -48,12 +48,13 @@ export const EquipmentForm = ({
     observations: "",
     invoiceNumber: "",
     customsNumber: "",
+    r1Number: "",
   },
   onChange,
   onSave,
   onCancel,
   capturedImages = { equipment: [], plate: [] },
-  capturedPDFs = { factura: [], pedimento: [] },
+  capturedPDFs = { factura: [], pedimento: [], r1: [] },
   onImageChange,
   onPDFChange,
   selectedEquipment = null,
@@ -445,6 +446,49 @@ export const EquipmentForm = ({
               />
             </div>
           </div>
+
+          {/* Grupo: R1 - Rectificación de Pedimento (Solo para equipos EXTRANJEROS) */}
+          {formData.origin === "EXTRANJERO" && (
+            <>
+              {/* Separador */}
+              <div className="border-t border-gray-200"></div>
+
+              <div className="space-y-3">
+                {/* Folio R1 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Folio R1 (Rectificación de Pedimento)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.r1Number}
+                    onChange={(e) => handleFieldChange("r1Number", e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Ej: R1-2023-001"
+                    disabled={isLoading}
+                  />
+                </div>
+
+                {/* Documento R1 PDF */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Documento R1 (PDF)
+                  </label>
+                  <PDFUploader
+                    category="r1"
+                    label="Documentos R1"
+                    pdfs={capturedPDFs.r1}
+                    onPDFsChange={(pdfs) => onPDFChange("r1", pdfs)}
+                    equipmentId={selectedEquipment?.id}
+                    isOnline={!isOffline}
+                    maxPDFs={5}
+                    maxSizeMB={20}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

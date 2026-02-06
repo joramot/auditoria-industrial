@@ -1,24 +1,24 @@
 import React, { useState } from "react";
 import { Upload, Trash2, Download, File, AlertCircle } from "lucide-react";
-import { deleteFactura, deletePedimento } from "../../services/deletion/deletionService";
+import { deleteFactura, deletePedimento, deleteR1 } from "../../services/deletion/deletionService";
 
 /**
  * PDF UPLOADER COMPONENT CON FUNCIONALIDAD DE ELIMINACION
- * 
+ *
  * Componente para seleccionar, validar, subir y ELIMINAR archivos PDF
- * Soporta facturas y pedimentos
- * 
- * @version 2.0 - Con eliminacion integrada
+ * Soporta facturas, pedimentos y documentos R1
+ *
+ * @version 2.1 - Con soporte para R1 y corrección de eliminación
  */
 
 const PDFUploader = ({
-  category,                    // "factura" o "pedimento"
+  category,                    // "factura", "pedimento" o "r1"
   label = "Documentos PDF",
   pdfs = [],                   // Array de PDFs ya cargados
   onPDFsChange,                // Callback cuando cambian los PDFs
   equipmentId,                 // ID del equipo (para eliminacion)
   isOnline = true,             // Estado de conexion
-  maxPDFs = 5,                 // Maximo de PDFs por categori­a
+  maxPDFs = 5,                 // Maximo de PDFs por categoria
   maxSizeMB = 20,              // Tamaño maximo en MB
   disabled = false,
 }) => {
@@ -27,22 +27,29 @@ const PDFUploader = ({
   const [deletingPdfId, setDeletingPdfId] = useState(null);
 
   /**
+   * Obtener el nombre del PDF (compatible con ambas estructuras)
+   */
+  const getPdfName = (pdf) => {
+    return pdf.name || pdf.fileName || "Archivo PDF";
+  };
+
+  /**
    * Validar archivo PDF
    */
   const validatePDF = (file) => {
     if (file.type !== "application/pdf") {
-      setError("âŒ Solo se aceptan archivos PDF");
+      setError("Solo se aceptan archivos PDF");
       return false;
     }
 
     const fileSizeMB = file.size / (1024 * 1024);
     if (fileSizeMB > maxSizeMB) {
-      setError(`âŒ El archivo supera ${maxSizeMB}MB (${fileSizeMB.toFixed(2)}MB)`);
+      setError(`El archivo supera ${maxSizeMB}MB (${fileSizeMB.toFixed(2)}MB)`);
       return false;
     }
 
     if (pdfs.length >= maxPDFs) {
-      setError(`âŒ MÃ¡ximo ${maxPDFs} archivos por categorÃ­a`);
+      setError(`Máximo ${maxPDFs} archivos por categoría`);
       return false;
     }
 
@@ -55,10 +62,10 @@ const PDFUploader = ({
    */
   const handleFileSelect = (event) => {
     const file = event.target.files?.[0];
-    
+
     if (file) {
-      console.log(`ðŸ“„ Archivo seleccionado: ${file.name} (${(file.size / 1024).toFixed(2)}KB)`);
-      
+      console.log(`Archivo seleccionado: ${file.name} (${(file.size / 1024).toFixed(2)}KB)`);
+
       if (!validatePDF(file)) {
         event.target.value = "";
         return;
@@ -73,11 +80,11 @@ const PDFUploader = ({
         isNew: true,
       };
 
-      console.log(`✅ PDF validado: ${file.name}`);
-      console.log('📦 Objeto PDF creado:', { name: newPDF.name, size: newPDF.size, isNew: newPDF.isNew, hasFile: !!newPDF.file });
-      
+      console.log(`PDF validado: ${file.name}`);
+      console.log('Objeto PDF creado:', { name: newPDF.name, size: newPDF.size, isNew: newPDF.isNew, hasFile: !!newPDF.file });
+
       const updatedPDFs = [...pdfs, newPDF];
-      console.log('📤 Llamando onPDFsChange con', updatedPDFs.length, 'PDF(s)');
+      console.log('Llamando onPDFsChange con', updatedPDFs.length, 'PDF(s)');
       onPDFsChange(updatedPDFs);
 
       event.target.value = "";
@@ -86,23 +93,24 @@ const PDFUploader = ({
   };
 
   /**
-   * ELIMINAR PDF - NUEVA FUNCION
+   * ELIMINAR PDF - Soporta factura, pedimento y r1
    */
   const handleDeletePDF = async (index) => {
     const pdfToDelete = pdfs[index];
-    
+    const pdfName = getPdfName(pdfToDelete);
+
     // Confirmacion
-    if (!window.confirm(`Â¿Eliminar ${pdfToDelete.name}?`)) {
+    if (!window.confirm(`¿Eliminar ${pdfName}?`)) {
       return;
     }
 
     setDeletingPdfId(index);
-    console.log(`ðŸ—‘ï¸ Eliminando PDF: ${pdfToDelete.name}`);
+    console.log(`Eliminando PDF: ${pdfName}`);
 
     try {
       // Si es un PDF nuevo (no sincronizado), solo remover de la lista
       if (pdfToDelete.isNew) {
-        console.log("ðŸ“¦ PDF no sincronizado, removiendo de la lista...");
+        console.log("PDF no sincronizado, removiendo de la lista...");
         if (pdfToDelete.preview) {
           URL.revokeObjectURL(pdfToDelete.preview);
         }
@@ -112,9 +120,16 @@ const PDFUploader = ({
         return;
       }
 
-      // Si ya estÃ¡ sincronizado, usar funcion de eliminacion
-      const deleteFunction = category === "factura" ? deleteFactura : deletePedimento;
-      
+      // Si ya está sincronizado, usar función de eliminación según categoría
+      let deleteFunction;
+      if (category === "factura") {
+        deleteFunction = deleteFactura;
+      } else if (category === "r1") {
+        deleteFunction = deleteR1;
+      } else {
+        deleteFunction = deletePedimento;
+      }
+
       const result = await deleteFunction(
         equipmentId,
         pdfToDelete,
@@ -122,20 +137,20 @@ const PDFUploader = ({
       );
 
       if (result.success) {
-        console.log("âœ… PDF eliminado correctamente");
-        
+        console.log("PDF eliminado correctamente");
+
         // Remover de la lista local
         const updatedPDFs = pdfs.filter((_, i) => i !== index);
         onPDFsChange(updatedPDFs);
-        
+
         // Mostrar mensaje
         alert(result.message);
       } else {
-        console.error("âŒ Error al eliminar PDF:", result.error);
+        console.error("Error al eliminar PDF:", result.error);
         alert(`Error: ${result.error}`);
       }
     } catch (error) {
-      console.error("âŒ Error crÃ­tico al eliminar PDF:", error);
+      console.error("Error crítico al eliminar PDF:", error);
       alert("Error al eliminar el PDF. Intenta de nuevo.");
     } finally {
       setDeletingPdfId(null);
@@ -147,25 +162,26 @@ const PDFUploader = ({
    */
   // eslint-disable-next-line no-unused-vars
   const handleRemovePDF = (index) => {
-    console.log(`ðŸ—‘ï¸ Removiendo PDF en Ã­ndice: ${index}`);
-    
+    console.log(`Removiendo PDF en índice: ${index}`);
+
     const pdfToRemove = pdfs[index];
-    
+
     if (pdfToRemove.preview && pdfToRemove.isNew) {
       URL.revokeObjectURL(pdfToRemove.preview);
     }
 
     const updatedPDFs = pdfs.filter((_, i) => i !== index);
     onPDFsChange(updatedPDFs);
-    
-    console.log(`âœ… PDF removido. Quedan: ${updatedPDFs.length}`);
+
+    console.log(`PDF removido. Quedan: ${updatedPDFs.length}`);
   };
 
   /**
    * Abrir PDF en nueva pestaña
    */
   const handleDownloadPDF = (pdf) => {
-    console.log(`📄 Abriendo PDF: ${pdf.name}`);
+    const pdfName = getPdfName(pdf);
+    console.log(`Abriendo PDF: ${pdfName}`);
 
     const url = pdf.url || pdf.preview;
 
@@ -176,7 +192,7 @@ const PDFUploader = ({
   };
 
   /**
-   * Formatear tamaÃ±o de archivo
+   * Formatear tamaño de archivo
    */
   const formatFileSize = (bytes) => {
     if (bytes === 0) return "0 B";
@@ -206,11 +222,11 @@ const PDFUploader = ({
         id={`pdf-input-${category}`}
       />
 
-      {/* BotÃ³n para seleccionar archivo */}
+      {/* Botón para seleccionar archivo */}
       <label
         htmlFor={`pdf-input-${category}`}
         className={`
-          flex items-center justify-center gap-2 px-4 py-2 
+          flex items-center justify-center gap-2 px-4 py-2
           rounded-lg border-2 border-dashed border-blue-300
           bg-blue-50 text-blue-700 font-medium
           cursor-pointer transition-all
@@ -223,15 +239,15 @@ const PDFUploader = ({
         <Upload className="w-5 h-5" />
         <span>
           {pdfs.length >= maxPDFs
-            ? `MÃ¡ximo ${maxPDFs} archivos`
-            : `Seleccionar PDF (${pdfs.length}/${maxPDFs})`
+            ? `Máximo ${maxPDFs} archivos`
+            : `Máximo ${maxPDFs} archivos`
           }
         </span>
       </label>
 
-      {/* InformaciÃ³n de lÃ­mites */}
+      {/* Información de límites */}
       <p className="text-xs text-gray-500 mt-2">
-        ðŸ“„ MÃ¡ximo: {maxPDFs} archivo{maxPDFs > 1 ? "s" : ""} | TamaÃ±o: hasta {maxSizeMB}MB
+        Máximo: {maxPDFs} archivo{maxPDFs > 1 ? "s" : ""} | Tamaño: hasta {maxSizeMB}MB
       </p>
 
       {/* Lista de PDFs cargados */}
@@ -240,7 +256,7 @@ const PDFUploader = ({
           <h4 className="text-sm font-medium text-gray-700">
             {pdfs.length} archivo{pdfs.length > 1 ? "s" : ""} cargado{pdfs.length > 1 ? "s" : ""}:
           </h4>
-          
+
           <div className="space-y-2">
             {pdfs.map((pdf, index) => (
               <div
@@ -252,17 +268,17 @@ const PDFUploader = ({
                 {/* Icono de PDF */}
                 <File className="w-5 h-5 text-red-600 flex-shrink-0" />
 
-                {/* InformaciÃ³n del PDF */}
+                {/* Información del PDF */}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-800 truncate">
-                    {pdf.name}
+                    {getPdfName(pdf)}
                   </p>
                   <p className="text-xs text-gray-500">
                     {formatFileSize(pdf.size)}
                   </p>
                 </div>
 
-                {/* Status de sincronizaciÃ³n */}
+                {/* Status de sincronización */}
                 {pdf.isNew ? (
                   <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded whitespace-nowrap">
                     Pendiente
@@ -273,10 +289,10 @@ const PDFUploader = ({
                   </span>
                 )}
 
-                {/* Botones de acciÃ³n */}
+                {/* Botones de acción */}
                 {hoveredPdfId === index && (
                   <div className="flex gap-1">
-                    {/* BotÃ³n descargar */}
+                    {/* Botón descargar */}
                     <button
                       onClick={() => handleDownloadPDF(pdf)}
                       className="p-1 text-gray-600 hover:text-blue-600 rounded transition-colors"
@@ -286,7 +302,7 @@ const PDFUploader = ({
                       <Download className="w-4 h-4" />
                     </button>
 
-                    {/* BotÃ³n eliminar - NUEVO: Funciona para PDFs nuevos y sincronizados */}
+                    {/* Botón eliminar - Funciona para PDFs nuevos y sincronizados */}
                     <button
                       onClick={() => handleDeletePDF(index)}
                       className={`p-1 rounded transition-colors ${
@@ -314,14 +330,14 @@ const PDFUploader = ({
       {/* Mensaje si no hay PDFs */}
       {(!pdfs || pdfs.length === 0) && (
         <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg text-center text-sm text-blue-700">
-          ðŸ’¡ Selecciona un PDF de {category} para cargarlo
+          Selecciona un PDF de {category} para cargarlo
         </div>
       )}
 
       {/* Indicador de modo offline */}
       {!isOnline && (
         <div className="mt-3 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-700">
-          ðŸ“¡ Modo Offline: Los cambios se sincronizarÃ¡n al conectar
+          Modo Offline: Los cambios se sincronizarán al conectar
         </div>
       )}
     </div>

@@ -38,6 +38,7 @@ const FILTERABLE_COLUMNS = [
   { key: "serialNumber", label: "No. Serie", field: "serialNumber" },
   { key: "invoiceNumber", label: "# Factura", field: "invoiceNumber" },
   { key: "customsNumber", label: "# Pedimento", field: "customsNumber" },
+  { key: "r1Number", label: "Folio R1", field: "r1Number" },
 ];
 
 /**
@@ -180,6 +181,7 @@ export const EquipmentTable = ({
     serialNumber: "",
     invoiceNumber: "",
     customsNumber: "",
+    r1Number: "",
   });
 
   // Verificar si hay filtros activos
@@ -209,6 +211,7 @@ export const EquipmentTable = ({
       serialNumber: "",
       invoiceNumber: "",
       customsNumber: "",
+      r1Number: "",
     });
     if (onSearchChange) {
       onSearchChange("");
@@ -229,7 +232,8 @@ export const EquipmentTable = ({
           eq.model?.toLowerCase().includes(term) ||
           eq.serialNumber?.toLowerCase().includes(term) ||
           eq.invoiceNumber?.toLowerCase().includes(term) ||
-          eq.customsNumber?.toLowerCase().includes(term)
+          eq.customsNumber?.toLowerCase().includes(term) ||
+          eq.r1Number?.toLowerCase().includes(term)
       );
     }
 
@@ -391,6 +395,9 @@ export const EquipmentTable = ({
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider hidden xl:table-cell min-w-[100px]">
                 # Pedimento
               </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider hidden xl:table-cell min-w-[140px]">
+                Folio R1
+              </th>
               <th className="px-4 py-3 text-center text-xs font-semibold text-gray-900 uppercase tracking-wider w-20">
                 Acciones
               </th>
@@ -444,6 +451,13 @@ export const EquipmentTable = ({
                     placeholder="Filtrar..."
                   />
                 </th>
+                <th className="px-2 py-2 hidden xl:table-cell">
+                  <ColumnFilterInput
+                    value={columnFilters.r1Number}
+                    onChange={(value) => updateColumnFilter("r1Number", value)}
+                    placeholder="Filtrar..."
+                  />
+                </th>
                 <th className="px-4 py-2">
                   {/* Columna acciones sin filtro */}
                 </th>
@@ -453,7 +467,7 @@ export const EquipmentTable = ({
           <tbody className="divide-y divide-gray-200">
             {isLoading ? (
               <tr>
-                <td colSpan="8" className="px-4 py-12 text-center">
+                <td colSpan="9" className="px-4 py-12 text-center">
                   <div className="flex flex-col items-center justify-center text-gray-500">
                     <Loader2 size={32} className="animate-spin mb-2" />
                     <span>Cargando equipos...</span>
@@ -462,7 +476,7 @@ export const EquipmentTable = ({
               </tr>
             ) : paginatedEquipment.length === 0 ? (
               <tr>
-                <td colSpan="8" className="px-4 py-12 text-center">
+                <td colSpan="9" className="px-4 py-12 text-center">
                   <div className="flex flex-col items-center justify-center text-gray-500">
                     {searchTerm || hasActiveFilters ? (
                       <>
@@ -539,6 +553,17 @@ export const EquipmentTable = ({
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600 hidden xl:table-cell">
                     {equip.customsNumber || "-"}
+                  </td>
+                  <td className="px-4 py-3 text-sm hidden xl:table-cell">
+                    {equip.origin === "EXTRANJERO" ? (
+                      equip.r1Number ? (
+                        <span className="text-gray-600 font-mono">{equip.r1Number}</span>
+                      ) : (
+                        <span className="text-gray-400 text-xs italic">SIN RECTIFICACION DE PEDIMENTO</span>
+                      )
+                    ) : (
+                      <span className="text-gray-300">-</span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-center actions-column" onClick={(e) => e.stopPropagation()}>
                     <ActionMenu

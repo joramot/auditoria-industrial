@@ -155,14 +155,15 @@ export const uploadMultiplePDFs = async (files, category, plantId, equipmentId, 
 };
 
 /**
- * ðŸ“„ OBTENER PDFs DE UN EQUIPO
+ * ðŸ"„ OBTENER PDFs DE UN EQUIPO
  */
 export const getEquipmentPDFs = async (plantId, equipmentId) => {
   try {
-    const categories = ['factura', 'pedimento'];
+    const categories = ['factura', 'pedimento', 'r1'];
     const pdfs = {
       factura: [],
-      pedimento: []
+      pedimento: [],
+      r1: []
     };
     
     for (const category of categories) {
@@ -230,7 +231,7 @@ export const deletePDF = async (pdfPath) => {
  */
 export const deleteEquipmentPDFs = async (plantId, equipmentId) => {
   try {
-    const categories = ['factura', 'pedimento'];
+    const categories = ['factura', 'pedimento', 'r1'];
     let deletedCount = 0;
     
     for (const category of categories) {
@@ -489,7 +490,8 @@ export const addEquipment = async (plantId, equipmentData) => {
       observations: '',                 // Campo editable por auditor
       // ========== CAMPOS DE EXPEDIENTE ========== ✨
       invoiceNumber: equipmentData.invoiceNumber || '',    // Número de factura
-      customsNumber: equipmentData.customsNumber || ''     // Número de pedimento
+      customsNumber: equipmentData.customsNumber || '',    // Número de pedimento
+      r1Number: equipmentData.r1Number || ''               // Folio R1 (rectificación de pedimento)
     });
 
     // Actualizar contador
@@ -546,7 +548,8 @@ export const saveEquipment = async (plantId, equipmentData, equipmentId = null) 
         observations: '',
         // ========== CAMPOS DE EXPEDIENTE ========== ✨
         invoiceNumber: equipmentData.invoiceNumber || '',
-        customsNumber: equipmentData.customsNumber || ''
+        customsNumber: equipmentData.customsNumber || '',
+        r1Number: equipmentData.r1Number || ''
       });
 
       // Actualizar contador de equipos en la planta

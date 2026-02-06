@@ -65,6 +65,7 @@ export const useEquipment = (
     observations: "",
     invoiceNumber: "",
     customsNumber: "",
+    r1Number: "",
   });
   
   // Estados de imágenes capturadas
@@ -77,6 +78,7 @@ export const useEquipment = (
   const [capturedPDFs, setCapturedPDFs] = useState({
     factura: [],
     pedimento: [],
+    r1: [],
   });
 
   // ============================================
@@ -155,8 +157,9 @@ export const useEquipment = (
       observations: "",
       invoiceNumber: "",
       customsNumber: "",
+      r1Number: "",
     });
-    
+
     setCapturedImages({
       equipment: [],
       plate: [],
@@ -165,8 +168,9 @@ export const useEquipment = (
     setCapturedPDFs({
       factura: [],
       pedimento: [],
+      r1: [],
     });
-    
+
     setCurrentView("form");
     
     // console.log("✅ Formulario limpio y listo para nuevo equipo");
@@ -195,8 +199,9 @@ export const useEquipment = (
       observations: "",
       invoiceNumber: "",
       customsNumber: "",
+      r1Number: "",
     });
-    
+
     setCapturedImages({
       equipment: [],
       plate: [],
@@ -205,8 +210,9 @@ export const useEquipment = (
     setCapturedPDFs({
       factura: [],
       pedimento: [],
+      r1: [],
     });
-    
+
     setCurrentView("equipment");
     
     // console.log("✅ Formulario limpiado, volviendo a lista de equipos");
@@ -247,6 +253,7 @@ export const useEquipment = (
         observations: formData.observations,
         invoiceNumber: formData.invoiceNumber,
         customsNumber: formData.customsNumber,
+        r1Number: formData.origin === "EXTRANJERO" ? formData.r1Number : "",
         capturedBy: "Usuario Actual",
         createdAt: new Date().toISOString(),
       };
@@ -303,20 +310,20 @@ export const useEquipment = (
           }
 
           // Guardar PDFs en Base64
-          const pdfCategories = ["factura", "pedimento"];
+          const pdfCategories = ["factura", "pedimento", "r1"];
 
           for (const category of pdfCategories) {
             const pdfs = capturedPDFs[category];
             if (pdfs && pdfs.length > 0) {
               // console.log(`📄 Procesando ${pdfs.length} PDFs de categoría ${category}`);
-              
+
               for (const pdf of pdfs) {
                 if (pdf.file) {
                   // console.log(`  📄 Guardando PDF ${category}:`, pdf.file.name);
-                  
+
                   try {
                     const result = await savePDFLocal(pdf.file, category, equipmentId);
-                    
+
                     if (result.success) {
                       // console.log(`  ✅ PDF guardado:`, result.data.id);
                     } else {
@@ -354,8 +361,11 @@ export const useEquipment = (
             }
           }
 
-          // Agregar PDFs a cola de sincronización
+          // Agregar PDFs a cola de sincronización (solo r1 si es extranjero)
           for (const category of pdfCategories) {
+            // Skip r1 si no es extranjero
+            if (category === "r1" && formData.origin !== "EXTRANJERO") continue;
+
             const pdfs = capturedPDFs[category];
             if (pdfs && pdfs.length > 0) {
               for (const pdf of pdfs) {
@@ -496,13 +506,16 @@ export const useEquipment = (
         // console.log(`📊 Total de imágenes subidas: ${totalImagesUploaded}`);
 
         // SUBIR NUEVOS PDFs
-        const pdfCategories = ["factura", "pedimento"];
+        const pdfCategories = ["factura", "pedimento", "r1"];
         const uploadedPDFUrls = {};
         let totalPDFsUploaded = 0;
 
         for (const category of pdfCategories) {
+          // Skip r1 si no es extranjero
+          if (category === "r1" && formData.origin !== "EXTRANJERO") continue;
+
           const pdfs = capturedPDFs[category];
-          
+
           if (pdfs && pdfs.length > 0) {
             uploadedPDFUrls[category] = [];
 
@@ -522,7 +535,7 @@ export const useEquipment = (
 
                   if (uploadResult.success) {
                     // console.log(`✅ PDF ${category} subido`);
-                    
+
                     uploadedPDFUrls[category].push({
                       url: uploadResult.url,
                       path: uploadResult.path,
@@ -629,6 +642,7 @@ export const useEquipment = (
       observations: "",
       invoiceNumber: "",
       customsNumber: "",
+      r1Number: "",
     });
     setCapturedImages({
       equipment: [],
@@ -637,6 +651,7 @@ export const useEquipment = (
     setCapturedPDFs({
       factura: [],
       pedimento: [],
+      r1: [],
     });
     setSelectedEquipment(null);
   };

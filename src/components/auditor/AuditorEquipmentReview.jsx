@@ -132,11 +132,12 @@ const AuditorEquipmentReview = ({
   // Estados para archivos
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   const [images, setImages] = useState({ equipment: [], plate: [] });
-  const [pdfs, setPdfs] = useState({ factura: [], pedimento: [] });
+  const [pdfs, setPdfs] = useState({ factura: [], pedimento: [], r1: [] });
 
   // Estados para visores
   const [showFacturaViewer, setShowFacturaViewer] = useState(false);
   const [showPedimentoViewer, setShowPedimentoViewer] = useState(false);
+  const [showR1Viewer, setShowR1Viewer] = useState(false);
   const [showEquipmentImagesViewer, setShowEquipmentImagesViewer] = useState(false);
   const [showPlateImagesViewer, setShowPlateImagesViewer] = useState(false);
 
@@ -181,7 +182,7 @@ const AuditorEquipmentReview = ({
       }
 
       if (pdfsResult.success) {
-        setPdfs(pdfsResult.pdfs || { factura: [], pedimento: [] });
+        setPdfs(pdfsResult.pdfs || { factura: [], pedimento: [], r1: [] });
       }
     } catch (error) {
       console.error("Error cargando archivos:", error);
@@ -215,6 +216,7 @@ const AuditorEquipmentReview = ({
   // Verificar disponibilidad de documentos e imagenes
   const hasFactura = pdfs.factura && pdfs.factura.length > 0;
   const hasPedimento = pdfs.pedimento && pdfs.pedimento.length > 0;
+  const hasR1 = pdfs.r1 && pdfs.r1.length > 0;
   const hasEquipmentImages = images.equipment && images.equipment.length > 0;
   const hasPlateImages = images.plate && images.plate.length > 0;
 
@@ -551,6 +553,38 @@ const AuditorEquipmentReview = ({
                   mono={true}
                 />
 
+                {/* Folio R1 - Solo para equipos EXTRANJEROS */}
+                {equipment.origin === "EXTRANJERO" && (
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5 text-gray-400" />
+                      Folio R1 (Rectificacion de Pedimento)
+                    </label>
+                    <div className="flex items-center gap-2">
+                      {equipment.r1Number ? (
+                        <>
+                          <p className="text-sm text-gray-900 font-mono flex-1">
+                            {equipment.r1Number}
+                          </p>
+                          {hasR1 && (
+                            <button
+                              onClick={() => setShowR1Viewer(true)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors border border-red-200"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              VER
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <p className="text-sm text-amber-600 italic font-medium">
+                          SIN RECTIFICACION DE PEDIMENTO
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Pais de Origen */}
                 <InfoField
                   icon={Globe}
@@ -710,6 +744,17 @@ const AuditorEquipmentReview = ({
           pdfUrl={pdfs.pedimento[0]?.url}
           title="Pedimento"
           fileName={pdfs.pedimento[0]?.name || `pedimento_${equipment.customsNumber || "equipo"}.pdf`}
+        />
+      )}
+
+      {/* Visor de PDF - R1 (Rectificacion de Pedimento) */}
+      {showR1Viewer && hasR1 && (
+        <PDFViewer
+          isOpen={showR1Viewer}
+          onClose={() => setShowR1Viewer(false)}
+          pdfUrl={pdfs.r1[0]?.url}
+          title="R1 - Rectificacion de Pedimento"
+          fileName={pdfs.r1[0]?.name || `r1_${equipment.r1Number || "equipo"}.pdf`}
         />
       )}
 

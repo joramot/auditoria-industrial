@@ -39,24 +39,34 @@ import {
  */
 export const deletePedimento = async (equipmentId, pdfData, isOnline = true) => {
   try {
-    console.log("🗑️ Eliminando pedimento:", pdfData.fileName);
+    console.log("🗑️ Eliminando pedimento:", pdfData.fileName || pdfData.name);
 
     if (isOnline) {
-      // MODO ONLINE: Eliminar de Firebase Storage
-      const fileRef = ref(storage, pdfData.path);
-      await deleteObject(fileRef);
-      console.log("✅ Pedimento eliminado de Storage");
+      // MODO ONLINE: Intentar eliminar de Firebase Storage
+      try {
+        const fileRef = ref(storage, pdfData.path);
+        await deleteObject(fileRef);
+        console.log("✅ Pedimento eliminado de Storage");
+      } catch (storageError) {
+        // Si el archivo no existe en Storage, continuar con la eliminación de Firestore
+        if (storageError.code === 'storage/object-not-found') {
+          console.log("ℹ️ Archivo no encontrado en Storage, continuando con limpieza de Firestore");
+        } else {
+          throw storageError;
+        }
+      }
 
       // Actualizar documento en Firestore (remover del array)
       const equipmentRef = doc(db, "equipment", equipmentId);
       const equipmentDoc = await getDoc(equipmentRef);
-      
+
       if (equipmentDoc.exists()) {
         const equipmentData = equipmentDoc.data();
+        const pdfFileName = pdfData.fileName || pdfData.name;
         const updatedPedimentos = (equipmentData.pdfs?.pedimento || []).filter(
-          pdf => pdf.fileName !== pdfData.fileName
+          pdf => (pdf.fileName || pdf.name) !== pdfFileName
         );
-        
+
         await updateDoc(equipmentRef, {
           'pdfs.pedimento': updatedPedimentos
         });
@@ -73,10 +83,10 @@ export const deletePedimento = async (equipmentId, pdfData, isOnline = true) => 
       });
 
       console.log("📦 Eliminación de pedimento programada para sincronización");
-      return { 
-        success: true, 
+      return {
+        success: true,
         message: "Pedimento marcado para eliminar. Se sincronizará al conectar",
-        offline: true 
+        offline: true
       };
     }
   } catch (error) {
@@ -90,24 +100,34 @@ export const deletePedimento = async (equipmentId, pdfData, isOnline = true) => 
  */
 export const deleteFactura = async (equipmentId, pdfData, isOnline = true) => {
   try {
-    console.log("🗑️ Eliminando factura:", pdfData.fileName);
+    console.log("🗑️ Eliminando factura:", pdfData.fileName || pdfData.name);
 
     if (isOnline) {
-      // MODO ONLINE: Eliminar de Firebase Storage
-      const fileRef = ref(storage, pdfData.path);
-      await deleteObject(fileRef);
-      console.log("✅ Factura eliminada de Storage");
+      // MODO ONLINE: Intentar eliminar de Firebase Storage
+      try {
+        const fileRef = ref(storage, pdfData.path);
+        await deleteObject(fileRef);
+        console.log("✅ Factura eliminada de Storage");
+      } catch (storageError) {
+        // Si el archivo no existe en Storage, continuar con la eliminación de Firestore
+        if (storageError.code === 'storage/object-not-found') {
+          console.log("ℹ️ Archivo no encontrado en Storage, continuando con limpieza de Firestore");
+        } else {
+          throw storageError;
+        }
+      }
 
       // Actualizar documento en Firestore (remover del array)
       const equipmentRef = doc(db, "equipment", equipmentId);
       const equipmentDoc = await getDoc(equipmentRef);
-      
+
       if (equipmentDoc.exists()) {
         const equipmentData = equipmentDoc.data();
+        const pdfFileName = pdfData.fileName || pdfData.name;
         const updatedFacturas = (equipmentData.pdfs?.factura || []).filter(
-          pdf => pdf.fileName !== pdfData.fileName
+          pdf => (pdf.fileName || pdf.name) !== pdfFileName
         );
-        
+
         await updateDoc(equipmentRef, {
           'pdfs.factura': updatedFacturas
         });
@@ -124,14 +144,75 @@ export const deleteFactura = async (equipmentId, pdfData, isOnline = true) => {
       });
 
       console.log("📦 Eliminación de factura programada para sincronización");
-      return { 
-        success: true, 
+      return {
+        success: true,
         message: "Factura marcada para eliminar. Se sincronizará al conectar",
-        offline: true 
+        offline: true
       };
     }
   } catch (error) {
     console.error("❌ Error al eliminar factura:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * 📄 ELIMINAR UN DOCUMENTO R1 ESPECÍFICO
+ */
+export const deleteR1 = async (equipmentId, pdfData, isOnline = true) => {
+  try {
+    console.log("🗑️ Eliminando documento R1:", pdfData.fileName || pdfData.name);
+
+    if (isOnline) {
+      // MODO ONLINE: Intentar eliminar de Firebase Storage
+      try {
+        const fileRef = ref(storage, pdfData.path);
+        await deleteObject(fileRef);
+        console.log("✅ Documento R1 eliminado de Storage");
+      } catch (storageError) {
+        // Si el archivo no existe en Storage, continuar con la eliminación de Firestore
+        if (storageError.code === 'storage/object-not-found') {
+          console.log("ℹ️ Archivo no encontrado en Storage, continuando con limpieza de Firestore");
+        } else {
+          throw storageError;
+        }
+      }
+
+      // Actualizar documento en Firestore (remover del array)
+      const equipmentRef = doc(db, "equipment", equipmentId);
+      const equipmentDoc = await getDoc(equipmentRef);
+
+      if (equipmentDoc.exists()) {
+        const equipmentData = equipmentDoc.data();
+        const pdfFileName = pdfData.fileName || pdfData.name;
+        const updatedR1s = (equipmentData.pdfs?.r1 || []).filter(
+          pdf => (pdf.fileName || pdf.name) !== pdfFileName
+        );
+
+        await updateDoc(equipmentRef, {
+          'pdfs.r1': updatedR1s
+        });
+        console.log("✅ Referencia del documento R1 eliminada de Firestore");
+      }
+
+      return { success: true, message: "Documento R1 eliminado correctamente" };
+    } else {
+      // MODO OFFLINE: Agregar a cola de sincronización
+      await addToSyncQueue("DELETE_R1", {
+        equipmentId,
+        pdfData,
+        timestamp: new Date().toISOString()
+      });
+
+      console.log("📦 Eliminación de R1 programada para sincronización");
+      return {
+        success: true,
+        message: "Documento R1 marcado para eliminar. Se sincronizará al conectar",
+        offline: true
+      };
+    }
+  } catch (error) {
+    console.error("❌ Error al eliminar documento R1:", error);
     return { success: false, error: error.message };
   }
 };
@@ -733,6 +814,7 @@ const deletionService = {
   // PDFs
   deletePedimento,
   deleteFactura,
+  deleteR1,
 
   // Imágenes
   deleteEquipmentImage,
