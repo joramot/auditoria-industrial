@@ -11,7 +11,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from "react";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Menu } from "lucide-react";
 
 // Componentes del Auditor
 import AuditorSidebar from "../auditor/AuditorSidebar";
@@ -68,6 +68,7 @@ export const AuditorLayout = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Estados de filtros
   const [searchTerm, setSearchTerm] = useState("");
@@ -440,10 +441,21 @@ export const AuditorLayout = ({ user }) => {
         user={user}
         isOffline={isOffline}
         equipmentCounts={equipmentCountByPlant}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
       {/* Area principal derecha - responsive */}
       <main className="main-content-responsive flex-1 p-4 laptop-sm:p-5 xl:p-6 overflow-auto">
+        {/* Boton hamburguesa para movil */}
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="md:hidden fixed top-3 left-3 z-30 p-2 bg-gray-900 text-white rounded-lg shadow-lg hover:bg-gray-800 transition-colors"
+          aria-label="Abrir menu"
+        >
+          <Menu size={22} />
+        </button>
+
         {/* Mensaje de exito */}
         {successMessage && (
           <div className="fixed top-4 right-4 bg-green-500 text-white px-4 laptop-sm:px-6 py-2 laptop-sm:py-3 rounded-lg shadow-lg z-50 flex items-center gap-2 animate-fade-in text-sm laptop-sm:text-base">
