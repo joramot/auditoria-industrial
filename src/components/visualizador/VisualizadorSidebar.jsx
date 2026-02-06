@@ -22,6 +22,7 @@ import {
   Eye,
   User,
   Building2,
+  X,
 } from "lucide-react";
 import { logout } from "../../services/auth/authService";
 
@@ -59,6 +60,8 @@ export const VisualizadorSidebar = ({
   user,
   isOffline = false,
   equipmentCounts = {},
+  isOpen = false,
+  onClose,
 }) => {
 
   // Manejar seleccion de planta
@@ -87,18 +90,52 @@ export const VisualizadorSidebar = ({
   // Obtener conteo de equipos de la planta seleccionada
   const counts = selectedPlant ? (equipmentCounts[selectedPlant.id] || { total: 0, reviewed: 0, pending: 0 }) : { total: 0, reviewed: 0, pending: 0 };
 
+  // Manejar navegacion en movil (cerrar sidebar al navegar)
+  const handleMobileNavigate = (view) => {
+    onNavigate(view);
+    if (onClose) onClose();
+  };
+
+  const handleMobilePlantChange = (e) => {
+    handlePlantChange(e);
+    if (onClose) onClose();
+  };
+
   return (
-    <aside className="w-56 lg:w-60 xl:w-64 bg-gray-900 min-h-screen flex flex-col flex-shrink-0 transition-all duration-300">
+    <>
+      {/* Backdrop overlay para movil */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 flex flex-col flex-shrink-0
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        md:relative md:translate-x-0 md:w-56 lg:w-60 xl:w-64
+      `}>
       {/* Header con logo */}
       <div className="p-3 lg:p-4 border-b border-gray-700">
-        <div className="flex items-center gap-2 lg:gap-3">
-          <div className="w-8 h-8 lg:w-10 lg:h-10 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-            <Eye size={20} className="lg:w-6 lg:h-6 text-white" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 lg:gap-3">
+            <div className="w-8 h-8 lg:w-10 lg:h-10 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <Eye size={20} className="lg:w-6 lg:h-6 text-white" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-white text-base lg:text-lg font-bold truncate">Auditoria</h1>
+              <p className="text-gray-400 text-xs">Industrial</p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <h1 className="text-white text-base lg:text-lg font-bold truncate">Auditoria</h1>
-            <p className="text-gray-400 text-xs">Industrial</p>
-          </div>
+          {/* Boton cerrar solo en movil */}
+          <button
+            onClick={onClose}
+            className="md:hidden p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            <X size={20} />
+          </button>
         </div>
       </div>
 
@@ -124,7 +161,7 @@ export const VisualizadorSidebar = ({
         <div className="relative">
           <select
             value={selectedPlant?.id || ""}
-            onChange={handlePlantChange}
+            onChange={handleMobilePlantChange}
             className="
               w-full bg-gray-800 text-white text-xs lg:text-sm
               border border-gray-700 rounded-lg
@@ -201,7 +238,7 @@ export const VisualizadorSidebar = ({
           icon={Factory}
           label="Equipos"
           isActive={currentView === "equipment" || currentView === "detail"}
-          onClick={() => selectedPlant && onNavigate("equipment")}
+          onClick={() => { if (selectedPlant) handleMobileNavigate("equipment"); }}
           disabled={!selectedPlant}
         />
 
@@ -209,21 +246,21 @@ export const VisualizadorSidebar = ({
           icon={FileText}
           label="Reportes"
           isActive={currentView === "reports"}
-          onClick={() => onNavigate("reports")}
+          onClick={() => handleMobileNavigate("reports")}
         />
 
         <MenuItem
           icon={BarChart3}
           label="Estadisticas"
           isActive={currentView === "stats"}
-          onClick={() => onNavigate("stats")}
+          onClick={() => handleMobileNavigate("stats")}
         />
 
         <MenuItem
           icon={Building2}
           label="Plantas"
           isActive={currentView === "plants"}
-          onClick={() => onNavigate("plants")}
+          onClick={() => handleMobileNavigate("plants")}
         />
       </nav>
 
@@ -259,6 +296,7 @@ export const VisualizadorSidebar = ({
         </button>
       </div>
     </aside>
+    </>
   );
 };
 

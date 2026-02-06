@@ -11,7 +11,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Eye } from "lucide-react";
+import { Eye, Menu } from "lucide-react";
 
 // Componentes del Visualizador
 import VisualizadorSidebar from "../visualizador/VisualizadorSidebar";
@@ -66,6 +66,7 @@ export const VisualizadorLayout = ({ user, roleName }) => {
 
   // Estados de UI
   const [loading, setLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Estados de filtros
   const [searchTerm, setSearchTerm] = useState("");
@@ -353,10 +354,21 @@ export const VisualizadorLayout = ({ user, roleName }) => {
         user={user}
         isOffline={isOffline}
         equipmentCounts={equipmentCountByPlant}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
       {/* Area principal derecha - responsive */}
       <main className="main-content-responsive flex-1 p-4 laptop-sm:p-5 xl:p-6 overflow-auto">
+        {/* Boton hamburguesa para movil */}
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="md:hidden fixed top-3 left-3 z-30 p-2 bg-gray-900 text-white rounded-lg shadow-lg hover:bg-gray-800 transition-colors"
+          aria-label="Abrir menu"
+        >
+          <Menu size={22} />
+        </button>
+
         {/* Contenido principal */}
         {renderMainContent()}
       </main>
