@@ -38,6 +38,33 @@ const FILTERABLE_COLUMNS = [
   { key: "location", label: "Ubicacion", field: "location" },
 ];
 
+// Configuración de filtros de datos faltantes
+const MISSING_DATA_FILTERS = [
+  { key: "missingModel", label: "Sin Modelo" },
+  { key: "missingSerialNumber", label: "Sin No. Serie" },
+  { key: "missingInvoiceNumber", label: "Sin # Factura" },
+  { key: "missingCustomsNumber", label: "Sin # Pedimento" },
+  { key: "missingR1Number", label: "Sin Folio R1" },
+  { key: "missingDocuments", label: "Sin documentos PDF adjuntos" },
+  { key: "missingImages", label: "Sin imágenes adjuntas" },
+];
+
+// Verificar condición de dato faltante para un equipo
+const checkMissingCondition = (eq, key) => {
+  switch (key) {
+    case "missingModel": return !eq.model?.trim();
+    case "missingSerialNumber": return !eq.serialNumber?.trim();
+    case "missingInvoiceNumber": return !eq.invoiceNumber?.trim();
+    case "missingCustomsNumber": return !eq.customsNumber?.trim();
+    case "missingR1Number": return !eq.r1Number?.trim();
+    case "missingDocuments":
+      return !eq.pdfs?.factura?.length && !eq.pdfs?.pedimento?.length && !eq.pdfs?.r1?.length;
+    case "missingImages":
+      return !eq.images?.equipment?.length && !eq.images?.plate?.length;
+    default: return false;
+  }
+};
+
 /**
  * Input de filtro para columna
  */
@@ -119,15 +146,30 @@ export const AuditorEquipmentTable = ({
     location: "",
   });
 
+  // Estado para filtros de datos faltantes
+  const [missingDataFilters, setMissingDataFilters] = useState(
+    Object.fromEntries(MISSING_DATA_FILTERS.map((f) => [f.key, false]))
+  );
+
+  // Alternar filtro de dato faltante
+  const toggleMissingFilter = (key) => {
+    setMissingDataFilters((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  // Contar filtros de datos faltantes activos
+  const activeMissingCount = useMemo(() => {
+    return Object.values(missingDataFilters).filter(Boolean).length;
+  }, [missingDataFilters]);
+
   // Verificar si hay filtros activos
   const hasActiveFilters = useMemo(() => {
-    return Object.values(columnFilters).some((filter) => filter.trim() !== "");
-  }, [columnFilters]);
+    return Object.values(columnFilters).some((filter) => filter.trim() !== "") || activeMissingCount > 0;
+  }, [columnFilters, activeMissingCount]);
 
   // Contar filtros activos
   const activeFiltersCount = useMemo(() => {
-    return Object.values(columnFilters).filter((filter) => filter.trim() !== "").length;
-  }, [columnFilters]);
+    return Object.values(columnFilters).filter((filter) => filter.trim() !== "").length + activeMissingCount;
+  }, [columnFilters, activeMissingCount]);
 
   // Actualizar filtro de columna
   const updateColumnFilter = (column, value) => {
@@ -146,6 +188,9 @@ export const AuditorEquipmentTable = ({
       serialNumber: "",
       location: "",
     });
+    setMissingDataFilters(
+      Object.fromEntries(MISSING_DATA_FILTERS.map((f) => [f.key, false]))
+    );
     if (onSearchChange) {
       onSearchChange("");
     }
@@ -188,8 +233,19 @@ export const AuditorEquipmentTable = ({
       }
     });
 
+    // Aplicar filtros de datos faltantes (lógica OR: muestra equipos que cumplen al menos uno)
+    const activeMissingKeys = Object.entries(missingDataFilters)
+      .filter(([, active]) => active)
+      .map(([key]) => key);
+
+    if (activeMissingKeys.length > 0) {
+      result = result.filter((eq) =>
+        activeMissingKeys.some((key) => checkMissingCondition(eq, key))
+      );
+    }
+
     return result;
-  }, [equipment, searchTerm, columnFilters, filterStatus]);
+  }, [equipment, searchTerm, columnFilters, filterStatus, missingDataFilters]);
 
   // Calcular estadisticas
   const stats = useMemo(() => {
@@ -208,7 +264,7 @@ export const AuditorEquipmentTable = ({
   // Resetear a pagina 1 cuando cambie el filtro
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, columnFilters, filterStatus]);
+  }, [searchTerm, columnFilters, filterStatus, missingDataFilters]);
 
   // Navegacion de paginas
   const goToPage = (page) => {
@@ -344,6 +400,30 @@ export const AuditorEquipmentTable = ({
           </div>
         </div>
       </div>
+
+      {/* Panel de filtros de datos faltantes */}
+      {showFilters && (
+        <div className="px-4 sm:px-6 py-3 bg-blue-50 border-b border-blue-200">
+          <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+            Datos faltantes
+          </p>
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
+            {MISSING_DATA_FILTERS.map(({ key, label }) => (
+              <label key={key} className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={missingDataFilters[key]}
+                  onChange={() => toggleMissingFilter(key)}
+                  className="w-4 h-4 rounded border-gray-300 cursor-pointer accent-blue-500"
+                />
+                <span className={`text-sm ${missingDataFilters[key] ? "text-blue-700 font-medium" : "text-gray-700"} group-hover:text-gray-900`}>
+                  {label}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Tabla */}
       <div className="overflow-x-auto overflow-y-visible">
