@@ -221,20 +221,33 @@ export const EquipmentTable = ({
     setMissingDataFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  // Estado para filtros de origen
+  const [originFilters, setOriginFilters] = useState({ nacional: false, extranjero: false });
+
+  // Alternar filtro de origen
+  const toggleOriginFilter = (key) => {
+    setOriginFilters((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
   // Contar filtros de datos faltantes activos
   const activeMissingCount = useMemo(() => {
     return Object.values(missingDataFilters).filter(Boolean).length;
   }, [missingDataFilters]);
 
+  // Contar filtros de origen activos
+  const activeOriginCount = useMemo(() => {
+    return Object.values(originFilters).filter(Boolean).length;
+  }, [originFilters]);
+
   // Verificar si hay filtros activos
   const hasActiveFilters = useMemo(() => {
-    return Object.values(columnFilters).some((filter) => filter.trim() !== "") || activeMissingCount > 0;
-  }, [columnFilters, activeMissingCount]);
+    return Object.values(columnFilters).some((filter) => filter.trim() !== "") || activeMissingCount > 0 || activeOriginCount > 0;
+  }, [columnFilters, activeMissingCount, activeOriginCount]);
 
   // Contar filtros activos
   const activeFiltersCount = useMemo(() => {
-    return Object.values(columnFilters).filter((filter) => filter.trim() !== "").length + activeMissingCount;
-  }, [columnFilters, activeMissingCount]);
+    return Object.values(columnFilters).filter((filter) => filter.trim() !== "").length + activeMissingCount + activeOriginCount;
+  }, [columnFilters, activeMissingCount, activeOriginCount]);
 
   // Actualizar filtro de columna
   const updateColumnFilter = (column, value) => {
@@ -258,6 +271,7 @@ export const EquipmentTable = ({
     setMissingDataFilters(
       Object.fromEntries(MISSING_DATA_FILTERS.map((f) => [f.key, false]))
     );
+    setOriginFilters({ nacional: false, extranjero: false });
     if (onSearchChange) {
       onSearchChange("");
     }
@@ -303,8 +317,18 @@ export const EquipmentTable = ({
       );
     }
 
+    // Aplicar filtros de origen (lógica OR entre los seleccionados)
+    const activeOrigins = [
+      originFilters.nacional && "NACIONAL",
+      originFilters.extranjero && "EXTRANJERO",
+    ].filter(Boolean);
+
+    if (activeOrigins.length > 0) {
+      result = result.filter((eq) => activeOrigins.includes(eq.origin));
+    }
+
     return result;
-  }, [equipment, searchTerm, columnFilters, missingDataFilters]);
+  }, [equipment, searchTerm, columnFilters, missingDataFilters, originFilters]);
 
   // Calcular paginación
   const totalPages = Math.ceil(filteredEquipment.length / ITEMS_PER_PAGE);
@@ -315,7 +339,7 @@ export const EquipmentTable = ({
   // Resetear a página 1 cuando cambie el filtro
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, columnFilters, missingDataFilters]);
+  }, [searchTerm, columnFilters, missingDataFilters, originFilters]);
 
   // Navegación de páginas
   const goToPage = (page) => {
@@ -424,26 +448,53 @@ export const EquipmentTable = ({
         )}
       </div>
 
-      {/* Panel de filtros de datos faltantes */}
+      {/* Panel de filtros de datos faltantes y origen */}
       {showFilters && (
-        <div className="px-4 sm:px-6 py-3 bg-amber-50 border-b border-amber-200">
-          <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
-            Datos faltantes
-          </p>
-          <div className="flex flex-wrap gap-x-6 gap-y-2">
-            {MISSING_DATA_FILTERS.map(({ key, label }) => (
-              <label key={key} className="flex items-center gap-2 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={missingDataFilters[key]}
-                  onChange={() => toggleMissingFilter(key)}
-                  className="w-4 h-4 rounded border-gray-300 cursor-pointer accent-amber-500"
-                />
-                <span className={`text-sm ${missingDataFilters[key] ? "text-amber-700 font-medium" : "text-gray-700"} group-hover:text-gray-900`}>
-                  {label}
-                </span>
-              </label>
-            ))}
+        <div className="px-4 sm:px-6 py-3 bg-amber-50 border-b border-amber-200 flex flex-col gap-3">
+          {/* Datos faltantes */}
+          <div>
+            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+              Datos faltantes
+            </p>
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              {MISSING_DATA_FILTERS.map(({ key, label }) => (
+                <label key={key} className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={missingDataFilters[key]}
+                    onChange={() => toggleMissingFilter(key)}
+                    className="w-4 h-4 rounded border-gray-300 cursor-pointer accent-amber-500"
+                  />
+                  <span className={`text-sm ${missingDataFilters[key] ? "text-amber-700 font-medium" : "text-gray-700"} group-hover:text-gray-900`}>
+                    {label}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+          {/* Origen */}
+          <div className="border-t border-amber-200 pt-3">
+            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+              Origen
+            </p>
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              {[
+                { key: "nacional", label: "Nacional" },
+                { key: "extranjero", label: "Extranjero" },
+              ].map(({ key, label }) => (
+                <label key={key} className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={originFilters[key]}
+                    onChange={() => toggleOriginFilter(key)}
+                    className="w-4 h-4 rounded border-gray-300 cursor-pointer accent-amber-500"
+                  />
+                  <span className={`text-sm ${originFilters[key] ? "text-amber-700 font-medium" : "text-gray-700"} group-hover:text-gray-900`}>
+                    {label}
+                  </span>
+                </label>
+              ))}
+            </div>
           </div>
         </div>
       )}
