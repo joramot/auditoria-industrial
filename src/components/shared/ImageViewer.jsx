@@ -29,10 +29,12 @@ import {
  * @param {number} props.initialIndex - Índice inicial (default: 0)
  * @param {string} props.title - Título del visor
  */
+const EMPTY_IMAGES = [];
+
 const ImageViewer = ({
   isOpen = false,
   onClose,
-  images = [],
+  images = EMPTY_IMAGES,
   initialIndex = 0,
   title = 'Visor de Imágenes'
 }) => {
@@ -50,12 +52,6 @@ const ImageViewer = ({
       setRotation(0);
     }
   }, [isOpen, initialIndex]);
-
-  // Reset zoom y rotación cuando cambia la imagen
-  useEffect(() => {
-    setZoom(1);
-    setRotation(0);
-  }, [currentIndex]);
 
   // Navegación con teclado
   useEffect(() => {
@@ -104,13 +100,17 @@ const ImageViewer = ({
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+      setCurrentIndex(prev => prev - 1);
+      setZoom(1);
+      setRotation(0);
     }
   };
 
   const handleNext = () => {
     if (currentIndex < images.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      setCurrentIndex(prev => prev + 1);
+      setZoom(1);
+      setRotation(0);
     }
   };
 
@@ -349,8 +349,12 @@ const ImageViewer = ({
           <div className="max-w-4xl mx-auto flex gap-2 overflow-x-auto pb-2 justify-center">
             {images.map((img, index) => (
               <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
+                key={img}
+                onClick={() => {
+                  setCurrentIndex(index);
+                  setZoom(1);
+                  setRotation(0);
+                }}
                 className={`
                   flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all
                   ${currentIndex === index

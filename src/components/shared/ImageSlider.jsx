@@ -23,6 +23,8 @@ const getImageUrl = (image) => {
   return image.url || image.preview || null;
 };
 
+const EMPTY_ARRAY = [];
+
 /**
  * Componente Slider de Imagenes
  *
@@ -33,8 +35,8 @@ const getImageUrl = (image) => {
  * @param {Function} props.onDownload - Callback para descargar imagen
  */
 const ImageSlider = ({
-  equipmentImages = [],
-  plateImages = [],
+  equipmentImages = EMPTY_ARRAY,
+  plateImages = EMPTY_ARRAY,
   onViewFullscreen,
   onDownload
 }) => {
@@ -203,7 +205,7 @@ const ImageSlider = ({
               const imgUrl = getImageUrl(img);
               return (
                 <button
-                  key={index}
+                  key={imgUrl || index}
                   onClick={() => setCurrentIndex(index)}
                   className={`flex-shrink-0 w-12 h-12 rounded overflow-hidden border-2 transition-colors ${
                     index === currentIndex

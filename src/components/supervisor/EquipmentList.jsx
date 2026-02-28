@@ -22,8 +22,10 @@ import {
  * @param {boolean} props.showSuccessMessage - Mostrar mensaje de éxito
  * @param {string} props.successMessage - Texto del mensaje de éxito
  */
+const EMPTY_ARRAY = [];
+
 export const EquipmentList = ({
-  equipment = [],
+  equipment = EMPTY_ARRAY,
   selectedPlant = null,
   onSelectEquipment,
   onNewEquipment,
@@ -33,7 +35,6 @@ export const EquipmentList = ({
   showSuccessMessage = false,
   successMessage = "",
 }) => {
-  // Filtrar equipos por término de búsqueda
   const filteredEquipment = equipment.filter((equip) => {
     const searchLower = searchTerm.toLowerCase();
     return (
@@ -106,6 +107,9 @@ export const EquipmentList = ({
               <div
                 key={equip.id}
                 onClick={() => onSelectEquipment(equip)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelectEquipment(equip); }}
+                role="button"
+                tabIndex={0}
                 className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:shadow-lg transition-all cursor-pointer hover:scale-[1.02]"
               >
                 <div className="flex justify-between items-start">

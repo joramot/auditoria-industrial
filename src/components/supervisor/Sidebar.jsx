@@ -48,11 +48,13 @@ const MenuItem = ({ icon: Icon, label, isActive, onClick, disabled }) => (
   </button>
 );
 
+const EMPTY_ARRAY = [];
+
 /**
  * Componente Sidebar
  */
 export const Sidebar = ({
-  plants = [],
+  plants = EMPTY_ARRAY,
   selectedPlant,
   onPlantSelect,
   onNewPlant,
@@ -162,11 +164,12 @@ export const Sidebar = ({
 
         {/* Selector de Planta */}
         <div className="p-4 border-b border-gray-700">
-          <label className="block text-gray-400 text-xs mb-2 uppercase tracking-wide">
+          <label htmlFor="sidebar-plant-select" className="block text-gray-400 text-xs mb-2 uppercase tracking-wide">
             Planta Activa
           </label>
           <div className="relative">
             <select
+              id="sidebar-plant-select"
               value={selectedPlant?.id || ""}
               onChange={handlePlantChange}
               className="

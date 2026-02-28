@@ -102,10 +102,11 @@ export const EquipmentForm = ({
         <div className="p-4 space-y-4">
           {/* 1. Descripción del Equipo */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="eq-name" className="block text-sm font-medium text-gray-700 mb-1">
               Descripción del Equipo <span className="text-red-500">*</span>
             </label>
             <input
+              id="eq-name"
               type="text"
               value={formData.equipmentName}
               onChange={(e) => handleFieldChange("equipmentName", e.target.value)}
@@ -117,10 +118,11 @@ export const EquipmentForm = ({
 
           {/* 2. Localización en Planta */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="eq-location" className="block text-sm font-medium text-gray-700 mb-1">
               Localización en Planta <span className="text-red-500">*</span>
             </label>
             <input
+              id="eq-location"
               type="text"
               value={formData.locationInPlant}
               onChange={(e) => handleFieldChange("locationInPlant", e.target.value)}
@@ -132,10 +134,11 @@ export const EquipmentForm = ({
 
           {/* 3. Número de Serie */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="eq-serial" className="block text-sm font-medium text-gray-700 mb-1">
               Número de Serie <span className="text-red-500">*</span>
             </label>
             <input
+              id="eq-serial"
               type="text"
               value={formData.serialNumber}
               onChange={(e) => handleFieldChange("serialNumber", e.target.value)}
@@ -147,10 +150,11 @@ export const EquipmentForm = ({
 
           {/* 4. Modelo */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="eq-model" className="block text-sm font-medium text-gray-700 mb-1">
               Modelo
             </label>
             <input
+              id="eq-model"
               type="text"
               value={formData.model}
               onChange={(e) => handleFieldChange("model", e.target.value)}
@@ -162,10 +166,11 @@ export const EquipmentForm = ({
 
           {/* 5. Fabricante / Marca */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="eq-manufacturer" className="block text-sm font-medium text-gray-700 mb-1">
               Fabricante / Marca
             </label>
             <input
+              id="eq-manufacturer"
               type="text"
               value={formData.manufacturer}
               onChange={(e) => handleFieldChange("manufacturer", e.target.value)}
@@ -177,10 +182,11 @@ export const EquipmentForm = ({
 
           {/* 6. País de Origen */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="eq-country" className="block text-sm font-medium text-gray-700 mb-1">
               País de Origen
             </label>
             <input
+              id="eq-country"
               type="text"
               value={formData.countryOfOrigin}
               onChange={(e) => handleFieldChange("countryOfOrigin", e.target.value)}
@@ -273,10 +279,11 @@ export const EquipmentForm = ({
 
           {/* 9. Análisis y Observaciones */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="eq-observations" className="block text-sm font-medium text-gray-700 mb-1">
               Análisis y Observaciones
             </label>
             <textarea
+              id="eq-observations"
               value={formData.observations}
               onChange={(e) => handleFieldChange("observations", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -288,10 +295,11 @@ export const EquipmentForm = ({
 
           {/* 10. Acciones Recomendadas */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="eq-actions" className="block text-sm font-medium text-gray-700 mb-1">
               Acciones Recomendadas
             </label>
             <textarea
+              id="eq-actions"
               value={formData.actionsDescription}
               onChange={(e) => handleFieldChange("actionsDescription", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -376,10 +384,11 @@ export const EquipmentForm = ({
           <div className="space-y-3">
             {/* Número de Factura */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="eq-invoice" className="block text-sm font-medium text-gray-700 mb-1">
                 Número de Factura
               </label>
               <input
+                id="eq-invoice"
                 type="text"
                 value={formData.invoiceNumber}
                 onChange={(e) => handleFieldChange("invoiceNumber", e.target.value)}
@@ -415,10 +424,11 @@ export const EquipmentForm = ({
           <div className="space-y-3">
             {/* Número de Pedimento */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="eq-customs" className="block text-sm font-medium text-gray-700 mb-1">
                 Número de Pedimento
               </label>
               <input
+                id="eq-customs"
                 type="text"
                 value={formData.customsNumber}
                 onChange={(e) => handleFieldChange("customsNumber", e.target.value)}
@@ -456,10 +466,11 @@ export const EquipmentForm = ({
               <div className="space-y-3">
                 {/* Folio R1 */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="eq-r1" className="block text-sm font-medium text-gray-700 mb-1">
                     Folio R1 (Rectificación de Pedimento)
                   </label>
                   <input
+                    id="eq-r1"
                     type="text"
                     value={formData.r1Number}
                     onChange={(e) => handleFieldChange("r1Number", e.target.value)}

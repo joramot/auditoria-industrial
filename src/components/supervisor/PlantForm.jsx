@@ -43,10 +43,11 @@ export const PlantForm = ({
         <div className="space-y-4">
           {/* Nombre de la planta */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="plant-name" className="block text-sm font-medium text-gray-700 mb-1">
               Nombre de la Planta <span className="text-red-500">*</span>
             </label>
             <input
+              id="plant-name"
               type="text"
               value={formData.name}
               onChange={(e) => onChange("name", e.target.value)}
@@ -58,10 +59,11 @@ export const PlantForm = ({
 
           {/* Ciudad y Estado */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="plant-location" className="block text-sm font-medium text-gray-700 mb-1">
               Ciudad y Estado <span className="text-red-500">*</span>
             </label>
             <input
+              id="plant-location"
               type="text"
               value={formData.location}
               onChange={(e) => onChange("location", e.target.value)}
@@ -73,10 +75,11 @@ export const PlantForm = ({
 
           {/* Dirección Completa */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="plant-address" className="block text-sm font-medium text-gray-700 mb-1">
               Dirección Completa
             </label>
             <textarea
+              id="plant-address"
               value={formData.address}
               onChange={(e) => onChange("address", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -88,10 +91,11 @@ export const PlantForm = ({
 
           {/* Responsable de Planta */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="plant-responsible" className="block text-sm font-medium text-gray-700 mb-1">
               Responsable de Planta
             </label>
             <input
+              id="plant-responsible"
               type="text"
               value={formData.responsiblePerson}
               onChange={(e) => onChange("responsiblePerson", e.target.value)}
@@ -103,10 +107,11 @@ export const PlantForm = ({
 
           {/* Teléfono de Contacto */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="plant-phone" className="block text-sm font-medium text-gray-700 mb-1">
               Teléfono de Contacto
             </label>
             <input
+              id="plant-phone"
               type="tel"
               value={formData.phoneNumber}
               onChange={(e) => onChange("phoneNumber", e.target.value)}

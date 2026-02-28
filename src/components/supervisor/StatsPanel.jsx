@@ -59,12 +59,14 @@ const StatCard = ({ icon: Icon, title, value, subtitle, color = "blue" }) => {
   );
 };
 
+const EMPTY_ARRAY = [];
+
 /**
  * Componente StatsPanel
  */
 export const StatsPanel = ({
-  plants = [],
-  equipment = [],
+  plants = EMPTY_ARRAY,
+  equipment = EMPTY_ARRAY,
   syncStatus,
   isOffline,
 }) => {

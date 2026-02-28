@@ -43,6 +43,32 @@ import { getPlants, updatePlant } from '../../services/firebase/firebaseServices
 import { DeletePlantButton, NukeDatabaseButton } from '../shared/DeletionButtons';
 import { cleanEverything, findDuplicates, removeDuplicates } from '../../utils/cleanDatabase';
 
+const StatCard = ({ icon: Icon, label, value, color = 'blue' }) => (
+  <div className={`bg-white rounded-lg border border-gray-200 p-4 flex items-center gap-4`}>
+    <div className={`p-3 rounded-lg bg-${color}-100`}>
+      <Icon className={`w-6 h-6 text-${color}-600`} />
+    </div>
+    <div>
+      <p className="text-2xl font-bold text-gray-800">{value}</p>
+      <p className="text-sm text-gray-500">{label}</p>
+    </div>
+  </div>
+);
+
+const NavButton = ({ view, icon: Icon, label, currentView, setCurrentView }) => (
+  <button
+    onClick={() => setCurrentView(view)}
+    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+      currentView === view
+        ? 'bg-blue-600 text-white'
+        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+    }`}
+  >
+    <Icon className="w-4 h-4" />
+    {label}
+  </button>
+);
+
 /**
  * Dashboard de Administracion
  * @param {Object} props
@@ -277,19 +303,6 @@ const AdminDashboard = ({ user }) => {
     setTimeout(() => setSuccessMessage(''), 3000);
   };
 
-  // Componente de tarjeta de estadistica
-  const StatCard = ({ icon: Icon, label, value, color = 'blue' }) => (
-    <div className={`bg-white rounded-lg border border-gray-200 p-4 flex items-center gap-4`}>
-      <div className={`p-3 rounded-lg bg-${color}-100`}>
-        <Icon className={`w-6 h-6 text-${color}-600`} />
-      </div>
-      <div>
-        <p className="text-2xl font-bold text-gray-800">{value}</p>
-        <p className="text-sm text-gray-500">{label}</p>
-      </div>
-    </div>
-  );
-
   // Vista de resumen
   const renderOverview = () => (
     <div className="space-y-6">
@@ -504,10 +517,11 @@ const AdminDashboard = ({ user }) => {
       {/* Formulario */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="edit-plant-name" className="block text-sm font-medium text-gray-700 mb-1">
             Nombre de la Planta
           </label>
           <input
+            id="edit-plant-name"
             type="text"
             value={editPlantData.name}
             onChange={(e) => setEditPlantData({ ...editPlantData, name: e.target.value })}
@@ -517,10 +531,11 @@ const AdminDashboard = ({ user }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="edit-plant-location" className="block text-sm font-medium text-gray-700 mb-1">
             Ubicacion
           </label>
           <input
+            id="edit-plant-location"
             type="text"
             value={editPlantData.location}
             onChange={(e) => setEditPlantData({ ...editPlantData, location: e.target.value })}
@@ -530,10 +545,11 @@ const AdminDashboard = ({ user }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="edit-plant-description" className="block text-sm font-medium text-gray-700 mb-1">
             Descripcion (opcional)
           </label>
           <textarea
+            id="edit-plant-description"
             value={editPlantData.description}
             onChange={(e) => setEditPlantData({ ...editPlantData, description: e.target.value })}
             rows={3}
@@ -688,21 +704,6 @@ const AdminDashboard = ({ user }) => {
     </div>
   );
 
-  // Menu de navegacion
-  const NavButton = ({ view, icon: Icon, label }) => (
-    <button
-      onClick={() => setCurrentView(view)}
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-        currentView === view
-          ? 'bg-blue-600 text-white'
-          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-      }`}
-    >
-      <Icon className="w-4 h-4" />
-      {label}
-    </button>
-  );
-
   // Loading
   if (loading && users.length === 0) {
     return (
@@ -731,10 +732,10 @@ const AdminDashboard = ({ user }) => {
 
       {/* Navegacion */}
       <div className="flex flex-wrap gap-2">
-        <NavButton view="overview" icon={BarChart3} label="Resumen" />
-        <NavButton view="users" icon={Users} label="Usuarios" />
-        <NavButton view="plants" icon={Building2} label="Plantas" />
-        <NavButton view="maintenance" icon={Wrench} label="Mantenimiento" />
+        <NavButton view="overview" icon={BarChart3} label="Resumen" currentView={currentView} setCurrentView={setCurrentView} />
+        <NavButton view="users" icon={Users} label="Usuarios" currentView={currentView} setCurrentView={setCurrentView} />
+        <NavButton view="plants" icon={Building2} label="Plantas" currentView={currentView} setCurrentView={setCurrentView} />
+        <NavButton view="maintenance" icon={Wrench} label="Mantenimiento" currentView={currentView} setCurrentView={setCurrentView} />
       </div>
 
       {/* Contenido */}

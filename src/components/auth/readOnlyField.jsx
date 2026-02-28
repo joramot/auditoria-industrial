@@ -11,6 +11,9 @@
 import React from 'react';
 import { Lock, Eye, Info, AlertCircle, CheckCircle, XCircle, Calendar, User, MapPin, Tag } from 'lucide-react';
 
+const EMPTY_OBJ = {};
+const EMPTY_ARRAY = [];
+
 /**
  * 📖 COMPONENTE READ ONLY FIELD
  * 
@@ -178,8 +181,8 @@ export const ReadOnlyFieldGroup = ({
 export const ReadOnlyStatus = ({
   label,
   status,
-  statusLabels = {},
-  statusColors = {},
+  statusLabels = EMPTY_OBJ,
+  statusColors = EMPTY_OBJ,
   showLockIcon = true,
   className = ''
 }) => {
@@ -316,7 +319,7 @@ export const ReadOnlyUser = ({
  */
 export const ReadOnlyTags = ({
   label,
-  values = [],
+  values = EMPTY_ARRAY,
   emptyMessage = 'Sin etiquetas',
   showLockIcon = true,
   className = ''
@@ -335,7 +338,7 @@ export const ReadOnlyTags = ({
         <div className="flex flex-wrap gap-2">
           {values.map((value, index) => (
             <span
-              key={index}
+              key={value || index}
               className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm bg-blue-100 text-blue-800 border border-blue-200"
             >
               {value}

@@ -45,35 +45,6 @@ export const useAuth = () => {
 };
 
 /**
- * HOOK PARA REQUERIR AUTENTICACIÓN
- *
- * Redirige al login si no está autenticado
- *
- * Uso:
- * ```javascript
- * const { user, loading } = useRequireAuth();
- *
- * if (loading) return <Loading />;
- * // Usuario garantizado aquí
- * ```
- */
-export const useRequireAuth = (redirectUrl = '/login') => {
-  const { user, isAuthenticated, isLoading } = useAuth();
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      // En una app con router, aquí redirigirías:
-      // navigate(redirectUrl);
-    }
-  }, [isAuthenticated, isLoading, redirectUrl]);
-
-  return {
-    user,
-    loading: isLoading
-  };
-};
-
-/**
  * OBTENER INFORMACIÓN DEL USUARIO ACTUAL
  *
  * Versión síncrona que obtiene el usuario del estado actual de Firebase
@@ -115,5 +86,3 @@ export const useIsAuthenticated = () => {
 
   return authenticated;
 };
-
-export default useAuth;

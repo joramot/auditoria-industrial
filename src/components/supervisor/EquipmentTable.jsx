@@ -119,6 +119,8 @@ const ActionMenu = ({ onEdit, onDelete }) => {
             className="fixed inset-0"
             style={{ zIndex: 9998 }}
             onClick={() => setIsOpen(false)}
+            role="presentation"
+            onKeyDown={() => {}}
           />
 
           {/* Menú desplegable con position fixed */}
@@ -181,11 +183,13 @@ const ColumnFilterInput = ({ value, onChange, placeholder }) => (
   </div>
 );
 
+const EMPTY_ARRAY = [];
+
 /**
  * Componente EquipmentTable
  */
 export const EquipmentTable = ({
-  equipment = [],
+  equipment = EMPTY_ARRAY,
   plantName,
   onSelectEquipment,
   onViewEquipment,
@@ -213,7 +217,7 @@ export const EquipmentTable = ({
 
   // Estado para filtros de datos faltantes
   const [missingDataFilters, setMissingDataFilters] = useState(
-    Object.fromEntries(MISSING_DATA_FILTERS.map((f) => [f.key, false]))
+    () => Object.fromEntries(MISSING_DATA_FILTERS.map((f) => [f.key, false]))
   );
 
   // Alternar filtro de dato faltante
@@ -229,25 +233,13 @@ export const EquipmentTable = ({
     setOriginFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  // Contar filtros de datos faltantes activos
-  const activeMissingCount = useMemo(() => {
-    return Object.values(missingDataFilters).filter(Boolean).length;
-  }, [missingDataFilters]);
+  const activeMissingCount = Object.values(missingDataFilters).filter(Boolean).length;
 
-  // Contar filtros de origen activos
-  const activeOriginCount = useMemo(() => {
-    return Object.values(originFilters).filter(Boolean).length;
-  }, [originFilters]);
+  const activeOriginCount = Object.values(originFilters).filter(Boolean).length;
 
-  // Verificar si hay filtros activos
-  const hasActiveFilters = useMemo(() => {
-    return Object.values(columnFilters).some((filter) => filter.trim() !== "") || activeMissingCount > 0 || activeOriginCount > 0;
-  }, [columnFilters, activeMissingCount, activeOriginCount]);
+  const hasActiveFilters = Object.values(columnFilters).some((filter) => filter.trim() !== "") || activeMissingCount > 0 || activeOriginCount > 0;
 
-  // Contar filtros activos
-  const activeFiltersCount = useMemo(() => {
-    return Object.values(columnFilters).filter((filter) => filter.trim() !== "").length + activeMissingCount + activeOriginCount;
-  }, [columnFilters, activeMissingCount, activeOriginCount]);
+  const activeFiltersCount = Object.values(columnFilters).filter((filter) => filter.trim() !== "").length + activeMissingCount + activeOriginCount;
 
   // Actualizar filtro de columna
   const updateColumnFilter = (column, value) => {

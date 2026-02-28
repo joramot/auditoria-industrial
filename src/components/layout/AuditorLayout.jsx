@@ -337,13 +337,13 @@ export const AuditorLayout = ({ user }) => {
 
   const handleNextEquipment = useCallback(() => {
     if (selectedEquipmentIndex < equipment.length - 1) {
-      setSelectedEquipmentIndex(selectedEquipmentIndex + 1);
+      setSelectedEquipmentIndex(prev => prev + 1);
     }
   }, [selectedEquipmentIndex, equipment.length]);
 
   const handlePreviousEquipment = useCallback(() => {
     if (selectedEquipmentIndex > 0) {
-      setSelectedEquipmentIndex(selectedEquipmentIndex - 1);
+      setSelectedEquipmentIndex(prev => prev - 1);
     }
   }, [selectedEquipmentIndex]);
 

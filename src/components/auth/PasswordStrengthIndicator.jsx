@@ -71,8 +71,8 @@ const PasswordStrengthIndicator = ({ password, showRequirements = true }) => {
       {/* Lista de requisitos */}
       {showRequirements && analysis.errors.length > 0 && (
         <ul className="text-xs space-y-1">
-          {analysis.errors.map((error, index) => (
-            <li key={index} className="text-red-600 flex items-center gap-1">
+          {analysis.errors.map((error) => (
+            <li key={error} className="text-red-600 flex items-center gap-1">
               <span className="w-1 h-1 bg-red-500 rounded-full" />
               {error}
             </li>

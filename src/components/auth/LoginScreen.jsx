@@ -271,11 +271,12 @@ const LoginScreen = ({ onLoginSuccess }) => {
               {/* Campo: Nombre (solo en registro) */}
               {!isLogin && (
                 <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                  <label htmlFor="login-name" className="block text-gray-700 text-sm font-medium mb-2">
                     <User className="w-4 h-4 inline mr-1" />
                     Nombre completo
                   </label>
                   <input
+                    id="login-name"
                     type="text"
                     value={displayName}
                     onChange={handleNameChange}
@@ -291,11 +292,12 @@ const LoginScreen = ({ onLoginSuccess }) => {
 
               {/* Campo: Email */}
               <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-medium mb-2">
+                <label htmlFor="login-email" className="block text-gray-700 text-sm font-medium mb-2">
                   <Mail className="w-4 h-4 inline mr-1" />
                   Email
                 </label>
                 <input
+                  id="login-email"
                   type="email"
                   value={email}
                   onChange={handleEmailChange}
@@ -310,12 +312,13 @@ const LoginScreen = ({ onLoginSuccess }) => {
 
               {/* Campo: Contraseña */}
               <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-medium mb-2">
+                <label htmlFor="login-password" className="block text-gray-700 text-sm font-medium mb-2">
                   <Lock className="w-4 h-4 inline mr-1" />
                   Contraseña
                 </label>
                 <div className="relative">
                   <input
+                    id="login-password"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={handlePasswordChange}
@@ -388,8 +391,8 @@ const LoginScreen = ({ onLoginSuccess }) => {
                     <span className="text-sm font-medium">Por favor corrige los siguientes errores:</span>
                   </div>
                   <ul className="text-sm list-disc list-inside space-y-1 ml-7">
-                    {errors.map((err, index) => (
-                      <li key={index}>{err}</li>
+                    {errors.map((err) => (
+                      <li key={err}>{err}</li>
                     ))}
                   </ul>
                 </div>

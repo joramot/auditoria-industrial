@@ -20,8 +20,10 @@ import {
  * @param {boolean} props.showSuccessMessage - Mostrar mensaje de exito
  * @param {string} props.successMessage - Texto del mensaje de exito
  */
+const EMPTY_ARRAY = [];
+
 export const ReportsView = ({
-  plants = [],
+  plants = EMPTY_ARRAY,
   syncStatus = {
     pendingCount: 0,
     lastSync: null,

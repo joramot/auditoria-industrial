@@ -33,6 +33,8 @@ const getPdfName = (pdf, index) => {
   return pdf.name || pdf.fileName || `Documento ${index + 1}`;
 };
 
+const EMPTY_ARRAY = [];
+
 /**
  * Componente Visor de PDFs Embebido
  *
@@ -41,8 +43,8 @@ const getPdfName = (pdf, index) => {
  * @param {Array} props.pedimentos - Array de pedimentos (objetos o strings)
  */
 const PDFDocumentViewer = ({
-  facturas = [],
-  pedimentos = []
+  facturas = EMPTY_ARRAY,
+  pedimentos = EMPTY_ARRAY
 }) => {
   const [currentCategory, setCurrentCategory] = useState('factura');
   const [currentIndex, setCurrentIndex] = useState(0);

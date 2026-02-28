@@ -5,10 +5,12 @@ import React, { useState } from 'react';
 import { Camera, Upload, X, Loader, Image as ImageIcon, Trash2, Eye } from 'lucide-react';
 import { deleteEquipmentImage, deletePlacaImage } from '../../services/deletion/deletionService';
 
+const EMPTY_ARRAY = [];
+
 const ImageUploader = ({ 
   category,                    // "equipment" o "plate"
   label,
-  images = [],
+  images = EMPTY_ARRAY,
   onImagesChange,
   equipmentId,                 // ID del equipo (para eliminación)
   plantId,                     // ID de la planta (para eliminación)
@@ -179,7 +181,7 @@ const ImageUploader = ({
       {images.length > 0 && (
         <div className="grid grid-cols-3 gap-2">
           {images.map((image, index) => (
-            <div key={index} className="relative group">
+            <div key={image.url || image.preview || index} className="relative group">
               <img
                 src={image.preview || image.url}
                 alt={`${label} ${index + 1}`}
@@ -257,6 +259,8 @@ const ImageUploader = ({
         <div 
           className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
           onClick={() => setPreviewImage(null)}
+          role="presentation"
+          onKeyDown={() => {}}
         >
           <div className="relative max-w-4xl max-h-full">
             <button
@@ -270,6 +274,8 @@ const ImageUploader = ({
               alt="Vista previa"
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
               onClick={(e) => e.stopPropagation()}
+              onKeyDown={() => {}}
+              role="presentation"
             />
           </div>
         </div>
